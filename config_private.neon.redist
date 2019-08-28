@@ -1,0 +1,40 @@
+### XXX
+### PRIVATE CONFIGURATION
+
+# cookie: tracy-debug
+DEBUG_COOKIE: "cookievalue"
+
+# Google OAuth 2.0
+goauth_client_id: "someid.apps.googleusercontent.com"
+goauth_secret: ""
+
+# Google Cloud Platfrom keys
+gcp_keys: "/keys/some.json"
+
+# Google
+google: [
+  mapsapi_key: "some_key"
+  pagespeedinsights_key: "some_key"
+]
+
+# Cloudflare
+cf: [
+  email: "joe@foo.bar"
+  apikey: "some_key"
+  zoneid: [
+    "some_key"
+    "some_key"
+  ]
+]
+
+# admins
+admin_groups: [
+  default: [
+  ]
+  editor: [
+  ]
+  admin: [
+    joe@foo.bar
+    mike@foo.bar
+  ]
+]

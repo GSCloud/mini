@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ORIG="/home/domain.tld"
+DEST="/home/${BETA}domain.tld"
+HOST='host'
+USER='user'

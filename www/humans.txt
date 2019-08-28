@@ -1,0 +1,39 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+Filip Oščádal <oscadal@gscloud.cz> @FredBrooker
+
+# TECHNOLOGY
+
+AltoRouter
+Apache Server 2
+Base58 coder
+CakePHP Cache & utilities
+Cloudflare SDK
+EU Cookie Consent component
+Font Awesome 5
+Google Analytics Event
+Google API Core
+Google Cloud Client library
+Google Sheets Data Stack implementation
+Google Stackdriver
+HTML5 Service Worker
+HTML5 Shiv
+jQuery
+Materialize CSS
+Modernizr
+Monolog
+Mustache
+Nette Neon coder
+OneSignal Web Push notifications
+Paragonie Halite cryptography / libsodium
+PSR caching interface
+PSR logging interface
+PSR simple caching interface
+Symphony Lock Component
+The PHP League CLImate
+The PHP League CSV
+The PHP League OAuth 2.0 Client / Google Client Provider
+Tracy debugger

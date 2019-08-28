@@ -1,0 +1,5 @@
+home:
+  language: en
+  path: /
+  presenter: mini
+  sitemap: true

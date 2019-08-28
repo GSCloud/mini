@@ -1,0 +1,20 @@
+defaults:
+  assert_httpcode: 200
+  language: en
+  method: GET
+  presenter: home
+  sitemap: false
+  template: mini
+  view: home
+
+sitemap:
+  path: /sitemap.txt
+  presenter: core
+
+swjs:
+  path: /sw.js
+  presenter: core
+
+error:
+  path: '/err/[a:code]'
+  presenter: error

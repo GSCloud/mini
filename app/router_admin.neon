@@ -1,0 +1,9 @@
+login:
+  assert_httpcode: 303
+  path: /login
+  presenter: login
+
+logout:
+  assert_httpcode: 303
+  path: /logout
+  presenter: logout
