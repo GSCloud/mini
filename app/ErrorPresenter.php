@@ -1,6 +1,6 @@
 <?php
 /**
- * GSC Tesseract MINI
+ * GSC Tesseract
  *
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>

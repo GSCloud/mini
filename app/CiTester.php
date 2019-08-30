@@ -1,6 +1,6 @@
 <?php
 /**
- * GSC Tesseract LASAGNA
+ * GSC Tesseract
  *
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>

@@ -1,12 +1,14 @@
 <?php
 /**
- * GSC Tesseract MINI
+ * GSC Tesseract
  *
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://mini.gscloud.cz
  */
+
+namespace GSC;
 
 use Cake\Cache\Cache;
 use GSC\CliPresenter;
@@ -217,7 +219,7 @@ header(implode(" ", [
 
 // SINGLETON
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
-$controller = "GSC\\$p";
+$controller = "\\GSC\\$p";
 \Tracy\Debugger::timer("PROCESSING");
 $app = $controller::getInstance()->setData($data)->process();
 $data = $app->getData();
