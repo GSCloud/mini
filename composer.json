@@ -1,6 +1,6 @@
 {
-  "name": "Tesseract LASAGNA",
-  "description": "Tesseract LASAGNA object oriented MVP framework",
+  "name": "gscloud/tesseractmini",
+  "description": "Tesseract MINI OOP framework",
   "require": {
     "altorouter/altorouter": "^1.2.0",
     "cakephp/cache": "^3.7.9",

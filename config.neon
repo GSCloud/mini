@@ -6,7 +6,7 @@ dbg: TRUE
 app: mini
 canonical_url: "https://mini.gscloud.cz/"
 date_default_timezone: "Europe/Prague"
-project: LASAGNA
+project: TESSERACT
 secret_cookie_key: secure.key
 version: v1
 
