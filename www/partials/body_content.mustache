@@ -1,16 +1,9 @@
-<div class="container">
+<div class="container center">
+  <section class="login-section">
+    {{>login}}
+  </section>
   <h1 class="hidden">{{ l.title }}</h1>
-  <h2>{{ l.title }}</h2>
-  <h3>{{ l.subtitle }}</h3>
-
-  {{>login}}
-
 </div>
 <div class="container">
-  <p align="center">
-    <a target="_blank" rel="noopener" href="https://bitbucket.org/gscloud/mini">bitbucket.org/gscloud/mini</a>
-  </p>
-  <p align="center">
-    <a target="_blank" rel="noopener" href="https://github.com/GSCloud/mini">github.com/GSCloud/mini</a>
-  </p>
+  <p>{{ l.readme }}</p>
 </div>

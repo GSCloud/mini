@@ -39,8 +39,12 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 </style>
 </head>
 <body>
-  {{>body_css.mustache}}
-  {{>body_content.mustache}}
-  {{>body_footer.mustache}}
+<style>
+{{>body_css.mustache}}
+</style>
+
+{{>body_content.mustache}}
+{{>body_footer.mustache}}
+
 </body>
 </html>

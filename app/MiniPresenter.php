@@ -10,6 +10,8 @@
 
 namespace GSC;
 
+use Michelf\MarkdownExtra;
+
 /**
  * Mini presenter
  */
@@ -28,6 +30,11 @@ class MiniPresenter extends APresenter
         $view = $this->getView();
         $data["user"] = $this->getCurrentUser();
         $data["user_group"] = $this->getUserGroup();
+        $readme = "";
+        if (file_exists(ROOT."/README.md")) {
+            $readme = @file_get_contents(ROOT."/README.md");
+        }
+        $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
         return $this->setData($data, "output", $output);
     }

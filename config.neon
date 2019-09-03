@@ -1,4 +1,4 @@
-### MINI
+### TESSERACT MINI
 
 dbg: TRUE
 
@@ -10,23 +10,26 @@ project: TESSERACT
 secret_cookie_key: secure.key
 version: v1
 
+# GCP
+gcp_project_id: "gscloudcz-163314"
+
 # Google OAUTH 2.0
 goauth_origin: "https://mini.gscloud.cz"
 goauth_redirect: "https://mini.gscloud.cz/login"
 local_goauth_origin: "http://localhost:8022"
 local_goauth_redirect: "http://localhost:8022/login"
 
-# alpha
+# ALPHA/BETA
 alpha_hosts: [
   mini
+  amini.gscloud.cz
 ]
-# beta
 beta_hosts: [
   mini
+  bmini.gscloud.cz
 ]
 
 # locales
 lang: en
 l:
   title: "Tesseract MINI"
-  subtitle: "MVP PWA mini framework"
