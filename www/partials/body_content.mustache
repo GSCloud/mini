@@ -13,7 +13,8 @@
 
   // add nonce to all anchors
   $('.container').find('a').each(function() {
-    $(this).attr('href', $(this).attr('href') + '&nonce=' + Math.round(Math.random() * 10000));
+    var h = $(this).attr('href');
+    if (h.indexOf('?') == -1) $(this).attr('href', h + '?nonce=' + Math.round(Math.random() * 10000));
   });
 
 })(window, $);
