@@ -14,7 +14,8 @@
 <meta name="theme-color" content="{{#theme_color}}{{ theme_color }}{{/theme_color}}{{^theme_color}}#fff{{/theme_color}}">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 {{#base}}<base href="{{ base }}">{{/base}}
-{{#canonical_url}}<link rel="canonical" href="{{ canonical_url }}{{ request_path }}">{{/canonical_url}}
+{{#LOCALHOST}}{{#canonical_url}}<link rel="canonical" href="{{ base }}{{ request_path }}">{{/canonical_url}}{{/LOCALHOST}}
+{{^LOCALHOST}}{{#canonical_url}}<link rel="canonical" href="{{ canonical_url }}{{ request_path }}">{{/canonical_url}}{{/LOCALHOST}}
 <link rel="manifest" href="/manifest.json">
 <script src="/js/jquery-3.4.1.min.js"></script>
 <script>
