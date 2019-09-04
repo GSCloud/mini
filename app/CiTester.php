@@ -5,20 +5,16 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
 
 use League\CLImate\CLImate;
 
-/**
- * CI Tester
- */
 class CiTester
 {
     /**
-     * CI tester
+     * Main controller
      *
      * @param array $cfg Configuration.
      * @param array $presenter Presenter.
@@ -34,11 +30,13 @@ class CiTester
         $type = (string) $type;
 
         switch ($type) {
+            case "local":
             case "testlocal":
                 $case = "local";
                 $target = $cfg["local_goauth_origin"] ?? "";
                 break;
 
+            case "prod":
             case "testprod":
             default:
                 $case = "production";
@@ -51,7 +49,7 @@ class CiTester
             exit;
         }
 
-        $climate->out("testing: <bold><green>${cfg['app']} ${case}");
+        $climate->out("CI testing: <bold><green>${cfg['app']} ${case}");
 
         $i = 0;
         $pages = [];
@@ -83,30 +81,65 @@ class CiTester
         }
         ksort($pages);
         ksort($redirects);
-        foreach (array_merge($redirects, $pages) as $x) {
-            $ch = curl_init($x["url"]);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_NOBODY, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            $output = curl_exec($ch);
-            @file_put_contents(ROOT . "/ci/" . date("Y-m-d") . strtr("_${target}_${x['path']}", '\/:.', '____') . ".curl.txt", $output);
-            $length = strlen($output);
-            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            $u = "url: <bold>${x['site']}${x['path']}</bold> ";
-            $t = "target: ${x['url']} ";
-            if ("${x['site']}${x['path']}" == "${x['url']}") {
-                $t = "";
-            }
-            if ($code == $x["assert_httpcode"]) {
-                $climate->out("${u}${t}length: <green>${length}</green> code: <green>${code}</green> / assert: <green>${x['assert_httpcode']}</green>");
-            } else {
-                $climate->out("<red>ERROR: ${u}${t}</red>\007");
-                @file_put_contents(ROOT . "/ci/errors_" . date("Y-m") . strtr("_${target}", '\/:.', '____') . ".assert.txt",
-                    "${u}${t}length: ${length} target: ${x['url']} code: ${code} / assert: ${x['assert_httpcode']}" . "\n", FILE_APPEND | LOCK_EX);
+        $p = array_merge($redirects, $pages);
+
+        $i = 0;
+        $ch = [];
+        // create curl multi
+        $multi = curl_multi_init();
+        foreach ($p as $x) {
+            $ch[$i] = curl_init();
+            curl_setopt($ch[$i], CURLOPT_URL, $x["url"]);
+            curl_setopt($ch[$i], CURLOPT_HEADER, true);
+            curl_setopt($ch[$i], CURLOPT_NOBODY, false);
+            curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch[$i], CURLOPT_TIMEOUT, 10);
+            curl_multi_add_handle($multi, $ch[$i]);
+            $i++;
+        }
+
+        $active = null;
+        // process all curl calls
+        do {
+            $mrc = curl_multi_exec($multi, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($multi) != -1) {
+                do {
+                    $mrc = curl_multi_exec($multi, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
             }
         }
+
+        $i = 0;
+        // read all results
+        foreach ($p as $x) {
+            $output = curl_multi_getcontent($ch[$i]);
+            $code = curl_getinfo($ch[$i], CURLINFO_HTTP_CODE);
+            $length = strlen($output);
+            @file_put_contents(ROOT . "/ci/" . date("Y-m-d") . strtr("_${target}_${x['path']}", '\/:.', '____') . ".curl.txt", $output);
+
+            $u1 = "<bold>${x['site']}${x['path']}</bold>";
+            $u2 = "${x['site']}${x['path']}";
+
+            $f = date("Y-m-d") . strtr("_${target}", '\/:.', '____');
+            if ($code == $x["assert_httpcode"]) {
+                $climate->out(
+                    "${u1};length:<green>${length}</green>;code:<green>${code}</green>"
+                );
+                @file_put_contents(ROOT . "/ci/tests_${f}.assert.txt",
+                    "${u2};length:${length};code:${code};assert:${x['assert_httpcode']}" . "\n", FILE_APPEND | LOCK_EX);
+            } else {
+                $climate->out(
+                    "<red>${u1};length:<bold>${length}</bold>;code:<bold>${code}</bold>;assert:<bold>${x['assert_httpcode']}</bold></red>\007"
+                );
+                @file_put_contents(ROOT . "/ci/errors_${f}.assert.txt",
+                    "${u2};length:${length};code:${code};assert:${x['assert_httpcode']}" . "\n", FILE_APPEND | LOCK_EX);
+            }
+            curl_multi_remove_handle($multi, $ch[$i]);
+            $i++;
+        }
+        curl_multi_close($multi);
         exit;
     }
 }

@@ -33,3 +33,4 @@ beta_hosts: [
 lang: en
 l:
   title: "Tesseract MINI"
+  author: "Fred Brooker @ GS Cloud Ltd."

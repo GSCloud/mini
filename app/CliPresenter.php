@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://mini.gscloud.cz
  */
 
 namespace GSC;
@@ -38,7 +37,7 @@ class CliPresenter extends APresenter
      */
     public function showConst()
     {
-        print_r(get_defined_constants(true)["user"]);
+        dump(get_defined_constants(true)["user"]);
         return $this;
     }
 
@@ -50,12 +49,14 @@ class CliPresenter extends APresenter
     public function help()
     {
         $climate = new CLImate;
+
         $climate->out("Usage: php -f Bootstrap.php <command> [<parameters>...] \n");
         $climate->out("\t <bold>app</bold> '<code>' \t - run inline code");
         $climate->out("\t <bold>doctor</bold> \t - check system requirements");
         $climate->out("\t <bold>unit</bold> \t\t - Unit test");
-        $climate->out("\t <bold>testlocal</bold> \t - local CI test");
-        $climate->out("\t <bold>testprod</bold> \t - production CI test\n");
+        $climate->out("\t <bold>local</bold> \t\t - local CI test");
+        $climate->out("\t <bold>prod</bold> \t\t - production CI test\n");
+
         return $this;
     }
 
@@ -73,7 +74,7 @@ class CliPresenter extends APresenter
         if ($argc != 3) {
             $climate->out("Examples:\n");
             $climate->out('<bold>app</bold> \'$app->showConst()\'');
-            $climate->out('<bold>app</bold> \'print_r($app->getIdentity())\'');
+            $climate->out('<bold>app</bold> \'dump($app->getIdentity())\'');
         } else {
             try {
                 eval(trim($argv[2]) . ";");
@@ -94,6 +95,8 @@ class CliPresenter extends APresenter
     public function selectModule($module, $argc, $argv)
     {
         switch ($module) {
+            case "local":
+            case "prod":
             case "testlocal":
             case "testprod":
                 require_once "CiTester.php";

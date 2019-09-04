@@ -3,3 +3,8 @@ home:
   path: /
   presenter: mini
   sitemap: true
+
+api:
+  path: "/api/v1/[a:call]/[**:trailing]"
+  presenter: api
+  assert_json: true
