@@ -1,11 +1,10 @@
 #!/bin/bash
+#@author Filip Oščádal <oscadal@gscloud.cz>
 
 dir="$(dirname "$0")"
 cd $dir
 . $dir"/_includes.sh"
 . $dir"/_site_cfg.sh"
-
-USER="mxdpeep"
 
 mkdir -p app cache ci data www/cdn-assets
 
@@ -20,7 +19,7 @@ if [ ! -z "$1" ]; then
     fi
 fi
 
-chown $USER:$USER .
+chown www-data:www-data .
 chgrp www-data cache ci data
 find ./ -type f -exec chmod 0644 {} \;
 chmod -R 0775 cache ci data &

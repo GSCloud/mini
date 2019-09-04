@@ -15,11 +15,9 @@ if [ -z "$GLOBALSYNC" ]; then
 fi
 . $dir"/_site_cfg.sh"
 
-if [ -z "${DEST}" ]; then fail "Error in _site_cfg.sh !"; fi
-if [ -z "${HOST}" ]; then fail "Error in _site_cfg.sh !"; fi
-if [ -z "${USER}" ]; then fail "Error in _site_cfg.sh !"; fi
-
-mkdir -p app cache ci data www/cdn-assets www/download www/upload
+if [ -z "${DEST}" ]; then fail "Error *DEST* in _site_cfg.sh !"; fi
+if [ -z "${HOST}" ]; then fail "Error *HOST* in _site_cfg.sh !"; fi
+if [ -z "${USER}" ]; then fail "Error *USER* in _site_cfg.sh !"; fi
 
 VERSION=`git rev-parse HEAD`
 echo $VERSION > VERSION
@@ -30,18 +28,16 @@ info "Version: $VERSION Revisions: $REVISIONS"
 
 rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" --exclude "www/download" \
   *.json \
+  *.md \
   *.neon \
   *.php \
+  *.sh \
   LICENSE \
   REVISIONS \
   VERSION \
-  _includes.sh \
-  _site_cfg.sh \
   app \
-  cli.sh \
-  remote_fixer.sh \
   vendor \
   www \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
-ssh root@$HOST $DEST/remote_fixer.sh ${BETA}
+ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA}

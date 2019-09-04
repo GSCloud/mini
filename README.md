@@ -5,35 +5,37 @@ for building microsites and apps
 --------------------------------
 
 
-* PHP 7.3 OOP
-* MVP architectural pattern
-* Progressive Web App (PWA)
+* **PHP 7.3 OOP**
+* **MVP** architectural pattern
+* **Progressive Web App** (PWA)
+* **CLI functions**
+* **Google OAuth 2.0** sign-in
 * minimalistic design
-* Google OAuth 2.0 sign-in
 * asynchronous jQuery client code
-* CLI functions
+* user access limiter
+* advanced caching and assets versioning
+* support for alpha and beta versions
 
 
 Components:
 
-* CakePHP cache library
-* Halite encrypted cookies using Sodium library
-* Markdown library for building HTML
-* NEON library for reading INI files
-* Nette Tracy debugger
-* access limiter
-* fast Alto Router
-* monolog logging services
-* mustache templates
-* support for Cloudflare
-* support for Google Cloud Platform
-* support for PHP Google Analytics
-* support for other Nette functions
+* **CakePHP cache** library
+* **Halite** encrypted cookies using **Sodium**
+* **Markdown** library
+* **NEON** library
+* **Nette Tracy** debugger
+* **Alto Router**
+* **monolog** logging
+* **mustache** templates
+* support for **Cloudflare**
+* support for **Google Cloud Platform**
+* support for **PHP Google Analytics**
+* support for other **Nette functions**
 
 
 Model View Presenter architectural pattern:
 
-* **Model** = data array
+* **Model** = multidimensional data array
 * **View** = mustache template
 * **Presenter** = singleton class extending abstract presenter
 

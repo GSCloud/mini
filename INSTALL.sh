@@ -7,10 +7,9 @@ dir="$(dirname "$0")"
 info "Setting up ..."
 
 chmod +x *.sh
-mkdir -p app cache ci data www/cdn-assets www/download www/upload
-chmod 0777 www/download www/upload
+mkdir -p app cache ci data www/cdn-assets
 chmod -R 0775 cache ci data
-sudo chgrp www-data cache ci data www/cdn-assets www/download www/upload
+sudo chgrp www-data cache ci data www/cdn-assets
 
 command -v composer >/dev/null 2>&1 || {
     warn "You need PHP composer installed!"
