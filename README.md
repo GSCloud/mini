@@ -13,7 +13,8 @@ for building microsites and apps
 * jQuery **asynchronous client code**
 * **access limiter**
 * **advanced caching** and **assets versioning**
-* support for **alpha** and **beta** versions
+* **alpha** and **beta** versions
+* **API calls**
 
 
 Components:
@@ -44,6 +45,13 @@ Execution flow:
 * **www/index.php** - may set some constants
 * **Bootstrap.php** - environment setup
 * **app/App.php** - main app, loads Presenter
+
+
+API calls:
+
+[/api/v1/GetCall1](/api/v1/GetCall1)
+[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)
+
 
 License: MIT, website: [https://mini.gscloud.cz](https://mini.gscloud.cz)
 repository: [https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)

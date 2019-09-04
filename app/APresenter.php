@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -51,7 +50,7 @@ interface IPresenter
     public function process();
     public function renderHTML($template);
     public function setCookie($name, $data);
-    public function setData($data, $key, $value);
+    public function setData($data, $value);
     public function setHeaderCsv();
     public function setHeaderFile();
     public function setHeaderHtml();
@@ -372,23 +371,25 @@ abstract class APresenter implements IPresenter
     /**
      * Data setter
      *
-     * @param array $data
-     * @param string $key
+     * @param mixed $data array or key
      * @param mixed $value
      * @return object Singleton instance.
      */
-    public function setData($data = null, $key = null, $value = null) // TODO: needs rework!
+    public function setData($data = null, $value = null)
 
     {
-        if (is_null($data)) {
-            $data = $this->data;
+        if (is_array($data)) {
+            // $data is the new model = replace it!
+            $this->data = (array) $data;
+        } else {
+            // $data is the index to current model = check the index!
+            $key = $data;
+            if (is_string($key) && !empty($key)) {
+                $dot = new \Adbar\Dot($this->data);
+                $dot->set($key, $value);
+                $this->data = (array) $dot->all();
+            }
         }
-        if (is_string($key) && !empty($key)) {
-            $dot = new \Adbar\Dot($data);
-            $dot->set($key, $value);
-            $data = $dot->all();
-        }
-        $this->data = (array) $data;
         return $this;
     }
 
@@ -1088,6 +1089,6 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         $this->setHeaderJson();
         $data = $this->getData();
         $output = json_encode($v, JSON_PRETTY_PRINT);
-        return $this->setData($data, "output", $output);
+        return $this->setData("output", $output);
     }
 }

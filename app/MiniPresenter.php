@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -30,12 +29,11 @@ class MiniPresenter extends APresenter
         $view = $this->getView();
         $data["user"] = $this->getCurrentUser();
         $data["user_group"] = $this->getUserGroup();
-        $readme = "";
         if (file_exists(ROOT."/README.md")) {
             $readme = @file_get_contents(ROOT."/README.md");
+            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);
         }
-        $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
-        return $this->setData($data, "output", $output);
+        return $this->setData("output", $output);
     }
 }

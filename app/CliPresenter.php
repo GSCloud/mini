@@ -17,7 +17,7 @@ use League\CLImate\CLImate;
 class CliPresenter extends APresenter
 {
     /**
-     * Process Tesseract CLI heading
+     * Main controller
      *
      * @return object Singleton instance
      */

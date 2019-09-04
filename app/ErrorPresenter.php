@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://mini.gscloud.cz
  */
 
 namespace GSC;
@@ -51,6 +50,6 @@ class ErrorPresenter extends APresenter
         header("HTTP/1.1 ${code} ${error}");
         $template = "<body><h1>HTTP Error $code</h1><h2>".self::CODESET[$code]."</h2></body>";
         $output = $this->setData($data)->renderHTML($template);
-        return $this->setData($data, "output", $output);
+        return $this->setData("output", $output);
     }
 }

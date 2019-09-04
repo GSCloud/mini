@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://mini.gscloud.cz
  */
 
 namespace GSC;
@@ -40,7 +39,7 @@ class CorePresenter extends APresenter
                 }
                 $data["sitemap"] = $a;
                 $output = $this->setData($data)->renderHTML("sitemap.txt");
-                return $this->setData($data, "output", $output);
+                return $this->setData("output", $output);
                 break;
 
             // sw.js
@@ -55,7 +54,7 @@ class CorePresenter extends APresenter
                 }
                 $data["sitemap"] = $a;
                 $output = $this->setData($data)->renderHTML("sw.js");
-                return $this->setData($data, "output", $output);
+                return $this->setData("output", $output);
                 break;
 
         }

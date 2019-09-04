@@ -7,3 +7,14 @@
 <div class="container">
   <p>{{ l.readme }}</p>
 </div>
+
+<script>
+(function (w, $, undefined) {
+
+  // add nonce to all anchors
+  $('.container').find('a').each(function() {
+    $(this).attr('href', $(this).attr('href') + '&nonce=' + Math.round(Math.random() * 10000));
+  });
+
+})(window, $);
+</script>

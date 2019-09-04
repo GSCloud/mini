@@ -1,7 +1,6 @@
 <script>
   window.addEventListener("load", function () {
     if ("serviceWorker" in navigator) {
-      console.log("Service worker...");
       navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
         console.log("ServiceWorker registration successful with scope: ", registration.scope);
       }, function (err) {

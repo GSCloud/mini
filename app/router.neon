@@ -4,7 +4,12 @@ home:
   presenter: mini
   sitemap: true
 
-api:
+api1:
+  path: "/api/v1/[a:call]"
+  presenter: api
+  assert_json: true
+
+api2:
   path: "/api/v1/[a:call]/[**:trailing]"
   presenter: api
   assert_json: true
