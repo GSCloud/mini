@@ -10,11 +10,10 @@ for building microsites and apps
 * **Progressive Web App** (PWA)
 * **CLI functions**
 * **Google OAuth 2.0** sign-in
-* minimalistic design
-* asynchronous jQuery client code
-* user access limiter
-* advanced caching and assets versioning
-* support for alpha and beta versions
+* jQuery **asynchronous client code**
+* **access limiter**
+* **advanced caching** and **assets versioning**
+* support for **alpha** and **beta** versions
 
 
 Components:
