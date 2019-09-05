@@ -25,9 +25,6 @@ class MiniPresenter extends APresenter
     public function process()
     {
         $this->checkRateLimit()->setHeaderHtml();
-        if (isset($_GET["logout"])) {
-            $this->setLocation();
-        }
 
         $data = $this->getData();
         $presenter = $this->getPresenter();
