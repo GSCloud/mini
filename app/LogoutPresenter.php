@@ -16,7 +16,7 @@ class LogoutPresenter extends APresenter
 {
 
     /**
-     * Process logout
+     * Main controller
      *
      * @return void
      */
