@@ -567,6 +567,7 @@ abstract class APresenter implements IPresenter
         }
         $this->identity = $out;
         $this->setCookie("identity", json_encode($out));
+        bdump($out, "setIdentity");
         return $this;
     }
 
@@ -577,67 +578,89 @@ abstract class APresenter implements IPresenter
      */
     public function getIdentity()
     {
-        $i = [
-            "avatar" => "",
-            "country" => "",
-            "email" => "",
-            "id" => 0,
-            "ip" => "",
-            "name" => "",
-        ];
+        $id = $this->identity["id"] ?? null;
+        $email = $this->identity["email"] ?? null;
+        if ($id && $email) {
+            return $this->identity;
+        }
         $file = DATA . "/" . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
-            $this->setIdentity([]); // initialize empty identity
+            // initialize
+            $this->setIdentity();
+            return $this->identity;
         }
-        $nonce = @file_get_contents($file);
-        $nonce = substr(trim($nonce), 0, 8);
-        // mock CLI identity
+        // empty identity
+        $i = [
+            "avatar" => "",
+            "email" => "",
+            "id" => 0,
+            "name" => "",
+        ];
+        // mock identity
         if (CLI) {
-            $this->setIdentity([
+            $i = [
+                "avatar" => "",
                 "email" => "f@mxd.cz",
                 "id" => 666,
                 "name" => "Mr. Robot",
-            ]);
+            ];
         }
-        // cookie identity
-        if (isset($_COOKIE["identity"])) {
-            $identity = $this->getCookie("identity");
-            $i = json_decode($identity, true);
-            if (!is_array($i)) {
-                $i = [];
+        $nonce = @file_get_contents($file);
+        $nonce = substr(trim($nonce), 0, 8);
+        do {
+            // URL identity
+            if (isset($_GET["identity"])) {
+                $this->setCookie("identity", $_GET["identity"]);    // set cookie
+                $this->setLocation();   //  reload URL
+                exit;
             }
-            if (!array_key_exists("nonce", $i)) {
-                $i["nonce"] = "";
+            // COOKIE identity
+            if (isset($_COOKIE["identity"])) {
+                $x = 0;
+                $q = json_decode($this->getCookie("identity"), true);
+                //bdump($q, "getIdentity");
+                if (!is_array($q)) {
+                    $x++;
+                }
+                if (!array_key_exists("avatar", $q)) {
+                    $x++;
+                }
+                if (!array_key_exists("email", $q)) {
+                    $x++;
+                }
+                if (!array_key_exists("id", $q)) {
+                    $x++;
+                }
+                if (!array_key_exists("name", $q)) {
+                    $x++;
+                }
+                if (!array_key_exists("nonce", $q)) {
+                    $x++;
+                }
+                if ($x) {
+                    $this->clearCookie("identity");
+                    break;
+                }
+                if ($q["nonce"] == $nonce) {
+                    $this->setIdentity($q);
+                    break;
+                }
             }
-            if (!array_key_exists("timestamp", $i)) {
-                $i["timestamp"] = 0;
-            }
-            if ($i["nonce"] == $nonce) {
-                $this->setIdentity([
-                    "avatar" => $i["avatar"] ?? "",
-                    "email" => $i["email"] ?? "",
-                    "id" => $i["id"] ?? 0,
-                    "name" => $i["name"] ?? "",
-                ]);
-            }
-        }
-        // URL parameter identity = set cookie and reload!!!
-        if (isset($_GET["identity"])) {
-            $this->setCookie("identity", $_GET["identity"]);
-            $this->setLocation("/");
-            exit;
-        }
-        return array_merge($i, $this->identity);
+            // empty / mock identity
+            $this->setIdentity($i);
+            break;
+        } while(true);
+        return $this->identity;
     }
 
     /**
-     * Get current user data
+     * Get current user
      *
-     * @return mixed Get current user data array / null
+     * @return array Get current user data
      */
     public function getCurrentUser()
     {
-        $u = array_replace_recursive([
+        $u = array_replace([
             "avatar" => "",
             "email" => "",
             "id" => 0,
@@ -790,20 +813,21 @@ abstract class APresenter implements IPresenter
      */
     public function getCookie($name)
     {
-        if (empty($name)) return null;
-        if (CLI) {
-            return $this->cookies[$name] ?? null;
+        if (empty($name)) {
+            return null;
         }
         if (is_null($name)) {
             $this->addError(__NAMESPACE__ . " : " . __METHOD__ . self::ERROR_NULL);
             return $this;
+        }
+        if (CLI) {
+            return $this->cookies[$name] ?? null;
         }
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
         $keyfile = DATA . "/$key";
         if (file_exists($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
         } else {
-            $this->setCookie($name);
             return null;
         }
         $cookie = new Cookie($enc);
@@ -817,7 +841,7 @@ abstract class APresenter implements IPresenter
      * @param string $data Cookie data
      * @return object Singleton instance
      */
-    public function setCookie($name, $data = "")
+    public function setCookie($name, $data)
     {
         if (empty($name)) {
             return $this;
@@ -845,7 +869,7 @@ abstract class APresenter implements IPresenter
         if (!CLI) {
             $cookie->store($name, (string) $data, time() + self::COOKIE_TTL, "/", DOMAIN, $secure, $httponly, $samesite);
         }
-        $this->cookies[$name] = $data;
+        $this->cookies[$name] = (string) $data;
         return $this;
     }
 
@@ -853,7 +877,7 @@ abstract class APresenter implements IPresenter
      * Clear encrypted cookie
      *
      * @param string $name Cookie name
-     * @return object  Singleton instance
+     * @return object Singleton instance
      */
     public function clearCookie($name)
     {
@@ -875,7 +899,7 @@ abstract class APresenter implements IPresenter
     {
         $code = (int) $code;
         if (empty($location)) {
-            $location = "/?nonce=" . substr(hash("sha1", random_bytes(10) . (string) time()), 0, 8);
+            $location = "/?nonce=" . substr(hash("sha256", random_bytes(10) . (string) time()), 0, 8);
         }
         header("Location: $location", true, ($code > 300) ? $code : 303);
         exit;
@@ -887,9 +911,8 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
-        $this->setCookie("identity", "");
-        unset($_COOKIE["identity"]);
         header('Clear-Site-Data: "cache", "cookies", "storage"');
+        $this->clearCookie("identity");
         $this->setLocation();
         exit;
     }
@@ -967,7 +990,7 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         if (!$id) {
             return false;
         }
-        $mygroup = false;
+        $mygroup = null;
         $email = trim((string) $email);
         // search all groups for email or asterisk
         foreach ($this->getCfg("admin_groups") ?? [] as $group => $users) {

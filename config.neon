@@ -1,6 +1,6 @@
 ### TESSERACT MINI
 
-dbg: TRUE
+#dbg: TRUE
 
 # CORE
 app: mini

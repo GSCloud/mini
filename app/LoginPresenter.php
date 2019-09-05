@@ -74,12 +74,6 @@ class LoginPresenter extends APresenter
             $errors[] = "Invalid OAuth state";
         } else {
 
-            // debugging
-/*
-            dump("OLD IDENTITY:");
-            dump($this->getIdentity());
-*/
-
             // get access token
             try {
                 $token = $provider->getAccessToken("authorization_code", [
@@ -99,8 +93,9 @@ class LoginPresenter extends APresenter
 /*
                 dump("NEW IDENTITY:");
                 dump($this->getIdentity());
-                dump("OAuth details");
+                dump("OAuth IDENTITY:");
                 dump($ownerDetails);
+                exit;
 */
                 if ($this->getUserGroup() == "admin") {
                     // set Tracy debug cookie

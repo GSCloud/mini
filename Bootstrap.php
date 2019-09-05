@@ -22,7 +22,7 @@ error_reporting(E_ALL);
 
 // CONSTANTS (in SPECIFIC ORDER !!!)
 
-/** @const Bootstrap folder. */
+/** @const Bootstrap folder */
 defined("ROOT") || define("ROOT", __DIR__);
 /** @const Cache and logs folder, defaults to "cache" */
 defined("CACHE") || define("CACHE", ROOT . "/cache");

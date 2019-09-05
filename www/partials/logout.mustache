@@ -1,9 +1,8 @@
-<a href="/logout" class="waves-effect waves-light red btn-large">{{
-  l.a_login }}<i class="material-icons md-48">cloud</i><br><b>Logout</b></a>
+<a href="/logout" class="waves-effect waves-light red btn-large">
+{{ l.a_login }}<i class="material-icons md-48">cloud</i><br><b>LOGOUT</b></a>
 
 <h4>{{ user.name }}</h4>
-<img width=128 src="{{ user.avatar }}" alt="{{ user.name }}"><br>
+<img width=100 src="{{ user.avatar }}" alt="{{ user.name }}"><br>
 <br>
-ID: {{ user.id }}<br>
-e-mail: <strong>{{ user.email }}</strong><br>
-<br>
+<span style="font-size:10px">{{ user.id }}</span><br>
+<strong>{{ user.email }}</strong><br>
