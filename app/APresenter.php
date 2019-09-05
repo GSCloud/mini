@@ -1118,7 +1118,6 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         // set language and fetch locale
         $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
-        $data["l"] = $this->getLocale($language);
         // compute data hash
         $data["DATA_VERSION"] = hash('sha256', (string) json_encode($data["l"]));
         // extract request path slug
