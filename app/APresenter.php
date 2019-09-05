@@ -964,8 +964,8 @@ $this->setLocation($this->getCfg("goauth_redirect") .
      */
     public function getUserGroup()
     {
-        $id = $this->getIdentity()["id"];
-        $email = $this->getIdentity()["email"];
+        $id = $this->getIdentity()["id"] ?? null;
+        $email = $this->getIdentity()["email"] ?? null;
         if (!$id) {
             return false;
         }
