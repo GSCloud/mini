@@ -2,7 +2,7 @@
 ### PRIVATE CONFIGURATION
 
 # cookie: tracy-debug
-#DEBUG_COOKIE: "some_cookie_value"
+#DEBUG_COOKIE: "1234"
 
 # Google OAuth 2.0
 #goauth_client_id: "someid.apps.googleusercontent.com"
@@ -23,12 +23,12 @@ cf: [
 
 # grants and permissions
 admin_groups: [
-  default: [
-  ]
-  editor: [
-  ]
   admin: [
     joe@foo.bar
     mike@foo.bar
+  ]
+  editor: [
+  ]
+  default: [
   ]
 ]

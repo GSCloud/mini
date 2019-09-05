@@ -21,6 +21,7 @@ class ApiPresenter extends APresenter
      */
     public function process()
     {
+        $this->checkRateLimit();
         $match = $this->getMatch();
 
         switch ($match["params"]["call"] ?? null) {

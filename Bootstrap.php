@@ -81,16 +81,16 @@ if (DEBUG === true) {   // https://api.nette.org/3.0/Tracy/Debugger.html
     Debugger::$showFireLogger = (bool) ($cfg["DEBUG_SHOW_FIRELOGGER"] ?? false);
     Debugger::$showLocation = (bool) ($cfg["DEBUG_SHOW_LOCATION"] ?? false);
     Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? true);
-//    Debugger::enable(Debugger::PRODUCTION, CACHE);
-    Debugger::enable(Debugger::DEVELOPMENT, CACHE);
-/*
     // cookie: tracy-debug
-    $a = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
-    Debugger::enable(
-        ($cfg["DEBUG_COOKIE"] ?? null) ? (string) $cfg["DEBUG_COOKIE"] . "@${a}" : Debugger::PRODUCTION, CACHE,
-            (string) ($cfg["DEBUG_EMAIL"] ?? null)
-    );
-*/
+    if ($cfg["DEBUG_COOKIE"] ?? null) {
+        $debug_cookie = (string) $cfg["DEBUG_COOKIE"];
+        $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+        Debugger::enable(
+              "${debug_cookie}@${address}", CACHE, (string) ($cfg["DEBUG_EMAIL"] ?? "")
+        );
+    } else {
+        Debugger::enable(Debugger::DETECT, CACHE);
+    }
     Debugger::timer("RUNNING");
 }
 

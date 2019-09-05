@@ -554,7 +554,7 @@ abstract class APresenter implements IPresenter
         }
         $i["timestamp"] = time();
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "";
-        $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+        $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
         $out = [];
         $keys = array_keys($i);
         shuffle($keys);
@@ -562,10 +562,9 @@ abstract class APresenter implements IPresenter
             $out[$k] = $i[$k];
         }
         $this->identity = $out;
-        $s = json_encode($out);
-        $this->setCookie("identity", $s);
-//        if (CLI) echo $s."\n";
-        //        bdump($_COOKIE["identity"]);
+        $json = json_encode($out);
+        $this->setCookie("identity", $json);
+        if (CLI) echo "JSON: ${json}\n";
         return $this;
     }
 
@@ -843,12 +842,14 @@ abstract class APresenter implements IPresenter
             $this->addMessage("HALITE: new keyfile created");
         }
         $cookie = new Cookie($enc);
-        $httponly = true;
-        $samesite = "strict";
-        $secure = true;
         if (DOMAIN == "localhost") {
-            $secure = false;
             $httponly = true;
+            $samesite = "strict";
+            $secure = false;
+        } else {
+            $httponly = true;
+            $samesite = "strict";
+            $secure = true;
         }
         $cookie->store($name, (string) $data, time() + self::COOKIE_TTL, "/", DOMAIN, $secure, $httponly, $samesite);
         return $this;

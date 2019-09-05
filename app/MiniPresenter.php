@@ -9,10 +9,11 @@
 
 namespace GSC;
 
+use Cake\Cache\Cache;
 use Michelf\MarkdownExtra;
 
 /**
- * Mini presenter
+ * Mini Presenter
  */
 class MiniPresenter extends APresenter
 {
@@ -23,17 +24,36 @@ class MiniPresenter extends APresenter
      */
     public function process()
     {
-        $this->checkRateLimit();
+        $this->checkRateLimit();    // check for abuse
+
         $data = $this->getData();
         $presenter = $this->getPresenter();
         $view = $this->getView();
-        $data["user"] = $this->getCurrentUser();
-        $data["user_group"] = $this->getUserGroup();
+
+        // expand data model
+        $this->dataExpander($data);
+
+        // advanced caching
+        $use_cache = $data["use_cache"] ?? false;   // set in dataExpander
+        $cache_key = strtolower(join([
+            $data["host"],
+            $data["request_path"],
+        ], "_"));
+        if ($use_cache && $output = Cache::read($cache_key, "page")) {
+            $output .= "\n<script>console.log('(page content cached)');</script>";  // console notification
+            return $this->setData("output", $output);
+        }
+
+        // generate content
         if (file_exists(ROOT."/README.md")) {
             $readme = @file_get_contents(ROOT."/README.md");
-            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);
+            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);    // render, add to model
         }
-        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
+
+        // render output & save to model & cache
+        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render
+        $output = StringFilters::trim_html_comment($output);    // remove comment blocks
+        Cache::write($cache_key, $output, "page");  // cache page
         return $this->setData("output", $output);
     }
 }
