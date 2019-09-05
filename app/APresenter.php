@@ -529,7 +529,7 @@ abstract class APresenter implements IPresenter
             "name" => "",
         ];
         $file = DATA . "/" . self::IDENTITY_NONCE;
-        // setup random nonce
+        // random nonce
         if (!file_exists($file)) {
             try {
                 $nonce = hash("sha256", random_bytes(256) . time());
@@ -567,7 +567,6 @@ abstract class APresenter implements IPresenter
         }
         $this->identity = $out;
         $this->setCookie("identity", json_encode($out));
-        bdump($out, "setIdentity");
         return $this;
     }
 
@@ -578,9 +577,11 @@ abstract class APresenter implements IPresenter
      */
     public function getIdentity()
     {
+        // check current identity
         $id = $this->identity["id"] ?? null;
         $email = $this->identity["email"] ?? null;
-        if ($id && $email) {
+        $name = $this->identity["name"] ?? null;
+        if ($id && $email && $name) {
             return $this->identity;
         }
         $file = DATA . "/" . self::IDENTITY_NONCE;
