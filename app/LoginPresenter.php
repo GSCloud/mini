@@ -128,7 +128,6 @@ class LoginPresenter extends APresenter
                     $time = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
                     $this->setLocation("/${time}");
                 }
-                exit;
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();
             }

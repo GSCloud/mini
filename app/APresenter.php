@@ -884,15 +884,13 @@ abstract class APresenter implements IPresenter
     /**
      * Google OAuth 2.0 logout
      * 
-     * @return void
      */
     public function logout()
     {
         $this->setCookie("identity", "");
         unset($_COOKIE["identity"]);
-        $this->identity = [];
         header('Clear-Site-Data: "cache", "cookies", "storage"');
-        $this->setLocation();
+        $this->setLocation("/?logout");
         exit;
     }
 
