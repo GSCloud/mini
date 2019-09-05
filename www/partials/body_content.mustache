@@ -2,16 +2,20 @@
 {{>body_css.mustache}}
 {{>_body_css_debug.mustache}}
 </style>
+
 <div class="container center">
   <section class="login-section">
     {{^user.id}}{{>login}}{{/user.id}}
-    {{#user.id}}{{>logout}}{{/user.id}}
   </section>
   <h1 class="hidden">{{ l.title }}</h1>
+  <h2>{{ l.title }}</h2>
 </div>
 <div class="container">
   <p>{{ l.readme }}</p>
 </div>
+<section class="login-section">
+  {{#user.id}}{{>logout}}{{/user.id}}
+</section>
 
 <script>
 (function (w, $, undefined) {
