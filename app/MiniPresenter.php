@@ -17,7 +17,7 @@ use Michelf\MarkdownExtra;
 class MiniPresenter extends APresenter
 {
     /**
-     * Process presenter
+     * Main controller
      *
      * @return object Singleton instance
      */

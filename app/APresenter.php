@@ -24,31 +24,33 @@ use ParagonIE\Halite\KeyFactory;
 
 interface IPresenter
 {
+    /** messages */
     public function addCritical($message);
     public function addError($message);
     public function addMessage($message);
-    public function checkPermission($role);
-    public function checkRateLimit($maximum);
-    public function clearCookie($name);
-    public function cloudflarePurgeCache($cf);
+    public function getCriticals();
+    public function getErrors();
+    public function getMessages();
+
+    /** getters */
     public function getCfg($key);
     public function getCookie($name);
-    public function getCriticals();
     public function getCurrentUser();
     public function getData($key);
-    public function getErrors();
     public function getIdentity();
     public function getMatch();
-    public function getMessages();
     public function getPresenter();
     public function getRouter();
     public function getUID();
     public function getUIDstring();
     public function getUserGroup();
     public function getView();
-    public function logout();
-    public function process();
-    public function renderHTML($template);
+
+    /** grants */
+    public function checkPermission($role);
+    public function checkRateLimit($maximum);
+
+    /** setters */
     public function setCookie($name, $data);
     public function setData($data, $value);
     public function setHeaderCsv();
@@ -59,8 +61,18 @@ interface IPresenter
     public function setHeaderPdf();
     public function setHeaderText();
     public function setIdentity($identity);
-    public function setLocation($locationm, $code);
+    public function setLocation($location, $code);
+
+    /** utilities */
+    public function clearCookie($name);
+    public function cloudflarePurgeCache($cf);
+    public function dataExpander(&$data);
+    public function logout();
+    public function process();  // abstract method
+    public function renderHTML($template);
     public function writeJsonData($d, $headers);
+
+    /** singleton */
     public static function getInstance();
     public static function getTestInstance();
 }
@@ -1091,4 +1103,42 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         $output = json_encode($v, JSON_PRETTY_PRINT);
         return $this->setData("output", $output);
     }
+
+    /**
+     * Data Expander
+     *
+     * @param array $data
+     * @return void
+     */
+    public function dataExpander(&$data) {
+        if (empty($data)) return;
+        $presenter = $this->getPresenter();
+        $view = $this->getView();
+
+        // check logged user
+        $use_cache = true;
+        $data["user"] = $this->getCurrentUser();
+        $data["admin"] = $a = $this->getUserGroup();
+        if ($a) {
+            $data["admin_group_${a}"] = true;
+            $use_cache = false;
+        }
+        $data["use_cache"] = $use_cache;
+
+        // set language and fetch locale
+        $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs";
+        $data["lang{$language}"] = true;
+        $data["l"] = $this->getLocale($language);
+
+        // compute data hash
+        $data["DATA_VERSION"] = hash('sha256', (string) json_encode($data["l"]));
+
+        // extract request path slug
+        if (($pos = strpos($data["request_path"], $language)) !== false) {
+            $data["request_path_slug"] = substr_replace($data["request_path"], "", $pos, strlen($language));
+        } else {
+            $data["request_path_slug"] = $data["request_path"];
+        }
+    }
+
 }

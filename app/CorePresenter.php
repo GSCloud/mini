@@ -15,7 +15,7 @@ namespace GSC;
 class CorePresenter extends APresenter
 {
     /**
-     * Process presenter
+     * Main controller
      *
      * @return object Singleton instance
      */

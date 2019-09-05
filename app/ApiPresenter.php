@@ -21,21 +21,24 @@ class ApiPresenter extends APresenter
      */
     public function process()
     {
-        $data = $this->getData();
         $match = $this->getMatch();
 
         switch ($match["params"]["call"] ?? null) {
 
-            // call 1
+            // API call 1
             case "GetCall1":
                 return $this->writeJsonData(["result" => 12345], ["name" => "API call", "fn" => "GetCall1"]);
                 break;
 
-            // call 2
+            // API call 2
             case "GetCall2":
                 $trailing = $match["params"]["trailing"] ?? null;
                 return $this->writeJsonData(["result" => 6789, "parameter" => $trailing], ["name" => "API call", "fn" => "GetCall2"]);
                 break;
+
+            default:
+                $this->setLocation("/err/400");
+                exit;
         }
 
         return $this;

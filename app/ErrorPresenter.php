@@ -33,7 +33,6 @@ class ErrorPresenter extends APresenter
      */
     public function process()
     {
-        $data = $this->getData();
         $match = $this->getMatch();
         $params = (array) ($match["params"] ?? []);
 
@@ -49,7 +48,7 @@ class ErrorPresenter extends APresenter
 
         header("HTTP/1.1 ${code} ${error}");
         $template = "<body><h1>HTTP Error $code</h1><h2>".self::CODESET[$code]."</h2></body>";
-        $output = $this->setData($data)->renderHTML($template);
+        $output = $this->renderHTML($template);
         return $this->setData("output", $output);
     }
 }
