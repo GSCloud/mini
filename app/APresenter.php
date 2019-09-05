@@ -577,6 +577,14 @@ abstract class APresenter implements IPresenter
      */
     public function getIdentity()
     {
+        $i = [
+            "avatar" => "",
+            "country" => "",
+            "email" => "",
+            "id" => 0,
+            "ip" => "",
+            "name" => "",
+        ];
         $file = DATA . "/" . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
             $this->setIdentity([]); // initialize empty identity
@@ -620,7 +628,8 @@ abstract class APresenter implements IPresenter
             $this->setLocation("/");
             exit;
         }
-        return $this->identity;
+        $identity = array_merge($i, $this->identity);
+        return $identity;
     }
 
     /**
