@@ -42,7 +42,7 @@ class CliPresenter extends APresenter
     }
 
     /**
-     * Display CLI syntax help
+     * Display CLI help
      *
      * @return object Singleton instance
      */
@@ -63,9 +63,9 @@ class CliPresenter extends APresenter
     /**
      * Evaluate input string
      *
-     * @param object $app Singleton
-     * @param int $argc ARGC count
-     * @param array $argv ARGV array
+     * @param object $app this :)
+     * @param int $argc ARGC
+     * @param array $argv ARGV
      * @return object Singleton instance
      */
     public function evaler($app, $argc, $argv)
@@ -88,8 +88,8 @@ class CliPresenter extends APresenter
      * Select CLI module
      *
      * @param string $module CLI parameter
-     * @param int $argc ARGC count
-     * @param array $argv ARGV array
+     * @param int $argc ARGC
+     * @param array $argv ARGV
      * @return void
      */
     public function selectModule($module, $argc, $argv)

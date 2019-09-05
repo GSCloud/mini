@@ -90,7 +90,7 @@ if (DEBUG === true) {   // https://api.nette.org/3.0/Tracy/Debugger.html
     } else {
         Debugger::enable(Debugger::DETECT, CACHE);
     }
-    Debugger::timer("RUNNING");
+    Debugger::timer("RUNNING"); // measuring performance
 }
 
 // DATA

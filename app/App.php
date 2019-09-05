@@ -220,16 +220,15 @@ header(implode(" ", $cfg["csp_headers"] ?? [
 // SINGLETON
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\$p";
-\Tracy\Debugger::timer("PROCESSING");
+\Tracy\Debugger::timer("PROCESSING");   // measuring performance
 $app = $controller::getInstance()->setData($data)->process();
-$data = $app->getData();
 
 // ANALYTICS
 $events = null;
+$data = $app->getData();
 $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "");
 $data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUNNING") * 1000, 2);
 $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESSING") * 1000, 2);
-$app->setData($data);
 
 // FINAL HEADERS
 header("X-Country: $country");
@@ -238,7 +237,7 @@ header("X-Processing: $time2 msec.");
 
 // ANALYTICS
 if (method_exists($app, "SendAnalytics")) {
-    $app->SendAnalytics();
+    $app->setData($data)->SendAnalytics();
 }
 
 // OUTPUT
