@@ -4,18 +4,26 @@
 </style>
 
 <div class="container center">
+
+{{^user.id}}
   <section class="login-section">
-    {{^user.id}}{{>login}}{{/user.id}}
+    {{>login}}
   </section>
+{{/user.id}}
+
+{{#user.id}}
+  <section class="login-section">
+    {{>logout}}
+  </section>
+{{/user.id}}
+
   <h1 class="hidden">{{ l.title }}</h1>
   <h2>{{ l.title }}</h2>
 </div>
+
 <div class="container">
   <p>{{ l.readme }}</p>
 </div>
-<section class="login-section">
-  {{#user.id}}{{>logout}}{{/user.id}}
-</section>
 
 <script>
 (function (w, $, undefined) {
