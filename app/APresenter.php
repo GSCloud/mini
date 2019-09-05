@@ -623,13 +623,11 @@ abstract class APresenter implements IPresenter
         }
         // URL parameter identity = set cookie and reload!!!
         if (isset($_GET["identity"])) {
-            $identity = $_GET["identity"];
-            $this->setCookie("identity", $identity);
+            $this->setCookie("identity", $_GET["identity"]);
             $this->setLocation("/");
             exit;
         }
-        $identity = array_merge($i, $this->identity);
-        return $identity;
+        return array_merge($i, $this->identity);
     }
 
     /**
