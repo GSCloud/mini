@@ -529,6 +529,7 @@ abstract class APresenter implements IPresenter
             "name" => "",
         ];
         $file = DATA . "/" . self::IDENTITY_NONCE;
+        // setup random nonce
         if (!file_exists($file)) {
             try {
                 $nonce = hash("sha256", random_bytes(256) . time());
@@ -565,8 +566,7 @@ abstract class APresenter implements IPresenter
             $out[$k] = $i[$k];
         }
         $this->identity = $out;
-        $json = json_encode($out);
-        $this->setCookie("identity", $json);
+        $this->setCookie("identity", json_encode($out));
         return $this;
     }
 
@@ -579,12 +579,12 @@ abstract class APresenter implements IPresenter
     {
         $file = DATA . "/" . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
-            $this->setIdentity([]); // initialize
+            $this->setIdentity([]); // initialize empty identity
         }
         $nonce = @file_get_contents($file);
         $nonce = substr(trim($nonce), 0, 8);
-        // mock identity
-        if (CLI || (DOMAIN == "localhost")) {
+        // mock CLI identity
+        if (CLI) {
             $this->setIdentity([
                 "email" => "f@mxd.cz",
                 "id" => 666,
@@ -613,15 +613,12 @@ abstract class APresenter implements IPresenter
                 ]);
             }
         }
-        // URL parameter identity
+        // URL parameter identity = set cookie and reload!!!
         if (isset($_GET["identity"])) {
             $identity = $_GET["identity"];
             $this->setCookie("identity", $identity);
             $this->setLocation("/");
             exit;
-        }
-        if ($this->identity === []) {
-            $this->setIdentity([]);
         }
         return $this->identity;
     }

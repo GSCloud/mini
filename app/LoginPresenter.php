@@ -15,18 +15,22 @@ namespace GSC;
 class LoginPresenter extends APresenter
 {
     /**
-     * Process OAuth 2.0 Google Login
+     * Main controller
      *
      * @return void
      */
     public function process()
     {
         $this->checkRateLimit()->setHeaderHtml();
+
         $cfg = $this->getCfg();
+
         // store return URI if exists
         if (isset($_GET["return_uri"])) {
             \setcookie("return_uri", $_GET["return_uri"]);
         }
+
+        // set OAuth 2.0 credentials
         try {
             $provider = new \League\OAuth2\Client\Provider\Google([
                 "clientId" => $cfg["goauth_client_id"],
@@ -34,13 +38,16 @@ class LoginPresenter extends APresenter
                 "redirectUri" => (LOCALHOST === true) ? $cfg["local_goauth_redirect"] : $cfg["goauth_redirect"],
             ]);
         } finally {}
+
+        // check for errors
         $errors = [];
         if (!empty($_GET["error"])) {
             $errors[] = htmlspecialchars($_GET["error"], ENT_QUOTES, "UTF-8");
         } elseif (empty($_GET["code"])) {
             $email = $_GET["login_hint"] ?? $_COOKIE["login_hint"] ?? null;
             $hint = $email ? strtolower("&login_hint=${email}") : "";
-            // check URL for relogin=1
+
+            // check URL for relogin parameter
             if (isset($_GET["relogin"]) && $_GET["relogin"] === true) {
                 $authUrl = $provider->getAuthorizationUrl([
                     "prompt" => "select_account consent",
@@ -54,12 +61,26 @@ class LoginPresenter extends APresenter
             if (ob_get_level()) {
                 ob_end_clean();
             }
+
+            // save OAuth state into cookie
             \setcookie("oauth2state", $provider->getState());
+
+            // OAuth processing
             header("Location: " . $authUrl . $hint, true, 303);
             exit;
         } elseif (empty($_GET["state"]) || ($_GET["state"] && !isset($_COOKIE["oauth2state"]))) {
+
+            // something bad happened!!!
             $errors[] = "Invalid OAuth state";
         } else {
+
+            // debugging
+/*
+            dump("OLD IDENTITY:");
+            dump($this->getIdentity());
+*/
+
+            // get access token
             try {
                 $token = $provider->getAccessToken("authorization_code", [
                     "code" => $_GET["code"],
@@ -73,26 +94,31 @@ class LoginPresenter extends APresenter
                     "id" => $ownerDetails->getId(),
                     "name" => $ownerDetails->getName(),
                 ]);
+
+                // debugging
+/*
+                dump("NEW IDENTITY:");
+                dump($this->getIdentity());
+                dump("OAuth details");
+                dump($ownerDetails);
+*/
                 if ($this->getUserGroup() == "admin") {
-                    // set tracy debug cookie for administrator
+                    // set Tracy debug cookie
                     if ($this->getCfg("DEBUG_COOKIE")) {
                         \setcookie("tracy-debug", $this->getCfg("DEBUG_COOKIE"));
                     }
                 }
+
+                // remove state cookie
                 \setcookie("oauth2state", "", 0);
                 unset($_COOKIE["oauth2state"]);
+
+                // store email for next run
                 if (strlen($ownerDetails->getEmail())) {
                     \setcookie("login_hint", $ownerDetails->getEmail() ?? "", time() + 86400 * 31, "/", DOMAIN);
                 }
 
-                echo "<strong>User:<br></strong>";
-                dump($this->getIdentity());
-                echo "<strong>Group:<br></strong>";
-                dump($this->getUserGroup());
-                echo "<strong>OAuth details:<br></strong>";
-                dump($ownerDetails);
-                exit;
-
+                // set correct URL location
                 if (isset($_COOKIE["return_uri"])) {
                     $c = $_COOKIE["return_uri"];
                     \setcookie("return_uri", "", 0);
@@ -107,10 +133,11 @@ class LoginPresenter extends APresenter
                 $errors[] = $e->getMessage();
             }
         }
+
+        // process errors
         if (ob_get_level()) {
             ob_end_clean();
         }
-
         $this->addError("HTTP/1.1 400 Bad Request");
         $time = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
         header("HTTP/1.1 400 Bad Request");
