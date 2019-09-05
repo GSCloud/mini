@@ -871,7 +871,7 @@ abstract class APresenter implements IPresenter
      * @param string $location URL address
      * @param integer $code HTTP code (optional)
      */
-    public function setLocation($location, $code = 303)
+    public function setLocation($location = "", $code = 303)
     {
         $code = (int) $code;
         if (empty($location)) {
@@ -892,7 +892,7 @@ abstract class APresenter implements IPresenter
         unset($_COOKIE["identity"]);
         $this->identity = [];
         header('Clear-Site-Data: "cache", "cookies", "storage"');
-        $this->setLocation($this->getCfg("canonical_url") ?? "/");
+        $this->setLocation();
         exit;
     }
 

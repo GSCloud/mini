@@ -4,7 +4,8 @@
 </style>
 <div class="container center">
   <section class="login-section">
-    {{>login}}
+    {{#user.id}}{{>logout}}{{/user.id}}
+    {{^user.id}}{{>login}}{{/user.id}}
   </section>
   <h1 class="hidden">{{ l.title }}</h1>
 </div>
