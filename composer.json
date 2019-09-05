@@ -1,6 +1,6 @@
 {
   "name": "gscloud/tesseractmini",
-  "description": "Tesseract MINI OOP framework",
+  "description": "Tesseract MINI OOP PWA framework",
   "require": {
     "altorouter/altorouter": "^1.2.0",
     "cakephp/cache": "^3.7.9",

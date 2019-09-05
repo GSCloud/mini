@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://mini.gscloud.cz
  */
 
 namespace GSC;
@@ -23,19 +22,19 @@ defined("CACHE") || die($x);
 defined("CLI") || die($x);
 defined("ROOT") || die($x);
 
-/** @const Cache prefix. */
+/** @const Cache prefix */
 defined("CACHEPREFIX") || define("CACHEPREFIX", "cakephpcache_");
-/** @const Domain name, extracted from SERVER array. */
+/** @const Domain name, extracted from SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-/** @const Project name, default LASAGNA. */
-defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "Tesseract"));
-/** @const Server name, extracted from SERVER array. */
+/** @const Project name */
+defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
+/** @const Server name, extracted from SERVER array */
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-/** @const Monolog filename, full path. */
+/** @const Monolog filename, full path */
 defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . ".log");
-/** @const Google Cloud Platform project ID. */
+/** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
-/** @const Google Cloud Platform JSON auth keys. */
+/** @const Google Cloud Platform JSON authentication keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 if (GCP_KEYS) {
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . GCP_KEYS);
@@ -107,7 +106,7 @@ $data["multisite_names"] = $multisite_names;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTES
-$routes = [
+$routes = $cfg["routes"] ?? [
     APP . "/router_defaults.neon",
     APP . "/router_admin.neon",
     APP . "/router.neon",
@@ -172,7 +171,7 @@ $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 $data["match"] = $match;
 $data["view"] = $view;
 
-// REDIRECT
+// REDIRECTS
 if ($router[$view]["redirect"] ?? false) {
     $r = $router[$view]["redirect"];
     if (ob_get_level()) {
@@ -183,7 +182,7 @@ if ($router[$view]["redirect"] ?? false) {
 }
 
 // CSP HEADERS
-header(implode(" ", [
+header(implode(" ", $cfg["csp_headers"] ?? [
     "Content-Security-Policy: ",
     "default-src",
     "'unsafe-inline'",
@@ -247,7 +246,7 @@ echo $data["output"] ?? "";
 
 // DEBUG
 if (DEBUG) {
-    // delete private information first
+    // remove private information
     unset($data["cf"]);
     unset($data["goauth_secret"]);
     unset($data["goauth_client_id"]);

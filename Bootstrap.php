@@ -5,7 +5,6 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://mini.gscloud.cz
  */
 
 use Nette\Neon\Neon;
@@ -13,7 +12,7 @@ use Tracy\Debugger;
 
 // START
 list($usec, $sec) = explode(" ", microtime());
-/** @const Global timer start. */
+/** @const Global timer start */
 define("TESSERACT_START", ((float) $usec + (float) $sec));
 ob_start();
 error_reporting(E_ALL);
@@ -25,31 +24,31 @@ error_reporting(E_ALL);
 
 /** @const Bootstrap folder. */
 defined("ROOT") || define("ROOT", __DIR__);
-/** @const Cache and logs folder, defaults to "cache". */
+/** @const Cache and logs folder, defaults to "cache" */
 defined("CACHE") || define("CACHE", ROOT . "/cache");
-/** @const Application data folder, defaults to "data". */
+/** @const Application data folder, defaults to "data" */
 defined("DATA") || define("DATA", ROOT . "/data");
-/** @const Website assets folder, defaults to "www". */
+/** @const Website assets folder, defaults to "www" */
 defined("WWW") || define("WWW", ROOT . "/www");
-/** @const Configuration file, full path. */
+/** @const Configuration file, full path */
 defined("CONFIG") || define("CONFIG", ROOT . "/config.neon");
-/** @const Private configuration file, full path. */
+/** @const Private configuration file, full path */
 defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", ROOT . "/config_private.neon");
-/** @const Website templates folder, defaults to "www/templates". */
+/** @const Website templates folder, defaults to "www/templates" */
 defined("TEMPLATES") || define("TEMPLATES", WWW . "/templates");
-/** @const Website template partials folder, defaults to "www/partials". */
+/** @const Website template partials folder, defaults to "www/partials" */
 defined("PARTIALS") || define("PARTIALS", WWW . "/partials");
-/** @const Website downloads folder, defaults to "www/download". */
+/** @const Website downloads folder, defaults to "www/download" */
 defined("DOWNLOAD") || define("DOWNLOAD", WWW . "/download");
-/** @const Website uploads folder, defaults to "www/upload". */
+/** @const Website uploads folder, defaults to "www/upload" */
 defined("UPLOAD") || define("UPLOAD", WWW . "/upload");
-/** @const Temporary files folder, defaults to "/tmp". */
+/** @const Temporary files folder, defaults to "/tmp" */
 defined("TEMP") || define("TEMP", "/tmp");
-/** @const True if running from command line interface. */
+/** @const True if running from command line interface */
 define("CLI", (bool) (PHP_SAPI === "cli"));
-/** @const True if running server locally. */
+/** @const True if running server locally */
 define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
-/** @const Application folder. */
+/** @const Application folder */
 defined("APP") || define("APP", ROOT . "/app/");
 
 require_once ROOT . "/vendor/autoload.php";
