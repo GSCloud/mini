@@ -5,8 +5,8 @@ var core = [
   {{#sitemap}}"/{{ . }}",{{/sitemap}}
   "{{ cdn }}/build.css",
   "{{ cdn }}/build.js",
-  "{{ cdn }}/img/favicon-128.png",
   "{{ cdn }}/img/favicon-16.png",
+  "{{ cdn }}/img/favicon-128.png",
   "{{ cdn }}/img/favicon-180.png",
   "{{ cdn }}/img/logo.png",
 ];
@@ -25,6 +25,12 @@ self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") {
     return;
   }
+  if (event.request.url.indexOf("?nonce=") !== -1) {
+    console.log("NOT caching %s", event.request.url);
+    return;
+  }
+  //console.log("fetch event for", event.request.url);
+
   event.respondWith(
     caches.match(event.request)
     .then(function (cached) {
@@ -40,13 +46,14 @@ self.addEventListener("fetch", function (event) {
             return cache.put(event.request, cacheCopy);
           })
           .then(function () {
+            //console.log("caching %s response", event.request.url);
           });
         return response;
       }
 
       function unableToResolve() {
-        var r = '?nonce=' + Math.round(Math.random() * 10000);
-        return new Response('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><h1 style="text-align:center">🙄 OFFLINE 🙄</h1><h3><a href=/login' + r + '>RELOAD ↻</a></h3>', {
+        var r = "?nonce=" + Math.round(Math.random() * 10000);
+        return new Response('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OFFLINE</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><h1 style="text-align:center">🙄 OFFLINE 🙄</h1><h2><a href=/login' + r + '>RELOAD ↻</a></h2>', {
           status: 503,
           statusText: "Service Unavailable",
           headers: new Headers({

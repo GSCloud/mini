@@ -885,8 +885,9 @@ abstract class APresenter implements IPresenter
         if (empty($name)) {
             return $this;
         }
-        unset($_COOKIE[$name]);
         \setcookie($name, "", time() - 3600, "/");
+        unset($_COOKIE[$name]);
+        unset($this->cookies[$name]);
         return $this;
     }
 
@@ -1132,15 +1133,19 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         if (empty($data)) return;
         $presenter = $this->getPresenter();
         $view = $this->getView();
-        // check logged user
         $use_cache = true;
-        $data["user"] = $this->getCurrentUser();
-        $data["admin"] = $a = $this->getUserGroup();
-        if ($a) {
-            $data["admin_group_${a}"] = true;
+        // do not cache pages with ?nonce
+        if (array_key_exists("nonce", $_GET)) {
             $use_cache = false;
         }
-        $data["use_cache"] = $use_cache;
+        // check logged user
+        $data["user"] = $this->getCurrentUser();
+        $data["admin"] = $g = $this->getUserGroup();
+        if ($g) {
+            // set admin_group_xxx
+            $data["admin_group_${g}"] = true;
+            $use_cache = false; // do not cache pages for logged users
+        }
         // set language and fetch locale
         $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
@@ -1150,8 +1155,9 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         if (($pos = strpos($data["request_path"], $language)) !== false) {
             $data["request_path_slug"] = substr_replace($data["request_path"], "", $pos, strlen($language));
         } else {
-            $data["request_path_slug"] = $data["request_path"];
+            $data["request_path_slug"] = $data["request_path"] ?? "";
         }
+        $data["use_cache"] = $use_cache;
     }
 
 }
