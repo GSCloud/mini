@@ -1,13 +1,13 @@
 {{#LOCALHOST}}
 {{#local_goauth_redirect}}
-<a href="{{ local_goauth_redirect }}?relogin=1" class="waves-effect waves-light red btn-large">{{
+<a href="{{ local_goauth_redirect }}" class="waves-effect waves-light red btn-large">{{
   l.a_login }}<i class="material-icons md-48">cloud</i><br><b>LOGIN</b></a>
 {{/local_goauth_redirect}}
 {{/LOCALHOST}}
 
 {{^LOCALHOST}}
 {{#goauth_redirect}}
-<a href="{{ goauth_redirect }}?relogin=1" class="waves-effect waves-light red btn-large">{{
+<a href="{{ goauth_redirect }}" class="waves-effect waves-light red btn-large">{{
   l.a_login }}<i class="material-icons md-48">cloud</i><br><b>LOGIN</b></a>
 {{/goauth_redirect}}
 {{/LOCALHOST}}
