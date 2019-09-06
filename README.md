@@ -55,6 +55,7 @@ API calls:
 [/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)
 
 
+
 License: MIT
 
 website: [https://mini.gscloud.cz](https://mini.gscloud.cz)
