@@ -6,6 +6,23 @@
 {{>body_css_debug}} -->
 </style>
 
+{{^user.id}}
+<div class="container">
+  <div class="float-right center">
+    {{>login}}
+  </div>
+  <div class="row">
+    <div class="column">
+      <h1 class="hidden">{{ l.title }}</h1>
+      <a id="fullscreen" class="button" href="#"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
+      <h2>{{ l.title }}</h2>
+      <p>{{ l.readme }}</p>
+    </div>
+  </div>
+</div>
+{{/user.id}}
+
+{{#user.id}}
 <div class="container">
   <div class="row">
     <div class="column column-80">
@@ -14,12 +31,12 @@
       <h2>{{ l.title }}</h2>
       <p>{{ l.readme }}</p>
     </div>
-    <div class="column center">
-      {{^user.id}}{{>login}}{{/user.id}}
-      {{#user.id}}{{>logout}}{{/user.id}}
+    <div class="column column-20 center">
+      {{>logout}}
     </div>
   </div>
 </div>
+{{/user.id}}
 
 <script>
 (function (w, $, undefined) {
