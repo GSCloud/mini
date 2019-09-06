@@ -37,14 +37,15 @@ Model View Presenter architectural pattern:
 
 * **Model** = multidimensional data array
 * **View** = mustache template
-* **Presenter** = singleton class extending abstract presenter
+* **Presenter** = Singleton extending abstract presenter
 
 
 Execution flow:
 
-* **www/index.php** - may set some constants
-* **Bootstrap.php** - environment setup
-* **app/App.php** - main app, loads Presenter
+* **www/index.php** - entry point
+* **Bootstrap.php** - setup
+* **app/App.php** - main app
+* **app/*Presenter.php** - presenters
 
 
 API calls:
