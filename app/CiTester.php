@@ -112,7 +112,8 @@ class CiTester
         }
 
         $i = 0;
-        // read all results
+        $errors = 0;
+        // process results
         foreach ($p as $x) {
             $output = curl_multi_getcontent($ch[$i]);
             $code = curl_getinfo($ch[$i], CURLINFO_HTTP_CODE);
@@ -130,6 +131,7 @@ class CiTester
                 @file_put_contents(ROOT . "/ci/tests_${f}.assert.txt",
                     "${u2};length:${length};code:${code};assert:${x['assert_httpcode']}" . "\n", FILE_APPEND | LOCK_EX);
             } else {
+                $errors++;
                 $climate->out(
                     "<red>${u1};length:<bold>${length}</bold>;code:<bold>${code}</bold>;assert:<bold>${x['assert_httpcode']}</bold></red>\007"
                 );
@@ -140,6 +142,6 @@ class CiTester
             $i++;
         }
         curl_multi_close($multi);
-        exit;
+        exit($errors);
     }
 }

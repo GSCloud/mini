@@ -22,13 +22,22 @@ class LoginPresenter extends APresenter
     public function process()
     {
         $this->checkRateLimit()->setHeaderHtml();
-
         $cfg = $this->getCfg();
 
-        // create return URI
-        dump($_SERVER);
-        exit;
-        //\setcookie("return_uri", $_GET["return_uri"]);
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        // set return URI
+        $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
+        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
+        $uri = "/${nonce}";
+        if ($refhost ?? null) {
+            if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
+                $uri = $_SERVER["HTTP_REFERER"];
+            }
+        }
+        \setcookie("return_uri", $uri);
 
         // set OAuth 2.0 credentials
         try {
@@ -58,9 +67,6 @@ class LoginPresenter extends APresenter
                 $authUrl = $provider->getAuthorizationUrl([
                     "response_type" => "code",
                 ]);
-            }
-            if (ob_get_level()) {
-                ob_end_clean();
             }
 
             // save OAuth state into cookie
@@ -120,8 +126,8 @@ class LoginPresenter extends APresenter
                     unset($_COOKIE["return_uri"]);
                     $this->setLocation($c);
                 } else {
-                    $time = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
-                    $this->setLocation("/${time}");
+                    $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
+                    $this->setLocation("/${nonce}");
                 }
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();

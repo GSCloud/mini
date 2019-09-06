@@ -28,6 +28,14 @@ beta_hosts: [
   mini
   bmini.gscloud.cz
 ]
+multisite_profiles: [
+  default: [
+    mini
+    amini.gscloud.cz
+    bmini.gscloud.cz
+  ]
+]
+
 
 # locales
 lang: en

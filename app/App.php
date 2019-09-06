@@ -101,8 +101,8 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
 
 // DATA
 $data["cache_profiles"] = $cache_profiles;
-$data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_names"] = $multisite_names;
+$data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTES

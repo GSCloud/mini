@@ -29,11 +29,24 @@
 (function (w, $, undefined) {
   'use strict';
 
+  // go fullscreen
+  var params = new window.URLSearchParams(window.location.search);
+  var fullscreen = params.get("fullscreen");
+  if (fullscreen) {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  }
+
   // add nonce to all anchors
   $('.container').find('a').each(function() {
     var h = $(this).attr('href');
-    if (h.indexOf('?') == -1) $(this).attr('href', h + '?nonce=' + Math.round(Math.random() * 10000));
+    var nonce = '?nonce=' + Math.round(Math.random() * 10000);
+    if (h.indexOf('?') == -1) $(this).attr('href', h + nonce);
   });
 
 })(window, $);
+
 </script>
