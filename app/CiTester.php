@@ -142,6 +142,7 @@ class CiTester
             $i++;
         }
         curl_multi_close($multi);
+        if ($errors > 254) $errors = 254;
         exit($errors);
     }
 }
