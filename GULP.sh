@@ -34,10 +34,13 @@ echo -e "\n"
 
 v=`node --version`
 info "node version: "$v
+
 v=`npm --version`
 info "npm version: "$v
+
 v=`npx --version`
 info "npx version: "$v
+
 v=`yarn --version`
 info "yarn version: "$v
 

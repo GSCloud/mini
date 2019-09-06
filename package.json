@@ -5,9 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Fred Brooker",
+  "license": "MIT",
+  "description": "Tesseract MINI framework\r ========================",
   "devDependencies": {
     "gulp": "^4.0.2"
   },
@@ -21,5 +21,8 @@
     "gulp-replace": "^1.0.0",
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^3.0.8"
-  }
+  },
+  "keywords": [
+    "tesseract"
+  ]
 }
