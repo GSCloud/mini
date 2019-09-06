@@ -68,18 +68,13 @@ class LoginPresenter extends APresenter
                     "response_type" => "code",
                 ]);
             }
-
-            // save OAuth state into cookie
             \setcookie("oauth2state", $provider->getState());
-            // OAuth processing
             header("Location: " . $authUrl . $hint, true, 303);
             exit;
         } elseif (empty($_GET["state"]) || ($_GET["state"] && !isset($_COOKIE["oauth2state"]))) {
-
-            // something bad happened!!!
+            // something happened!!!
             $errors[] = "Invalid OAuth state";
         } else {
-
             // get access token
             try {
                 $token = $provider->getAccessToken("authorization_code", [
@@ -109,21 +104,16 @@ class LoginPresenter extends APresenter
                         \setcookie("tracy-debug", $this->getCfg("DEBUG_COOKIE"));
                     }
                 }
-
-                // remove state cookie
-                \setcookie("oauth2state", "", 0);
-                unset($_COOKIE["oauth2state"]);
-
+                $this->clearCookie("oauth2state");
                 // store email for next run
                 if (strlen($ownerDetails->getEmail())) {
                     \setcookie("login_hint", $ownerDetails->getEmail() ?? "", time() + 86400 * 31, "/", DOMAIN);
                 }
-
                 // set correct URL location
                 if (isset($_COOKIE["return_uri"])) {
                     $c = $_COOKIE["return_uri"];
-                    \setcookie("return_uri", "", 0);
-                    unset($_COOKIE["return_uri"]);
+                    $this->clearCookie("return_uri");
+                    $this->clearCookie("oauth2state");
                     $this->setLocation($c);
                 } else {
                     $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
@@ -135,12 +125,12 @@ class LoginPresenter extends APresenter
         }
 
         // process errors
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
         $this->addError("HTTP/1.1 400 Bad Request");
         $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
         header("HTTP/1.1 400 Bad Request");
+        $this->clearCookie("login_hint");
+        $this->clearCookie("oauth2state");
+        $this->clearcookie("return_uri");
         echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
         echo join("<br>", $errors);
         echo "<h3><a href=/login${nonce}>RELOAD ↻</a></h3>";
