@@ -139,11 +139,11 @@ class LoginPresenter extends APresenter
             ob_end_clean();
         }
         $this->addError("HTTP/1.1 400 Bad Request");
-        $time = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
+        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
         header("HTTP/1.1 400 Bad Request");
         echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
         echo join("<br>", $errors);
-        echo "<h3><a href=/login?nonce=${time}>RELOAD ↻</a></h3>";
+        echo "<h3><a href=/login${nonce}>RELOAD ↻</a></h3>";
         exit;
     }
 }
