@@ -48,12 +48,13 @@ class LoginPresenter extends APresenter
             $hint = $email ? strtolower("&login_hint=${email}") : "";
 
             // check URL for relogin parameter
-            if (isset($_GET["relogin"]) && $_GET["relogin"] === true) {
+            if (isset($_GET["relogin"])) {
                 $authUrl = $provider->getAuthorizationUrl([
                     "prompt" => "select_account consent",
                     "response_type" => "code",
                 ]);
             } else {
+                $hint = "";
                 $authUrl = $provider->getAuthorizationUrl([
                     "response_type" => "code",
                 ]);
