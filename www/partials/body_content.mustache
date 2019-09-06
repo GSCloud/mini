@@ -2,8 +2,7 @@
 
 <style>
 {{>body_css}}
-<!-- uncomment for CSS debugging
-{{>body_css_debug}} -->
+{{>###body_css_debug}}
 </style>
 
 {{^user.id}}
@@ -14,7 +13,7 @@
   <div class="row">
     <div class="column">
       <h1 class="hidden">{{ l.title }}</h1>
-      <a id="fullscreen" class="button" href="#"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
+      <a id="fullscreen" class="button" href="#" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
       <h2>{{ l.title }}</h2>
       <p>{{ l.readme }}</p>
     </div>
