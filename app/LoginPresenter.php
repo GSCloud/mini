@@ -49,12 +49,12 @@ class LoginPresenter extends APresenter
 
             // check URL for relogin parameter
             if (isset($_GET["relogin"])) {
+                $hint = "";
                 $authUrl = $provider->getAuthorizationUrl([
                     "prompt" => "select_account consent",
                     "response_type" => "code",
                 ]);
             } else {
-                $hint = "";
                 $authUrl = $provider->getAuthorizationUrl([
                     "response_type" => "code",
                 ]);
@@ -68,6 +68,7 @@ class LoginPresenter extends APresenter
 
             // OAuth processing
             header("Location: " . $authUrl . $hint, true, 303);
+            //echo $authUrl . $hint;
             exit;
         } elseif (empty($_GET["state"]) || ($_GET["state"] && !isset($_COOKIE["oauth2state"]))) {
 
