@@ -1,4 +1,4 @@
-<a href="/logout" class="waves-effect waves-light red btn-large">
+<a href="/logout">
 {{ l.a_login }}<i class="material-icons md-48">cloud</i><br><b>LOGOUT</b></a>
 
 <h4>{{ user.name }}</h4>
@@ -8,14 +8,14 @@
 
 {{#LOCALHOST}}
 {{#local_goauth_redirect}}
-<a href="{{ local_goauth_redirect }}?relogin=1" class="waves-effect waves-light red btn-large">{{
+<a href="{{ local_goauth_redirect }}?relogin=1">{{
   l.a_login }}<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
 {{/local_goauth_redirect}}
 {{/LOCALHOST}}
 
 {{^LOCALHOST}}
 {{#goauth_redirect}}
-<a href="{{ goauth_redirect }}?relogin=1" class="waves-effect waves-light red btn-large">{{
+<a href="{{ goauth_redirect }}?relogin=1">{{
   l.a_login }}<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
 {{/goauth_redirect}}
 {{/LOCALHOST}}
