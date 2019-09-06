@@ -25,10 +25,10 @@ class LoginPresenter extends APresenter
 
         $cfg = $this->getCfg();
 
-        // store return URI if exists
-        if (isset($_GET["return_uri"])) {
-            \setcookie("return_uri", $_GET["return_uri"]);
-        }
+        // create return URI
+        dump($_SERVER);
+        exit;
+        //\setcookie("return_uri", $_GET["return_uri"]);
 
         // set OAuth 2.0 credentials
         try {
