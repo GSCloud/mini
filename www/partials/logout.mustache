@@ -1,5 +1,6 @@
 <a href="/logout">
-{{ l.a_login }}<i class="material-icons md-48">cloud</i><br><b>LOGOUT</b></a>
+{{ l.a_login }}
+<i class="material-icons md-48">cloud</i><br><b>LOGOUT</b></a>
 
 <h4>{{ user.name }}</h4>
 <img width=100 src="{{ user.avatar }}" alt="{{ user.name }}"><br><br>
@@ -8,14 +9,16 @@
 
 {{#LOCALHOST}}
 {{#local_goauth_redirect}}
-<a href="{{ local_goauth_redirect }}?relogin">{{
-  l.a_login }}<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
+<a href="{{ local_goauth_redirect }}?relogin">
+{{ l.a_login }}
+<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
 {{/local_goauth_redirect}}
 {{/LOCALHOST}}
 
 {{^LOCALHOST}}
 {{#goauth_redirect}}
-<a href="{{ goauth_redirect }}?relogin">{{
-  l.a_login }}<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
+<a href="{{ goauth_redirect }}?relogin">
+{{ l.a_login }}
+<i class="material-icons md-48">cloud</i><br><b>NEW LOGIN</b></a>
 {{/goauth_redirect}}
 {{/LOCALHOST}}

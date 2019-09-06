@@ -65,10 +65,8 @@ class LoginPresenter extends APresenter
 
             // save OAuth state into cookie
             \setcookie("oauth2state", $provider->getState());
-
             // OAuth processing
             header("Location: " . $authUrl . $hint, true, 303);
-            //echo $authUrl . $hint;
             exit;
         } elseif (empty($_GET["state"]) || ($_GET["state"] && !isset($_COOKIE["oauth2state"]))) {
 

@@ -40,19 +40,19 @@ class MiniPresenter extends APresenter
             $data["request_path"],
         ], "_"));
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
-            $output .= "\n<script>console.log('(page content cached)');</script>";  // console notification
+            $output .= "\n<script>console.log('(page content cached)');</script>";  // notification
             return $this->setData("output", $output);
         }
 
         // generate content
         if (file_exists(ROOT."/README.md")) {
             $readme = @file_get_contents(ROOT."/README.md");
-            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);    // render, add to model
+            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);    // add to model
         }
 
         // render output & save to model & cache
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render
-        $output = StringFilters::trim_html_comment($output);    // remove comment blocks
+        $output = StringFilters::trim_html_comment($output);    // remove comments
         Cache::write($cache_key, $output, "page");  // cache page
         return $this->setData("output", $output);
     }
