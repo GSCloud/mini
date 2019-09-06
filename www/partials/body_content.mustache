@@ -1,6 +1,6 @@
 <style>
-{{>body_css.mustache}}
-{{>_body_css_debug.mustache}}
+{{>body_css}}
+{{>xbody_css_debug}}
 </style>
 
 <div class="container center">
@@ -30,7 +30,7 @@
 (function (w, $, undefined) {
   'use strict';
 
-  // GSC.FullScreen()
+  // fn GSC.FullScreen()
   if (typeof w.GSC.FullScreen != "function") w.GSC.FullScreen = function() {
     if (document.fullscreenElement) {
       document.exitFullscreen();
@@ -45,6 +45,8 @@
     var nonce = '?nonce=' + Math.round(Math.random() * 10000);
     if (h.indexOf('?') == -1) $(this).attr('href', h + nonce);
   });
+
+  // action on fullscreen button
   $("#fullscreen").click(function () {
     GSC.FullScreen()
   });
