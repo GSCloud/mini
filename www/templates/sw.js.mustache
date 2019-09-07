@@ -25,7 +25,7 @@ self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") {
     return;
   }
-  if (event.request.url.indexOf("?nonce=") !== -1) {
+  if (event.request.url.indexOf("?nonce") !== -1) {
     console.log("NOT caching %s", event.request.url);
     return;
   }
