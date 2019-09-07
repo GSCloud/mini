@@ -913,7 +913,7 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
-        //header('Clear-Site-Data: "cache", "cookies", "storage"');
+        header('Clear-Site-Data: "cache", "cookies", "storage"');
         $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         $this->clearCookie("identity");
         $this->setLocation("/${nonce}");
