@@ -52,9 +52,14 @@ Execution flow:
 * **app/App.php** - main app
 * **app/*Presenter.php** - presenters
 
+Configuration:
+
+* **config.neon** - configuration
+* **config_private.neon** - private configuration
+* **app/router*.neon** - routing tables
+
 
 License: MIT
 
-website: [https://mini.gscloud.cz](https://mini.gscloud.cz)
-
-repository: [https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)
+* website: [https://mini.gscloud.cz](https://mini.gscloud.cz)
+* repository: [https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)
