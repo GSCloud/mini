@@ -373,14 +373,14 @@ abstract class APresenter implements IPresenter
             "CONST.LOG_FILEMODE" => self::LOG_FILEMODE,
         ]);
 
-        $this->data = $dot->all();
+        $this->data = (array) $dot->all();
         if (is_null($key)) {
             return $this->data;
         }
         if (is_string($key)) {
             return $dot->get($key);
         }
-        return false;
+        return null;
     }
 
     /**
@@ -394,10 +394,10 @@ abstract class APresenter implements IPresenter
 
     {
         if (is_array($data)) {
-            // $data is the new model = replace it!
+            // $data is the new model = replace it
             $this->data = (array) $data;
         } else {
-            // $data is the index to current model = check the index!
+            // $data is the index to current model
             $key = $data;
             if (is_string($key) && !empty($key)) {
                 $dot = new \Adbar\Dot($this->data);
