@@ -1139,11 +1139,12 @@ $this->setLocation($this->getCfg("goauth_redirect") .
             $use_cache = false;
         }
         // check logged user
-        $data["user"] = $this->getCurrentUser();
+        $data["user"] = $u = $this->getCurrentUser();
         $data["admin"] = $g = $this->getUserGroup();
         if ($g) {
-            // set admin_group_xxx
             $data["admin_group_${g}"] = true;
+        }
+        if ($u["id"]) {
             $use_cache = false; // do not cache pages for logged users
         }
         // set language and fetch locale
