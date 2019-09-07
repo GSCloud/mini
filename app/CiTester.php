@@ -49,7 +49,7 @@ class CiTester
             exit;
         }
 
-        $climate->out("CI testing: <bold><green>${cfg['app']} ${case}");
+        $climate->out("CI testing: <bold><green>${cfg['app']} ${case}\n");
 
         $i = 0;
         $pages = [];
@@ -142,7 +142,12 @@ class CiTester
             $i++;
         }
         curl_multi_close($multi);
-        if ($errors > 254) $errors = 254;
+
+        if ($errors) {
+            $climate->out("Errors: <bold>" . $errors . "\007\n\n");
+        } else {
+            echo "\n";
+        }
         exit($errors);
     }
 }

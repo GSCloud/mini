@@ -16,10 +16,21 @@ use League\CLImate\CLImate;
  */
 class Doctor
 {
+    /** @var int $err error counter */
+    private static $err = 0;
+
+    /**
+     * Count errors
+     *
+     * @return void
+     */
+    public static function Bad() {
+        self::$err++;
+    }
+
     /**
      * Doctor constructor
      *
-     * @return object Singleton instance
      */
     public function __construct()
     {
@@ -31,6 +42,7 @@ class Doctor
                 throw new \Exception("Empty parameter!");
             }
             if (!file_exists($f) || !is_readable($f)) {
+                Doctor::bad();
                 return false;
             }
             return true;
@@ -42,18 +54,12 @@ class Doctor
                 throw new \Exception("Empty parameter!");
             }
             if (!is_writable($f)) {
+                Doctor::bad();
                 return false;
             }
             return true;
         }
 
-        /**
-         * Display decorated message based on result truthfulness
-         *
-         * @param string $message
-         * @param boolean $result
-         * @return void
-         */
         function validate($message, $result)
         {
             if (is_null($message)) {
@@ -67,6 +73,7 @@ class Doctor
             if ($result) {
                 $climate->out("<green><bold>[√]</bold></green> ${message}");
             } else {
+                Doctor::bad();
                 $climate->out("<red><bold>[!]</bold></red> ${message}");
             }
         }
@@ -104,8 +111,9 @@ class Doctor
         validate("lib <bold>json", (in_array("json", get_loaded_extensions())));
         validate("lib <bold>mbstring", (in_array("mbstring", get_loaded_extensions())));
         validate("lib <bold>sodium", (in_array("sodium", get_loaded_extensions())));
-
         echo "\n";
-        return $this;
+
+        if (self::$err) $climate->out("Errors: <bold>" . self::$err . "\007\n");
+        exit(self::$err);
     }
 }
