@@ -12,12 +12,12 @@ use Tracy\Debugger;
 
 // START
 list($usec, $sec) = explode(" ", microtime());
-/** @const Global timer start */
+/** @const Global timer microtime start */
 define("TESSERACT_START", ((float) $usec + (float) $sec));
 ob_start();
 error_reporting(E_ALL);
 @ini_set("auto_detect_line_endings", true);
-@ini_set("default_socket_timeout", 15);
+@ini_set("default_socket_timeout", 10);
 @ini_set("display_errors", true);
 
 // CONSTANTS (in SPECIFIC ORDER !!!)
@@ -30,9 +30,9 @@ defined("CACHE") || define("CACHE", ROOT . "/cache");
 defined("DATA") || define("DATA", ROOT . "/data");
 /** @const Website assets folder, defaults to "www" */
 defined("WWW") || define("WWW", ROOT . "/www");
-/** @const Configuration file, full path */
+/** @const Configuration file full path */
 defined("CONFIG") || define("CONFIG", ROOT . "/config.neon");
-/** @const Private configuration file, full path */
+/** @const Private configuration file full path */
 defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", ROOT . "/config_private.neon");
 /** @const Website templates folder, defaults to "www/templates" */
 defined("TEMPLATES") || define("TEMPLATES", WWW . "/templates");
@@ -44,11 +44,11 @@ defined("DOWNLOAD") || define("DOWNLOAD", WWW . "/download");
 defined("UPLOAD") || define("UPLOAD", WWW . "/upload");
 /** @const Temporary files folder, defaults to "/tmp" */
 defined("TEMP") || define("TEMP", "/tmp");
-/** @const True if running from command line interface */
+/** @const TRUE if running from command line interface */
 define("CLI", (bool) (PHP_SAPI === "cli"));
-/** @const True if running server locally */
+/** @const TRUE if running server locally */
 define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
-/** @const Application folder */
+/** @const Application folder, defaults to "app" */
 defined("APP") || define("APP", ROOT . "/app/");
 
 require_once ROOT . "/vendor/autoload.php";
@@ -82,8 +82,8 @@ if (DEBUG === true) {   // https://api.nette.org/3.0/Tracy/Debugger.html
     Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? true);
     // cookie: tracy-debug
     if ($cfg["DEBUG_COOKIE"] ?? null) {
-        $debug_cookie = (string) $cfg["DEBUG_COOKIE"];
         $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+        $debug_cookie = (string) $cfg["DEBUG_COOKIE"];
         Debugger::enable(
               "${debug_cookie}@${address}", CACHE, (string) ($cfg["DEBUG_EMAIL"] ?? "")
         );

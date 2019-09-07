@@ -18,7 +18,6 @@ class LogoutPresenter extends APresenter
     /**
      * Main controller
      *
-     * @return void
      */
     public function process()
     {

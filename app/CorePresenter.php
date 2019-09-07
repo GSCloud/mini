@@ -21,7 +21,8 @@ class CorePresenter extends APresenter
      */
     public function process()
     {
-        $data = $this->getData();
+        $this->checkRateLimit();
+
         $presenter = $this->getPresenter();
         $view = $this->getView();
 
@@ -30,30 +31,26 @@ class CorePresenter extends APresenter
             // sitemap
             case "sitemap":
                 $this->setHeaderText();
-                $a = [];
+                $map = [];
                 foreach ($presenter as $p) {
                     if (isset($p["sitemap"]) && $p["sitemap"]) {
-                        $x = trim($p["path"], "/ \t\n\r\0\x0B");
-                        $a[] = $x;
+                        $map[] = trim($p["path"], "/ \t\n\r\0\x0B");
                     }
                 }
-                $data["sitemap"] = $a;
-                $output = $this->setData($data)->renderHTML("sitemap.txt");
+                $output = $this->setData("sitemap", $map)->renderHTML("sitemap.txt");
                 return $this->setData("output", $output);
                 break;
 
             // sw.js
             case "swjs":
                 $this->setHeaderJavaScript();
-                $a = [];
+                $map = [];
                 foreach ($presenter as $p) {
                     if (isset($p["sitemap"]) && $p["sitemap"]) {
-                        $x = trim($p["path"], "/ \t\n\r\0\x0B");
-                        $a[] = $x;
+                        $map[] = trim($p["path"], "/ \t\n\r\0\x0B");
                     }
                 }
-                $data["sitemap"] = $a;
-                $output = $this->setData($data)->renderHTML("sw.js");
+                $output = $this->setData("sitemap", $map)->renderHTML("sw.js");
                 return $this->setData("output", $output);
                 break;
 

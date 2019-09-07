@@ -22,15 +22,15 @@ defined("CACHE") || die($x);
 defined("CLI") || die($x);
 defined("ROOT") || die($x);
 
-/** @const Cache prefix */
+/** @const Cache prefix, defaults to "cakephpcache_" */
 defined("CACHEPREFIX") || define("CACHEPREFIX", "cakephpcache_");
-/** @const Domain name, extracted from SERVER array */
+/** @const Domain name, extracted from $SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-/** @const Project name */
+/** @const Project name, defaults to "TESSERACT" */
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
-/** @const Server name, extracted from SERVER array */
+/** @const Server name, extracted from $SERVER array */
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-/** @const Monolog filename, full path */
+/** @const Monolog log file full path */
 defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . ".log");
 /** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
@@ -67,12 +67,13 @@ function logger($message, $severity = Logger::INFO)
     } finally {}
 }
 
-// CACHE
+// CACHE PROFILES
 $cache_profiles = array_replace([
     "default" => "+3 minutes",
     "limiter" => "+2 seconds",
     "page" => "+10 seconds",
 ], (array) ($cfg["cache_profiles"] ?? []));
+// set caching defaults
 foreach ($cache_profiles as $k => $v) {
     Cache::setConfig($k, [
         "className" => "File",
@@ -105,7 +106,7 @@ $data["multisite_names"] = $multisite_names;
 $data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
-// ROUTES
+// ROUTING CONFIGURATION
 $routes = $cfg["routes"] ?? [
     APP . "/router_defaults.neon",
     APP . "/router_admin.neon",
@@ -124,8 +125,7 @@ foreach ($routes as $r) {
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
 }
-
-// DEFAULTS
+// set routing defaults
 $presenter = [];
 $defaults = $router["defaults"] ?? [];
 foreach ($router as $k => $v) {
@@ -138,7 +138,7 @@ foreach ($router as $k => $v) {
     $presenter[$k] = $router[$k];
 }
 
-// MAPPINGS
+// URL MAPPINGS
 $alto = new \AltoRouter();
 foreach ($presenter as $k => $v) {
     if (!isset($v["path"])) { // skip presenters without path
@@ -152,7 +152,7 @@ foreach ($presenter as $k => $v) {
 $data["presenter"] = $presenter;
 $data["router"] = $router;
 
-// CLI
+// CLI HANDLER
 if (CLI) {
     if (ob_get_level()) {
         ob_end_clean();
@@ -165,13 +165,13 @@ if (CLI) {
     exit;
 }
 
-// ROUTING
+// PROCESS ROUTING
 $match = $alto->match();
 $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 $data["match"] = $match;
 $data["view"] = $view;
 
-// REDIRECTS
+// PROCESS REDIRECTS
 if ($router[$view]["redirect"] ?? false) {
     $r = $router[$view]["redirect"];
     if (ob_get_level()) {
@@ -217,13 +217,13 @@ header(implode(" ", $cfg["csp_headers"] ?? [
     "'self';",
 ]));
 
-// SINGLETON
+// SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\$p";
-\Tracy\Debugger::timer("PROCESSING");   // measuring performance
+\Tracy\Debugger::timer("PROCESSING");   // measure performance
 $app = $controller::getInstance()->setData($data)->process();
 
-// ANALYTICS
+// ANALYTICS DATA
 $events = null;
 $data = $app->getData();
 $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "");
@@ -251,5 +251,5 @@ if (DEBUG) {
     unset($data["goauth_client_id"]);
     unset($data["google_drive_backup "]);
     bdump($data, '$data');
-    bdump($app->getIdentity(), "identity");
+    //bdump($app->getIdentity(), "identity");
 }

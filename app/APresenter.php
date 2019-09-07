@@ -319,7 +319,7 @@ abstract class APresenter implements IPresenter
                     return (string) time();
                 },
                 "sha256_nonce" => function () {
-                    return (string) substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+                    return substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
                 },
             ],
             "charset" => "UTF-8",
@@ -894,14 +894,14 @@ abstract class APresenter implements IPresenter
     /**
      * Set URL location and exit
      *
-     * @param string $location URL address
+     * @param string $location URL address (optional)
      * @param integer $code HTTP code (optional)
      */
     public function setLocation($location = "", $code = 303)
     {
         $code = (int) $code;
         if (empty($location)) {
-            $location = "/?nonce=" . substr(hash("sha256", random_bytes(10) . (string) time()), 0, 8);
+            $location = "/?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         }
         header("Location: $location", true, ($code > 300) ? $code : 303);
         exit;
@@ -913,9 +913,10 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
-        header('Clear-Site-Data: "cache", "cookies", "storage"');
+        //header('Clear-Site-Data: "cache", "cookies", "storage"');
+        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         $this->clearCookie("identity");
-        $this->setLocation();
+        $this->setLocation("/${nonce}");
         exit;
     }
 

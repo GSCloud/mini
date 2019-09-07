@@ -21,16 +21,15 @@ class LoginPresenter extends APresenter
      */
     public function process()
     {
-        $this->checkRateLimit()->setHeaderHtml();
-        $cfg = $this->getCfg();
-
         if (ob_get_level()) {
             ob_end_clean();
         }
+        $this->checkRateLimit()->setHeaderHtml();
 
+        $cfg = $this->getCfg();
+        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         // set return URI
         $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
-        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
         $uri = "/${nonce}";
         if ($refhost ?? null) {
             if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
@@ -38,16 +37,14 @@ class LoginPresenter extends APresenter
             }
         }
         \setcookie("return_uri", $uri);
-
-        // set OAuth 2.0 credentials
         try {
             $provider = new \League\OAuth2\Client\Provider\Google([
+                // set OAuth 2.0 credentials
                 "clientId" => $cfg["goauth_client_id"],
                 "clientSecret" => $cfg["goauth_secret"],
                 "redirectUri" => (LOCALHOST === true) ? $cfg["local_goauth_redirect"] : $cfg["goauth_redirect"],
             ]);
         } finally {}
-
         // check for errors
         $errors = [];
         if (!empty($_GET["error"])) {
@@ -55,7 +52,6 @@ class LoginPresenter extends APresenter
         } elseif (empty($_GET["code"])) {
             $email = $_GET["login_hint"] ?? $_COOKIE["login_hint"] ?? null;
             $hint = $email ? strtolower("&login_hint=${email}") : "";
-
             // check URL for relogin parameter
             if (isset($_GET["relogin"])) {
                 $hint = "";
@@ -72,7 +68,7 @@ class LoginPresenter extends APresenter
             header("Location: " . $authUrl . $hint, true, 303);
             exit;
         } elseif (empty($_GET["state"]) || ($_GET["state"] && !isset($_COOKIE["oauth2state"]))) {
-            // something happened!!!
+            // something baaaaaaaaaaaaaad happened!
             $errors[] = "Invalid OAuth state";
         } else {
             // get access token
@@ -89,7 +85,6 @@ class LoginPresenter extends APresenter
                     "id" => $ownerDetails->getId(),
                     "name" => $ownerDetails->getName(),
                 ]);
-
                 // debugging
 /*
                 dump("NEW IDENTITY:");
@@ -116,23 +111,21 @@ class LoginPresenter extends APresenter
                     $this->clearCookie("oauth2state");
                     $this->setLocation($c);
                 } else {
-                    $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
                     $this->setLocation("/${nonce}");
                 }
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();
             }
         }
-
         // process errors
-        $this->addError("HTTP/1.1 400 Bad Request");
         header("HTTP/1.1 400 Bad Request");
+        $this->addError("HTTP/1.1 400 Bad Request");
         $this->clearCookie("login_hint");
         $this->clearCookie("oauth2state");
         $this->clearcookie("return_uri");
         echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
+        echo '<h2><a href="/login?relogin">RELOAD ↻</a></h2><hr>';
         echo join("<br>", $errors);
-        echo '<h3><a href="/login?relogin">RELOAD ↻</a></h3>';
         exit;
     }
 }

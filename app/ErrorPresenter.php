@@ -27,15 +27,15 @@ class ErrorPresenter extends APresenter
     ];
 
     /**
-     * Process error page
+     * Main controller
      *
      * @return object Singleton instance
      */
     public function process()
     {
+        $this->setHeaderHtml();
         $match = $this->getMatch();
         $params = (array) ($match["params"] ?? []);
-
         if (array_key_exists("code", $params)) {
             $code = (int) $params["code"];
         } else {
@@ -45,10 +45,8 @@ class ErrorPresenter extends APresenter
             $code = 400;
         }
         $error = self::CODESET[$code];
-
         header("HTTP/1.1 ${code} ${error}");
-        $template = "<body><h1>HTTP Error $code</h1><h2>".self::CODESET[$code]."</h2></body>";
-        $output = $this->renderHTML($template);
-        return $this->setData("output", $output);
+        $template = "<body><center><h1>🤔 HTTP Error $code 💣</h1><h2>" . self::CODESET[$code] . "</h2><h3><a href='/'>RELOAD ↻</a></h3></body>";
+        return $this->setData("output", $this->renderHTML($template));
     }
 }
