@@ -68,7 +68,7 @@ interface IPresenter
     public function cloudflarePurgeCache($cf);
     public function dataExpander(&$data);
     public function logout();
-    public function process();  // abstract method
+    public function process(); // abstract method
     public function renderHTML($template);
     public function writeJsonData($d, $headers);
 
@@ -79,9 +79,6 @@ interface IPresenter
 
 abstract class APresenter implements IPresenter
 {
-    /** @var string Fatal error message when checking for null value */
-    const ERROR_NULL = " > FATAL ERROR: NULL UNEXPECTED";
-
     /** @var integer Octal file mode for logs */
     const LOG_FILEMODE = 0664;
 
@@ -89,7 +86,7 @@ abstract class APresenter implements IPresenter
     const COOKIE_KEY_FILEMODE = 0600;
 
     /** @var integer Cookie time to live */
-    const COOKIE_TTL = 86400 * 10;
+    const COOKIE_TTL = 86400 * 15;
 
     /** @var integer Access limiter maximum hits */
     const LIMITER_MAXIMUM = 50;
@@ -201,7 +198,6 @@ abstract class APresenter implements IPresenter
         if (ob_get_level()) {
             ob_flush();
         }
-
         ob_start();
 
         $monolog = new Logger("Tesseract log");
@@ -302,8 +298,7 @@ abstract class APresenter implements IPresenter
      */
     public function renderHTML($template = "index")
     {
-        if (is_null($template)) {
-            $this->addError(__NAMESPACE__ . " : " . __METHOD__ . self::ERROR_NULL);
+        if (empty($template)) {
             return "";
         }
         $type = (file_exists(TEMPLATES . "/${template}.mustache")) ? true : false;
@@ -337,65 +332,64 @@ abstract class APresenter implements IPresenter
     /**
      * Data getter
      *
-     * @param string $key Optional array key, may use dot notation
-     * @return mixed Data if key exists or whole data array
+     * @param string $key array key, may use dot notation (optional)
+     * @return mixed value / whole array
      */
     public function getData($key = null)
     {
         $dot = new \Adbar\Dot((array) $this->data);
 
         // global constants
-        $dot->set([
-            "CONST.APP" => APP,
-            "CONST.CACHE" => CACHE,
-            "CONST.CACHEPREFIX" => CACHEPREFIX,
-            "CONST.CLI" => CLI,
-            "CONST.DATA" => DATA,
-            "CONST.DOMAIN" => DOMAIN,
-            "CONST.DOWNLOAD" => DOWNLOAD,
-            "CONST.MONOLOG" => MONOLOG,
-            "CONST.PARTIALS" => PARTIALS,
-            "CONST.PROJECT" => PROJECT,
-            "CONST.ROOT" => ROOT,
-            "CONST.SERVER" => SERVER,
-            "CONST.TEMP" => TEMP,
-            "CONST.TEMPLATES" => TEMPLATES,
-            "CONST.UPLOAD" => UPLOAD,
-            "CONST.WWW" => WWW,
-        ]);
+        $dot->set(
+            [
+                "CONST.APP" => APP,
+                "CONST.CACHE" => CACHE,
+                "CONST.CACHEPREFIX" => CACHEPREFIX,
+                "CONST.CLI" => CLI,
+                "CONST.DATA" => DATA,
+                "CONST.DOMAIN" => DOMAIN,
+                "CONST.DOWNLOAD" => DOWNLOAD,
+                "CONST.MONOLOG" => MONOLOG,
+                "CONST.PARTIALS" => PARTIALS,
+                "CONST.PROJECT" => PROJECT,
+                "CONST.ROOT" => ROOT,
+                "CONST.SERVER" => SERVER,
+                "CONST.TEMP" => TEMP,
+                "CONST.TEMPLATES" => TEMPLATES,
+                "CONST.UPLOAD" => UPLOAD,
+                "CONST.WWW" => WWW,
+            ]
+        );
 
         // class constants
-        $dot->set([
-            "CONST.COOKIE_KEY_FILEMODE" => self::COOKIE_KEY_FILEMODE,
-            "CONST.COOKIE_TTL" => self::COOKIE_TTL,
-            "CONST.ERROR_NULL" => self::ERROR_NULL,
-            "CONST.LIMITER_MAXIMUM" => self::LIMITER_MAXIMUM,
-            "CONST.LOG_FILEMODE" => self::LOG_FILEMODE,
-        ]);
+        $dot->set(
+            [
+                "CONST.COOKIE_KEY_FILEMODE" => self::COOKIE_KEY_FILEMODE,
+                "CONST.COOKIE_TTL" => self::COOKIE_TTL,
+                "CONST.LIMITER_MAXIMUM" => self::LIMITER_MAXIMUM,
+                "CONST.LOG_FILEMODE" => self::LOG_FILEMODE,
+            ]
+        );
 
-        $this->data = (array) $dot->all();
-        if (is_null($key)) {
-            return $this->data;
-        }
         if (is_string($key)) {
             return $dot->get($key);
         }
-        return null;
+        $this->data = (array) $dot->all();
+        return $this->data;
     }
 
     /**
      * Data setter
      *
-     * @param mixed $data array or key
+     * @param mixed $data array / key
      * @param mixed $value
      * @return object Singleton instance
      */
     public function setData($data = null, $value = null)
-
     {
         if (is_array($data)) {
             // $data is the new model = replace it
-            $this->data = (array) $data;
+            $this->data = $data;
         } else {
             // $data is the index to current model
             $key = $data;
@@ -487,15 +481,16 @@ abstract class APresenter implements IPresenter
      */
     public function getUIDstring()
     {
-        $string = strtr(implode("_", [
-            $_SERVER["HTTP_ACCEPT"] ?? "NA",
-            $_SERVER["HTTP_ACCEPT_CHARSET"] ?? "NA",
-            $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "NA",
-            $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "NA",
-            $_SERVER["HTTP_USER_AGENT"] ?? "UA",
-            $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
-        ]), " ", "_");
-        return $string;
+        return strtr(implode("_",
+            [
+                $_SERVER["HTTP_ACCEPT"] ?? "NA",
+                $_SERVER["HTTP_ACCEPT_CHARSET"] ?? "NA",
+                $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "NA",
+                $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "NA",
+                $_SERVER["HTTP_USER_AGENT"] ?? "UA",
+                $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
+            ]),
+            " ", "_");
     }
 
     /**
@@ -505,8 +500,7 @@ abstract class APresenter implements IPresenter
      */
     public function getUID()
     {
-        $hash = hash("sha256", $this->getUIDstring());
-        return $hash;
+        return hash("sha256", $this->getUIDstring());
     }
 
     /**
@@ -611,8 +605,8 @@ abstract class APresenter implements IPresenter
         do {
             // URL identity
             if (isset($_GET["identity"])) {
-                $this->setCookie("identity", $_GET["identity"]);    // set cookie
-                $this->setLocation();   //  reload URL
+                $this->setCookie("identity", $_GET["identity"]); // set cookie
+                $this->setLocation(); //  reload URL
                 exit;
             }
             // COOKIE identity
@@ -650,7 +644,7 @@ abstract class APresenter implements IPresenter
             // empty / mock identity
             $this->setIdentity($i);
             break;
-        } while(true);
+        } while (true);
         return $this->identity;
     }
 
@@ -818,8 +812,7 @@ abstract class APresenter implements IPresenter
             return null;
         }
         if (is_null($name)) {
-            $this->addError(__NAMESPACE__ . " : " . __METHOD__ . self::ERROR_NULL);
-            return $this;
+            return null;
         }
         if (CLI) {
             return $this->cookies[$name] ?? null;
@@ -909,7 +902,7 @@ abstract class APresenter implements IPresenter
 
     /**
      * Google OAuth 2.0 logout
-     * 
+     *
      */
     public function logout()
     {
@@ -1130,8 +1123,12 @@ $this->setLocation($this->getCfg("goauth_redirect") .
      * @param array $data Model array
      * @return void
      */
-    public function dataExpander(&$data) {
-        if (empty($data)) return;
+    public function dataExpander(&$data)
+    {
+        if (empty($data)) {
+            return;
+        }
+
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $use_cache = true;
