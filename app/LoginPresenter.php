@@ -126,14 +126,13 @@ class LoginPresenter extends APresenter
 
         // process errors
         $this->addError("HTTP/1.1 400 Bad Request");
-        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(10) . time()), 0, 8);
         header("HTTP/1.1 400 Bad Request");
         $this->clearCookie("login_hint");
         $this->clearCookie("oauth2state");
         $this->clearcookie("return_uri");
         echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
         echo join("<br>", $errors);
-        echo "<h3><a href=/login${nonce}>RELOAD ↻</a></h3>";
+        echo '<h3><a href="/login?relogin">RELOAD ↻</a></h3>';
         exit;
     }
 }
