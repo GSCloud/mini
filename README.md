@@ -10,17 +10,16 @@ for building microsites and apps
 * **Progressive Web App** (PWA)
 * **CLI functions**
 * **Google OAuth 2.0** sign-in
-* jQuery **asynchronous client code**
+* **asynchronous client code** (Vanilla JS, jQuery)
 * **access limiter**
-* **advanced caching** and **assets versioning**
-* **alpha** and **beta** versions
+* **advanced caching** and **assets versioning**, * **alpha** and **beta** versions
 * **API calls**
 
 
 Components:
 
 * **CakePHP cache** library
-* **Halite** encrypted cookies using **Sodium**
+* **Halite** encrypted cookies
 * **Markdown** library
 * **NEON** library
 * **Nette Tracy** debugger
@@ -30,7 +29,6 @@ Components:
 * support for **Cloudflare**
 * support for **Google Cloud Platform**
 * support for **PHP Google Analytics**
-* support for other **Nette functions**
 
 
 Model View Presenter architectural pattern:
@@ -40,20 +38,19 @@ Model View Presenter architectural pattern:
 * **Presenter** = Singleton extending abstract presenter
 
 
+API calls examples:
+
+[/api/v1/GetCall1](/api/v1/GetCall1)
+
+[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)
+
+
 Execution flow:
 
 * **www/index.php** - entry point
 * **Bootstrap.php** - setup
 * **app/App.php** - main app
 * **app/*Presenter.php** - presenters
-
-
-API calls:
-
-[/api/v1/GetCall1](/api/v1/GetCall1)
-
-[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)
-
 
 
 License: MIT
