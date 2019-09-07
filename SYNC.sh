@@ -23,6 +23,7 @@ VERSION=`git rev-parse HEAD`
 echo $VERSION > VERSION
 REVISIONS=`git rev-list --all --count`
 echo $REVISIONS > REVISIONS
+
 ln -s ../. www/cdn-assets/$VERSION >/dev/null 2>&1
 info "Version: $VERSION Revisions: $REVISIONS"
 
@@ -40,4 +41,4 @@ rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" --ex
   www \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
-ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA}
+ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA} &

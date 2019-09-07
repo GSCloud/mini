@@ -29,7 +29,7 @@
     </div>
     <div class="column column-80">
       <h1 class="hidden">{{ l.title }}</h1>
-      <a id="fullscreen" class="button" href="#"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
+      <a id="fullscreen" class="button" href="javascript:blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
       <h2>{{ l.title }}</h2>
       <p>{{ l.readme }}</p>
     </div>
@@ -54,7 +54,7 @@
   $('.container').find('a').each(function() {
     var h = $(this).attr('href');
     var nonce = '?nonce=' + Math.round(Math.random() * 10000);
-    if ((h.indexOf('?nonce') == -1) && (h.indexOf('https://') != -1)) {
+    if ((h.indexOf('?') == -1) && (h.indexOf('http') != -1)) {
       $(this).attr('href', h + nonce);
     }
   });

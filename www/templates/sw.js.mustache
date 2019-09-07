@@ -52,8 +52,7 @@ self.addEventListener("fetch", function (event) {
       }
 
       function unableToResolve() {
-        var r = "?nonce=" + Math.round(Math.random() * 10000);
-        return new Response('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OFFLINE</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><h1 style="text-align:center">🙄 OFFLINE 🙄</h1><h2><a href=/login' + r + '>RELOAD ↻</a></h2>', {
+        return new Response('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1.0"><h1 style="text-align:center">🙄 OFFLINE 🙄</h1><h2><a href="javascript:location.reload(true);">RELOAD ↻</a></h2>', {
           status: 503,
           statusText: "Service Unavailable",
           headers: new Headers({
