@@ -1,5 +1,3 @@
-{{>gscloud_functions}}
-
 <style>
 {{>body_css}}
 {{>###body_css_debug}}
@@ -41,27 +39,24 @@
 (function (w, $, undefined) {
   'use strict';
 
-  // fn GSC.FullScreen()
-  if (typeof w.GSC.FullScreen != "function") w.GSC.FullScreen = function() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      document.documentElement.requestFullscreen();
-    }
-  }
+  // *** DELAYED FUNCTIONS ***
 
-  // add nonce to all anchors
-  $('.container').find('a').each(function() {
-    var h = $(this).attr('href');
-    var nonce = '?nonce=' + Math.round(Math.random() * 10000);
-    if ((h.indexOf('?') == -1) && (h.indexOf('http') != -1)) {
-      $(this).attr('href', h + nonce);
-    }
+  GSC._fn.push(function () {
+    // add nonce to all anchors
+    $('.container').find('a').each(function() {
+      var h = $(this).attr('href');
+      var nonce = '?nonce=' + Math.round(Math.random() * 10000);
+      if ((h.indexOf('?') == -1) && (h.indexOf('http') != -1)) {
+        $(this).attr('href', h + nonce);
+      }
+    });
   });
 
-  // action on fullscreen button
-  $("#fullscreen").click(function () {
-    GSC.FullScreen()
+  GSC._fn.push(function () {
+    // action on fullscreen button
+    $("#fullscreen").click(function () {
+      GSC.FullScreen()
+    });
   });
 
 })(window, $);

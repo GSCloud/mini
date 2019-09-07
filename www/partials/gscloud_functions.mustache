@@ -104,6 +104,15 @@ String.prototype.trim||(String.prototype.trim=function(){return this.replace(/^[
       }
     }
 
+    // GSC.FullScreen()
+    if (typeof w.GSC.FullScreen != "function") w.GSC.FullScreen = function() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
+    }
+
     // GSC.CopyThisHtml()
     if (typeof GSC.CopyThisHtml !== "function") GSC.CopyThisHtml = function (that) {
       if (that) {
@@ -113,12 +122,6 @@ String.prototype.trim||(String.prototype.trim=function(){return this.replace(/^[
         M.toast({html: t});
       }
     }
-
-    // delayed fn
-    GSC._fn.push(
-      function () {
-      }
-    );
 
   }
 })(window, document);

@@ -33,10 +33,20 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 <script>
   'use strict';
   window.GSC = {_fn:[]};
+  window.addEventListener('load', function() {
+    for (var fn = window.GSC._fn, i = 0, l = fn.length; i < l; i++) {
+      try {
+        fn[i]();
+      }
+      catch(e) {}
+    };
+    console.log("Delayed functions called: %s", l);
+  });
 </script>
+  {{>gscloud_functions}}
 </head>
 <body>
-{{>body_content.mustache}}
-{{>body_footer.mustache}}
+  {{>body_content.mustache}}
+  {{>body_footer.mustache}}
 </body>
 </html>

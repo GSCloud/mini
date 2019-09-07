@@ -34,26 +34,27 @@ class MiniPresenter extends APresenter
         $this->dataExpander($data);
 
         // advanced caching
-        $use_cache = $data["use_cache"] ?? false;   // set in dataExpander
+        $use_cache = $data["use_cache"] ?? false; // set in dataExpander
         $cache_key = strtolower(join([
             $data["host"],
             $data["request_path"],
         ], "_"));
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
-            $output .= "\n<script>console.log('(page content cached)');</script>";  // notification
+            $output .= "\n<script>console.log('*** page content cached');</script>"; // add console notification
             return $this->setData("output", $output);
         }
 
-        // generate content
-        if (file_exists(ROOT."/README.md")) {
-            $readme = @file_get_contents(ROOT."/README.md");
-            $data["l"]["readme"] = MarkdownExtra::defaultTransform($readme);    // add to model
+        // content
+        $file = ROOT . "/README.md";
+        if (file_exists($file)) {
+            // add README.md to model as HTML
+            $data["l"]["readme"] = MarkdownExtra::defaultTransform(@file_get_contents($file));
         }
 
         // render output & save to model & cache
-        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render
-        $output = StringFilters::trim_html_comment($output);    // remove comments
-        Cache::write($cache_key, $output, "page");  // cache page
+        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
+        $output = StringFilters::trim_html_comment($output);
+        Cache::write($cache_key, $output, "page");
         return $this->setData("output", $output);
     }
 }
