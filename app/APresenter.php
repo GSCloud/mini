@@ -63,14 +63,16 @@ interface IPresenter
     public function setIdentity($identity);
     public function setLocation($location, $code);
 
-    /** utilities */
+    /** tools */
     public function clearCookie($name);
     public function cloudflarePurgeCache($cf);
     public function dataExpander(&$data);
     public function logout();
-    public function process(); // abstract method
     public function renderHTML($template);
     public function writeJsonData($d, $headers);
+
+    /** abstract */
+    public function process();
 
     /** singleton */
     public static function getInstance();
