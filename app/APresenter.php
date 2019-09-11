@@ -1,6 +1,6 @@
 <?php
 /**
- * GSC Tesseract
+ * GSC Tesseract MINI
  *
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
@@ -46,7 +46,7 @@ interface IPresenter
     public function getUserGroup();
     public function getView();
 
-    /** grants */
+    /** checks */
     public function checkPermission($role);
     public function checkRateLimit($maximum);
 
@@ -69,14 +69,14 @@ interface IPresenter
     public function dataExpander(&$data);
     public function logout();
     public function renderHTML($template);
-    public function writeJsonData($d, $headers);
+    public function writeJsonData($data, $headers);
 
     /** abstract */
     public function process();
 
     /** singleton */
     public static function getInstance();
-    public static function getTestInstance();
+    public static function getTestInstance(); // Unit Tests
 }
 
 abstract class APresenter implements IPresenter
@@ -98,29 +98,29 @@ abstract class APresenter implements IPresenter
 
     // PRIVATE VARS
 
-    /** @var array $data Model data array */
+    /** @var array $data Model array */
     private $data = [];
 
-    /** @var array $messages Array of internal messages */
+    /** @var array $messages Array of messages */
     private $messages = [];
 
-    /** @var array $errors Array of internal errors */
+    /** @var array $errors Array of errors */
     private $errors = [];
 
-    /** @var array $criticals Array of internal critical errors */
+    /** @var array $criticals Array of critical errors */
     private $criticals = [];
 
     /** @var array $identity Identity associative array */
     private $identity = [];
 
-    /** @var array $instances Array of singleton instances */
-    private static $instances = [];
-
     /** @var array $cookies Array of saved cookies */
     private $cookies = [];
 
+    /** @var array $instances Array of singleton instances */
+    private static $instances = [];
+
     /**
-     * Abstract process method
+     * Abstract processor
      *
      * @abstract
      * @return void
@@ -128,7 +128,7 @@ abstract class APresenter implements IPresenter
     abstract public function process();
 
     /**
-     * Private class constructor
+     * Class constructor
      */
     final private function __construct()
     {
@@ -185,7 +185,7 @@ abstract class APresenter implements IPresenter
     /**
      * Object to string
      *
-     * @return string Serialized model data array to JSON encoded string
+     * @return string Serialized JSON model
      */
     final public function __toString()
     {
@@ -223,7 +223,7 @@ abstract class APresenter implements IPresenter
 
         try {
             if (count($criticals) + count($errors) + count($messages)) {
-                if (class_exists("LoggingClient") && GCP_PROJECTID && GCP_KEYS) {
+                if (GCP_PROJECTID && GCP_KEYS) {
                     $logging = new LoggingClient([
                         "projectId" => GCP_PROJECTID,
                         "keyFilePath" => APP . GCP_KEYS,
@@ -334,7 +334,7 @@ abstract class APresenter implements IPresenter
     /**
      * Data getter
      *
-     * @param string $key array key, may use dot notation (optional)
+     * @param string $key array key, dot notation (optional)
      * @return mixed value / whole array
      */
     public function getData($key = null)
@@ -492,7 +492,7 @@ abstract class APresenter implements IPresenter
                 $_SERVER["HTTP_USER_AGENT"] ?? "UA",
                 $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
             ]),
-            " ", "_");
+        " ", "_");
     }
 
     /**
@@ -514,7 +514,7 @@ abstract class APresenter implements IPresenter
     public function setIdentity($identity = [])
     {
         if (!is_array($identity)) {
-            throw new \Exception("Parameter must be array!");
+            $identity = [];
         }
         $i = [
             "avatar" => "",
@@ -525,6 +525,7 @@ abstract class APresenter implements IPresenter
             "name" => "",
         ];
         $file = DATA . "/" . self::IDENTITY_NONCE;
+
         // random nonce
         if (!file_exists($file)) {
             try {
@@ -540,6 +541,8 @@ abstract class APresenter implements IPresenter
         }
         $nonce = @file_get_contents($file);
         $i["nonce"] = substr(trim($nonce), 0, 8);
+
+        // check all keys
         if (array_key_exists("avatar", $identity)) {
             $i["avatar"] = (string) $identity["avatar"];
         }
@@ -552,17 +555,28 @@ abstract class APresenter implements IPresenter
         if (array_key_exists("name", $identity)) {
             $i["name"] = (string) $identity["name"];
         }
+
+        // set remaining keys
         $i["timestamp"] = time();
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX";
         $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
+
+        // shuffle data
         $out = [];
         $keys = array_keys($i);
         shuffle($keys);
         foreach ($keys as $k) {
             $out[$k] = $i[$k];
         }
+
+        // new identity
         $this->identity = $out;
-        $this->setCookie("identity", json_encode($out));
+        if ($i["id"]) {
+            $this->setCookie("identity", json_encode($out));
+        } else {
+            // no user id = no cookie
+            $this->clearCookie("identity");
+        }
         return $this;
     }
 
@@ -580,12 +594,17 @@ abstract class APresenter implements IPresenter
         if ($id && $email && $name) {
             return $this->identity;
         }
+
+        // get nonce
         $file = DATA . "/" . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
-            // initialize
+            // initialize nonce
             $this->setIdentity();
             return $this->identity;
         }
+        $nonce = @file_get_contents($file);
+        $nonce = substr(trim($nonce), 0, 8);
+
         // empty identity
         $i = [
             "avatar" => "",
@@ -593,6 +612,7 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "name" => "",
         ];
+
         // mock identity
         if (CLI) {
             $i = [
@@ -602,40 +622,46 @@ abstract class APresenter implements IPresenter
                 "name" => "Mr. Robot",
             ];
         }
-        $nonce = @file_get_contents($file);
-        $nonce = substr(trim($nonce), 0, 8);
+
         do {
             // URL identity
             if (isset($_GET["identity"])) {
-                $this->setCookie("identity", $_GET["identity"]); // set cookie
-                $this->setLocation(); //  reload URL
+                // set cookie and reload
+                $tls = "";
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+                    $tls = "s";
+                }
+                $this->setCookie("identity", $_GET["identity"]);
+                $this->setLocation("http{$tls}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
                 exit;
             }
+
             // COOKIE identity
             if (isset($_COOKIE["identity"])) {
                 $x = 0;
                 $q = json_decode($this->getCookie("identity"), true);
-                //bdump($q, "getIdentity");
                 if (!is_array($q)) {
                     $x++;
-                }
-                if (!array_key_exists("avatar", $q)) {
-                    $x++;
-                }
-                if (!array_key_exists("email", $q)) {
-                    $x++;
-                }
-                if (!array_key_exists("id", $q)) {
-                    $x++;
-                }
-                if (!array_key_exists("name", $q)) {
-                    $x++;
-                }
-                if (!array_key_exists("nonce", $q)) {
-                    $x++;
+                } else {
+                    if (!array_key_exists("avatar", $q)) {
+                        $x++;
+                    }
+                    if (!array_key_exists("email", $q)) {
+                        $x++;
+                    }
+                    if (!array_key_exists("id", $q)) {
+                        $x++;
+                    }
+                    if (!array_key_exists("name", $q)) {
+                        $x++;
+                    }
+                    if (!array_key_exists("nonce", $q)) {
+                        $x++;
+                    }
                 }
                 if ($x) {
-                    $this->clearCookie("identity");
+                    // something is wrong!
+                    $this->logout();
                     break;
                 }
                 if ($q["nonce"] == $nonce) {
@@ -1049,11 +1075,12 @@ $this->setLocation($this->getCfg("goauth_redirect") .
      * @param array $headers JSON array (optional)
      * @return object Singleton instance
      */
-    public function writeJsonData($d = null, $headers = [])
+    public function writeJsonData($data, $headers = [])
     {
-        $v = [];
-        $v["timestamp"] = time();
-        $v["version"] = $this->getCfg("version");
+        $out = [];
+        $code = 200;
+        $out["timestamp"] = time();
+        $out["version"] = (string) ($this->getCfg("version") ?? "v1");
 
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
@@ -1085,16 +1112,16 @@ $this->setLocation($this->getCfg("goauth_redirect") .
                 $msg = "";
                 break;
         }
-        if (is_null($d)) {
+        if (is_null($data)) {
             $code = 500;
             $msg = "";
         }
-        if (is_string($d)) {
-            $d = [$d];
+        if (is_string($data)) {
+            $data = [$data];
         }
-        if (is_int($d)) {
-            $code = $d;
-            switch ($d) {
+        if (is_int($data)) {
+            $code = $data;
+            switch ($data) {
                 case 304:
                     $msg = "Not modified.";
                     break;
@@ -1107,16 +1134,16 @@ $this->setLocation($this->getCfg("goauth_redirect") .
                 default:
                     $msg = "Unknown error.";
             }
-            $d = null;
+            $data = null;
         }
-        $v["code"] = $code;
-        $v["message"] = $msg;
-        $v = array_merge_recursive($v, $headers);
-        $v["data"] = $d ?? null;
+
+        // output array
         $this->setHeaderJson();
-        $data = $this->getData();
-        $output = json_encode($v, JSON_PRETTY_PRINT);
-        return $this->setData("output", $output);
+        $out["code"] = (int) $code;
+        $out["message"] = $msg;
+        $out = array_merge_recursive($out, $headers);
+        $out["data"] = $data ?? null;
+        return $this->setData("output", json_encode($out, JSON_PRETTY_PRINT));
     }
 
     /**

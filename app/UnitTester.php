@@ -21,9 +21,8 @@ class UnitTester
     {
         $climate = new CLImate;
         $climate->out("<green><bold>Tesseract Unit Tester");
-        Tester\Environment::setup();
 
+        \Tester\Environment::setup();
         Assert::same('Hello John', "Hello John");
-        Assert::same('Hi John', 'Yo John');
     }
 }
