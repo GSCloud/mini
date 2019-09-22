@@ -492,7 +492,7 @@ abstract class APresenter implements IPresenter
                 $_SERVER["HTTP_USER_AGENT"] ?? "UA",
                 $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
             ]),
-        " ", "_");
+            " ", "_");
     }
 
     /**
@@ -683,12 +683,15 @@ abstract class APresenter implements IPresenter
      */
     public function getCurrentUser()
     {
-        $u = array_replace([
-            "avatar" => "",
-            "email" => "",
-            "id" => 0,
-            "name" => "",
-        ], $this->getIdentity());
+        $u = array_replace(
+            [
+                "avatar" => "",
+                "email" => "",
+                "id" => 0,
+                "name" => "",
+            ],
+            $this->getIdentity()
+        );
         $u["uid"] = $this->getUID();
         $u["uidstring"] = $this->getUIDstring();
         return $u;
@@ -706,7 +709,7 @@ abstract class APresenter implements IPresenter
             return $this->getData("cfg");
         }
         if (is_string($key)) {
-            return $this->getData("cfg.$key");
+            return $this->getData("cfg.${key}");
         }
         throw new \Exception("FATAL ERROR: Invalid parameter!");
     }
@@ -714,7 +717,7 @@ abstract class APresenter implements IPresenter
     /**
      * Match getter
      *
-     * @return mixed Match data array or null
+     * @return mixed Match data array
      */
     public function getMatch()
     {
@@ -724,7 +727,7 @@ abstract class APresenter implements IPresenter
     /**
      * Presenter getter
      *
-     * @return mixed Rresenter data array / null
+     * @return mixed Rresenter data array
      */
     public function getPresenter()
     {
@@ -734,7 +737,7 @@ abstract class APresenter implements IPresenter
     /**
      * Router getter
      *
-     * @return mixed Router data array / null
+     * @return mixed Router data array
      */
     public function getRouter()
     {
@@ -744,7 +747,7 @@ abstract class APresenter implements IPresenter
     /**
      * View getter
      *
-     * @return mixed Router view / null
+     * @return mixed Router view
      */
     public function getView()
     {
@@ -845,11 +848,14 @@ abstract class APresenter implements IPresenter
         if (CLI) {
             return $this->cookies[$name] ?? null;
         }
+
+        // secure key
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
-        $keyfile = DATA . "/$key";
+        $keyfile = DATA . "/${key}";
         if (file_exists($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
         } else {
+            $this->addError("HALITE: Missing encryption key!");
             return null;
         }
         $cookie = new Cookie($enc);
@@ -868,6 +874,11 @@ abstract class APresenter implements IPresenter
         if (empty($name)) {
             return $this;
         }
+        if (is_null($name)) {
+            return $this;
+        }
+
+        // secure key
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
         $keyfile = DATA . "/$key";
         if (file_exists($keyfile)) {
@@ -876,7 +887,7 @@ abstract class APresenter implements IPresenter
             $enc = KeyFactory::generateEncryptionKey();
             KeyFactory::save($enc, $keyfile);
             @chmod($keyfile, self::COOKIE_KEY_FILEMODE);
-            $this->addMessage("HALITE: new keyfile created");
+            $this->addMessage("HALITE: New keyfile created");
         }
         $cookie = new Cookie($enc);
         if (DOMAIN == "localhost") {
@@ -904,6 +915,9 @@ abstract class APresenter implements IPresenter
     public function clearCookie($name)
     {
         if (empty($name)) {
+            return $this;
+        }
+        if (!is_string($name)) {
             return $this;
         }
         \setcookie($name, "", time() - 3600, "/");
@@ -953,11 +967,10 @@ abstract class APresenter implements IPresenter
         $uid = $this->getUID();
         $file = "${uid}_rate_limit";
         if (!$rate = Cache::read($file, "limiter")) {
-            $rate = 1;
+            $rate = 0;
         }
         $rate++;
         if ($rate > $maximum) {
-            $this->addMessage("RATE LIMITED: $maximum reached");
             $this->setLocation("/err/420");
         }
         Cache::write($file, $rate, "limiter");
@@ -975,35 +988,26 @@ abstract class APresenter implements IPresenter
         if (empty($role)) {
             return $this;
         }
-        $role = trim((string) $role);
-        $email = $this->getIdentity()["email"];
+        $role = strtolower(trim((string) $role));
+        $email = $this->getIdentity()["email"] ?? "";
         $groups = $this->getCfg("admin_groups") ?? [];
-
         if (strlen($role) && strlen($email)) {
-            // group access by email
+            // email allowed
             if (in_array($email, $groups[$role] ?? [], true)) {
                 return $this;
             }
-            // any Google users allowed in group
+            // any Google users allowed
             if (in_array("*", $groups[$role] ?? [], true)) {
                 return $this;
             }
         }
         // not authorized
         $this->setLocation("/err/401");
-
-/*
-// force re-login
-if ($this->getCfg("goauth_redirect")) {
-$this->setLocation($this->getCfg("goauth_redirect") .
-"?return_uri=" . $this->getCfg("goauth_origin") . ($_SERVER["REQUEST_URI"] ?? ""));
-}
- */
-
+        exit;
     }
 
     /**
-     * Get user group
+     * Get current user group
      *
      * @return string User group name
      */
@@ -1012,7 +1016,7 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         $id = $this->getIdentity()["id"] ?? null;
         $email = $this->getIdentity()["email"] ?? null;
         if (!$id) {
-            return false;
+            return null;
         }
         $mygroup = null;
         $email = trim((string) $email);
@@ -1033,7 +1037,7 @@ $this->setLocation($this->getCfg("goauth_redirect") .
     /**
      * Purge Cloudflare cache
      *
-     * @var array $cf Cloudflare authentication
+     * @var array $cf Cloudflare authentication array
      * @return object Singleton instance
      */
     public function CloudflarePurgeCache($cf = null)
@@ -1064,7 +1068,9 @@ $this->setLocation($this->getCfg("goauth_redirect") .
                     }
                 }
             }
-        } catch (Execption $e) {}
+        } catch (Execption $e) {
+            $this->addError("CLOUDFLARE: " . (string) $e);
+        }
         return $this;
     }
 
@@ -1081,7 +1087,7 @@ $this->setLocation($this->getCfg("goauth_redirect") .
         $code = 200;
         $out["timestamp"] = time();
         $out["version"] = (string) ($this->getCfg("version") ?? "v1");
-
+        // last decoding error
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
                 $code = 200;
