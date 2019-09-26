@@ -4,7 +4,6 @@ Tesseract MINI framework
 for building microsites and apps
 --------------------------------
 
-
 * **PHP 7.3 OOP**
 * **MVP** architectural pattern
 * **Progressive Web App** (PWA)
@@ -14,7 +13,6 @@ for building microsites and apps
 * **access limiter**
 * **advanced caching** and **assets versioning**, * **alpha** and **beta** versions
 * **API calls**
-
 
 Components:
 
@@ -30,20 +28,16 @@ Components:
 * support for **Google Cloud Platform**
 * support for **PHP Google Analytics**
 
-
 Model View Presenter architectural pattern:
 
 * **Model** = multidimensional data array
 * **View** = mustache template
 * **Presenter** = Singleton extending abstract presenter
 
-
 API calls examples:
 
-[/api/v1/GetCall1](/api/v1/GetCall1)
-
-[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)
-
+* **[/api/v1/GetCall1](/api/v1/GetCall1)**
+* **[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)**
 
 Execution flow:
 
@@ -58,8 +52,7 @@ Configuration:
 * **config_private.neon** - private configuration
 * **app/router*.neon** - routing tables
 
+License: **MIT**
 
-License: MIT
-
-* website: [https://mini.gscloud.cz](https://mini.gscloud.cz)
-* repository: [https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)
+* project website: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
+* git repository: **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
