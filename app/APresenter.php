@@ -1167,10 +1167,12 @@ abstract class APresenter implements IPresenter
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $use_cache = true;
+
         // do not cache pages with ?nonce
         if (array_key_exists("nonce", $_GET)) {
             $use_cache = false;
         }
+
         // check logged user
         $data["user"] = $user = $this->getCurrentUser();
         $data["admin"] = $group = $this->getUserGroup();
@@ -1178,20 +1180,23 @@ abstract class APresenter implements IPresenter
             $data["admin_group_${group}"] = true;
         }
         if ($user["id"]) {
-            $use_cache = false; // no cache for logged users
+            $use_cache = false; // do not cache logged users
         }
+        $data["use_cache"] = $use_cache;
+
         // set language
         $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
+
         // compute data hash
         $data["DATA_VERSION"] = hash('sha256', (string) json_encode($data["l"]));
+
         // extract request path slug
         if (($pos = strpos($data["request_path"], $language)) !== false) {
             $data["request_path_slug"] = substr_replace($data["request_path"], "", $pos, strlen($language));
         } else {
             $data["request_path_slug"] = $data["request_path"] ?? "";
         }
-        $data["use_cache"] = $use_cache;
     }
 
 }
