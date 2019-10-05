@@ -1149,7 +1149,7 @@ abstract class APresenter implements IPresenter
         $out["message"] = $msg;
         $out = array_merge_recursive($out, $headers);
         $out["data"] = $data ?? null;
-        return $this->setData("output", json_encode($out, JSON_PRETTY_PRINT));
+        return $this->setData("output", json_encode($out, JSON_PRETTY_PRINT|JSON_FORCE_OBJECT));
     }
 
     /**
