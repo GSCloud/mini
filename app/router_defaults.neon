@@ -1,12 +1,16 @@
 defaults:
+  api: false
+  api_description: ""
+  api_info: ""
+  api_example: []
   assert_httpcode: 200
   assert_json: false
-  assert_minlength: false
+  assert_values: []
   language: en
   method: GET
   presenter: home
   sitemap: false
-  template: mini
+  template: index
   view: home
 
 sitemap:
@@ -20,3 +24,10 @@ swjs:
 error:
   path: '/err/[a:code]'
   presenter: error
+
+api:
+  path: /api
+  api: true
+  api_description: "Show public REST API list"
+  api_info: "Exactly this page :)"
+  presenter: core

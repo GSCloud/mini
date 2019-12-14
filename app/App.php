@@ -43,15 +43,7 @@ if (GCP_KEYS) {
 // STACKDRIVER
 function logger($message, $severity = Logger::INFO)
 {
-    if (empty($message)) {
-        return;
-    }
-
-    if (is_null(GCP_PROJECTID)) {
-        return;
-    }
-
-    if (is_null(GCP_KEYS)) {
+    if (empty($message) || is_null(GCP_PROJECTID) || is_null(GCP_KEYS)) {
         return;
     }
 
@@ -67,19 +59,45 @@ function logger($message, $severity = Logger::INFO)
     } finally {}
 }
 
-// CACHE PROFILES
+// CACHING PROFILES
 $cache_profiles = array_replace([
-    "default" => "+3 minutes",
-    "limiter" => "+2 seconds",
-    "page" => "+10 seconds",
-], (array) ($cfg["cache_profiles"] ?? []));
-// set caching defaults
+    "apiconsume" => "+60 minutes",
+    "csv" => "+180 minutes",
+    "day" => "+24 hours",
+    "default" => "+5 minutes",
+    "hour" => "+60 minutes",
+    "limiter" => "+1 seconds",
+    "minute" => "+60 seconds",
+    "page" => "+3 minutes",
+    "second" => "+1 seconds",
+    "tenseconds" => "+10 seconds",
+    "tenminutes" => "+10 minutes",
+],
+    (array) ($cfg["cache_profiles"] ?? [])
+);
+
 foreach ($cache_profiles as $k => $v) {
-    Cache::setConfig($k, [
+
+    // set "file" fallbacks
+    Cache::setConfig("file_{$k}", [
         "className" => "File",
         "duration" => $v,
+        "lock" => true,
         "path" => CACHE,
         "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_",
+    ]);
+
+    // "redis" cache configurations
+    Cache::setConfig($k, [
+        "className" => "Redis",
+        "database" => 0,
+        "duration" => $v,
+        "host" => "127.0.0.1",
+        "persistent" => true,
+        "port" => 6377, // note special port 6377!!!
+        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_",
+        "timeout" => 0.1,
+        'fallback' => "file_{$k}", // fallback profile
     ]);
 }
 
@@ -168,6 +186,8 @@ if (CLI) {
 // PROCESS ROUTING
 $match = $alto->match();
 $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
+
+// DATA POPULATION
 $data["match"] = $match;
 $data["view"] = $view;
 
@@ -182,7 +202,7 @@ if ($router[$view]["redirect"] ?? false) {
 }
 
 // CSP HEADERS
-header(implode(" ", $cfg["csp_headers"] ?? [
+header(implode(" ", [
     "Content-Security-Policy: ",
     "default-src",
     "'unsafe-inline'",
@@ -196,15 +216,16 @@ header(implode(" ", $cfg["csp_headers"] ?? [
     "'unsafe-inline'",
     "*.gstatic.com;",
     "script-src",
-    "cdnjs.cloudflare.com",
     "*.facebook.net",
     "*.google-analytics.com",
     "*.googleapis.com",
     "*.googletagmanager.com",
     "*.ytimg.com",
     "cdn.onesignal.com",
+    "cdnjs.cloudflare.com",
     "onesignal.com",
     "platform.twitter.com",
+    "static.cloudflareinsights.com",
     "'self'",
     "'unsafe-inline'",
     "'unsafe-eval';",
@@ -222,6 +243,7 @@ $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) .
 $controller = "\\GSC\\$p";
 \Tracy\Debugger::timer("PROCESSING");   // measure performance
 $app = $controller::getInstance()->setData($data)->process();
+$data = $app->getData();
 
 // ANALYTICS DATA
 $events = null;
@@ -251,5 +273,5 @@ if (DEBUG) {
     unset($data["goauth_client_id"]);
     unset($data["google_drive_backup "]);
     bdump($data, '$data');
-    //bdump($app->getIdentity(), "identity");
+    bdump($app->getIdentity(), "identity");
 }
