@@ -10,7 +10,7 @@ defaults:
   method: GET
   presenter: home
   sitemap: false
-  template: index
+  template: mini
   view: home
   use_key: false
   private: false

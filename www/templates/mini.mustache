@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>{{#LOCALHOST}}LOCAL: {{/LOCALHOST}}{{ l.title }}</title>
+
 <meta http-equiv="x-ua-compatible" content="IE=edge">
 <meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}{{^l.author}}Fred Brooker{{/l.author}}">
 <meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}{{^l.description}}Tesseract MINI{{/l.description}}">
@@ -18,7 +19,6 @@
 {{#LOCALHOST}}{{#canonical_url}}<link rel="canonical" href="{{ base }}{{ request_path }}">{{/canonical_url}}{{/LOCALHOST}}
 {{^LOCALHOST}}{{#canonical_url}}<link rel="canonical" href="{{ canonical_url }}{{ request_path }}">{{/canonical_url}}{{/LOCALHOST}}
 
-<link rel="manifest" href="/manifest.json">
 <script>
   'use strict';
   if (!window.JSON) document.write('<script src="/js/json2.min.js"><\/script>');
@@ -31,7 +31,11 @@
 {{>head_favicons}}
 
 <!-- feel free to replace or extend the jQuery library -->
+<script src="/js/es5-shim.min.js"></script>
+<script src="/js/es6-shim.min.js"></script>
 <script src="/js/jquery-3.4.1.min.js"></script>
+
+<link rel="manifest" href="/manifest.json">
 
 <style type="text/css">
 html{min-width:320px!important}
@@ -40,8 +44,19 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 
 <script>
   'use strict';
+
   window.GSC = {_fn:[]};
+
   window.addEventListener('load', function() {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
+        console.log("ServiceWorker registration successful with scope: ", registration.scope);
+      }, function (err) {
+        console.log("ServiceWorker registration failed: ", err);
+      });
+    } else {
+      console.log("Service worker not supported!");
+    }
     for (var fn = window.GSC._fn, i = 0, l = fn.length; i < l; i++) {
       try {
         fn[i]();
@@ -56,6 +71,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 
 </head>
 <body>
+  <style>
+    {{>body_css}}
+    {{>#body_css_debug}}
+  </style>
 
   {{>body_content.mustache}}
   {{>body_footer.mustache}}

@@ -73,9 +73,11 @@ class CorePresenter extends APresenter
                         ];
                     }
                 }
+/* // do not sort API list :)
                 usort($map, function ($a, $b) {
                     return strcmp($a["desc"], $b["desc"]);
                 });
+*/
                 return $this->setData("output", $this->setData("apis", $map)->setData("l", $this->getLocale("en"))->renderHTML("apis"));
                 break;
 

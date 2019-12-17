@@ -434,9 +434,21 @@ class ApiPresenter extends APresenter
             return null;
         }
         $timestamp = file_exists(DATA . "/${f}") ? @filemtime(DATA . "/${f}") : null;
+        $count = count($records["uid"]);
+        $today = date('j');
+        $x = round($today * $count / 31 );
+        // podcast of the day
+        $potd_name = $records["title"][$x];
+        $potd_url = $records["link"][$x];
+        $potd_rss = $records["rssfeed"][$x];
         // result
         $result = [
-            "podcasts_count" => count($records["uid"]),
+            "potd" => [
+                "title" => $potd_name,
+                "link" => $potd_url,
+                "rss" => $potd_rss,
+            ],
+            "podcasts_count" => $count,
             "timestamp" => $timestamp,
             "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
         ];
