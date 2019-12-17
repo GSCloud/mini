@@ -12,6 +12,8 @@ defaults:
   sitemap: false
   template: index
   view: home
+  use_key: false
+  private: false
 
 sitemap:
   path: /sitemap.txt

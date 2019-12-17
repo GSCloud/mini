@@ -62,12 +62,14 @@ class CorePresenter extends APresenter
                         $info = $p["api_info"] ?? "";
                         StringFilters::convert_eol_to_br($info);
                         $map[] = [
-                            "path" => trim($p["path"], "/ \t\n\r\0\x0B"),
+                            "count" => count($p["api_example"]),
                             "desc" => $p["api_description"] ?? "",
                             "exam" => $p["api_example"] ?? [],
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
-                            "count" => count($p["api_example"]),
+                            "key" => $p["use_key"] ?? false,
                             "method" => \strtoupper($p["method"]),
+                            "path" => trim($p["path"], "/ \t\n\r\0\x0B"),
+                            "private" => $p["private"] ?? false,
                         ];
                     }
                 }
