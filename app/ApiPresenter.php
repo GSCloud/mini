@@ -22,8 +22,8 @@ use Symfony\Component\Lock\Store\FlockStore;
 class ApiPresenter extends APresenter
 {
     /** @var bool use cache? */
-    const USE_CACHE = true;
-    //const USE_CACHE = false;
+    //const USE_CACHE = true;
+    const USE_CACHE = false;
 
     /** @var string podcasts CSV */
     const PODCASTS_CSV = "podcasts.csv";
@@ -331,6 +331,7 @@ class ApiPresenter extends APresenter
         $list = array_map("abs", $list);
         $list = array_filter($list, "is_int");
         $list = array_unique($list);
+
         if (!count($list)) {
             return null;
         }
