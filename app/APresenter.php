@@ -1091,7 +1091,7 @@ abstract class APresenter implements IPresenter
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
                 $code = 200;
-                $msg = "OK";
+                $msg = "DATA OK";
                 break;
             case JSON_ERROR_DEPTH:
                 $code = 400;
@@ -1120,7 +1120,7 @@ abstract class APresenter implements IPresenter
         }
         if (is_null($data)) {
             $code = 500;
-            $msg = "";
+            $msg = "Server error, data is null!";
         }
         if (is_string($data)) {
             $data = [$data];
@@ -1134,11 +1134,17 @@ abstract class APresenter implements IPresenter
                 case 400:
                     $msg = "Bad request.";
                     break;
+                case 401:
+                    $msg = "Unauthorized.";
+                    break;
+                case 403:
+                    $msg = "Forbidden.";
+                    break;
                 case 404:
                     $msg = "Not found.";
                     break;
                 default:
-                    $msg = "Unknown error.";
+                    $msg = "Unknown error >:{";
             }
             $data = null;
         }

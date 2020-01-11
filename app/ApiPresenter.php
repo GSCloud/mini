@@ -42,7 +42,7 @@ class ApiPresenter extends APresenter
     const MAX_API_HITS = 1000;
 
     /** @var string API cache profile */
-    const API_CACHE = "hour";
+    const API_CACHE = "tenminutes";
 
     /** @var string CSV headers */
     const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,xmlid,uid";
