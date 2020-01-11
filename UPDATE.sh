@@ -14,6 +14,9 @@ echo $REVISIONS > REVISIONS
 ln -s ../. www/cdn-assets/$VERSION >/dev/null 2>&1
 info "Version: $VERSION Revisions: $REVISIONS"
 
-command -v composer >/dev/null 2>&1 || fail "PHP composer is NOT installed!"
+# check php parser
+command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
+# check php composer
+command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
 
 composer update --no-plugins --no-scripts
