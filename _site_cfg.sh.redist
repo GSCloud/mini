@@ -1,6 +1,10 @@
 #!/bin/bash
 
+# webapp root
 ORIG="/home/domain.tld"
+# sub-webapp root or same as origin
 DEST="/home/${BETA}domain.tld"
-HOST='host'
-USER='root'
+# host domain name
+HOST="tld.com"
+# DevOps host account
+USER="root"

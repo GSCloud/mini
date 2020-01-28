@@ -1,5 +1,6 @@
 ### TESSERACT MINI
 
+# uncomment to force debug !!!
 #dbg: TRUE
 
 # CORE
@@ -10,7 +11,7 @@ project: TESSERACT
 secret_cookie_key: secure.key
 version: v1
 
-# GCP
+# GCP ID
 gcp_project_id: "gscloudcz-163314"
 
 # Google OAUTH 2.0
@@ -36,8 +37,7 @@ multisite_profiles: [
   ]
 ]
 
-
-# locales
+# localization
 lang: en
 l:
   title: "Tesseract MINI"
