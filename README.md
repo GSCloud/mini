@@ -19,7 +19,7 @@ Components:
 * **CakePHP cache** library
 * **Halite** encrypted cookies
 * **Markdown** library
-* **NEON** library
+* **NE-ON** library
 * **Nette Tracy** debugger
 * **Alto Router**
 * **monolog** logging
@@ -28,11 +28,11 @@ Components:
 * support for **Google Cloud Platform**
 * support for **PHP Google Analytics**
 
-Model View Presenter architectural pattern:
+Architecture:
 
-* **Model** = multidimensional data array
-* **View** = mustache template
-* **Presenter** = Singleton extending abstract presenter
+* **Model** = multi-dimensional data array
+* **View** = mustache templates
+* **Presenter** = Singleton presenters extending abstract presenter
 
 API calls examples:
 
@@ -51,6 +51,13 @@ Configuration:
 * **config.neon** - configuration
 * **config_private.neon** - private configuration
 * **app/router.neon** - routing table
+
+How to:
+
+* **./INSTALL.sh** - installer
+* **./UPDATE.sh** - updater
+* **./cli.sh doctor** - installation doctor
+* **./cli.sh local** - local integration test
 
 License: **MIT**
 
