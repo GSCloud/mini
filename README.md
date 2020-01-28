@@ -4,7 +4,7 @@ Tesseract MINI framework
 for building microsites and apps
 --------------------------------
 
-* **PHP 7.3 OOP**
+* **PHP 7.3+ OOP**
 * **MVP** architectural pattern
 * **Progressive Web App** (PWA)
 * **CLI functions**
@@ -42,17 +42,17 @@ API calls examples:
 Execution flow:
 
 * **www/index.php** - entry point
-* **Bootstrap.php** - setup
-* **app/App.php** - main app
-* **app/*Presenter.php** - presenters
+* **Bootstrap.php** - core setup (constants, debugger, model)
+* **app/App.php** - main app (routing, mapping, logging)
+* **app/Presenter.php** - presenters (content)
 
 Configuration:
 
 * **config.neon** - configuration
 * **config_private.neon** - private configuration
-* **app/router*.neon** - routing tables
+* **app/router.neon** - routing table
 
 License: **MIT**
 
-* project website: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
-* git repository: **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
+* app: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
+* git: **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
