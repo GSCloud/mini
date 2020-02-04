@@ -65,6 +65,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
     };
     console.log("Delayed functions called: %s", l);
   });
+
 </script>
 
 {{>gscloud_functions}}
@@ -73,11 +74,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 <body>
   <style>
     {{>body_css}}
+    /* remove # to debug */
     {{>#body_css_debug}}
   </style>
-
   {{>body_content.mustache}}
   {{>body_footer.mustache}}
-
 </body>
 </html>

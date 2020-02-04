@@ -69,44 +69,61 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 <script src="/js/es5-shim.min.js"></script>
 <script src="/js/es6-shim.min.js"></script>
 <script src="/js/jquery-3.4.1.min.js"></script>
-
 <script>
-  'use strict';
-  window.GSC = {_fn:[]};
-  window.addEventListener('load', function() {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
-        console.log("ServiceWorker registration successful with scope: ", registration.scope);
-      }, function (err) {
-        console.log("ServiceWorker registration failed: ", err);
-      });
-    } else {
-      console.log("Service worker not supported!");
+'use strict';
+
+window.GSC = {_fn:[]};
+
+window.addEventListener('load', function() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
+      console.log("ServiceWorker registration successful with scope: ", registration.scope);
+    }, function (err) {
+      console.log("ServiceWorker registration failed: ", err);
+    });
+  } else {
+    console.log("Service worker not supported!");
+  }
+  for (var fn = window.GSC._fn, i = 0, l = fn.length; i < l; i++) {
+    try {
+      fn[i]();
     }
-    for (var fn = window.GSC._fn, i = 0, l = fn.length; i < l; i++) {
-      try {
-        fn[i]();
-      }
-      catch(e) {}
-    };
-    console.log("Delayed functions called: %s", l);
-  });
+    catch(e) {}
+  };
+  console.log("Delayed calls: %s", l);
+});
+
 </script>
 </head>
 <body>
 <div class="container">
+  <div class="row">
+    <div class="column">
+      <h3><a href="/">{{ l.title }}</a> PUBLIC REST API</h3>
+    </div>
+  </div>
+</div>
 
-  <h1>{{ l.title }} PUBLIC REST API</h1>
+<div class="container">
 
   <ol>
+
 {{#apis}}
   <li> <b>{{ desc }}</b>
     <p>
-      REST method: <b>{{ method }}</b><br>
-      {{#key}}use API key: <b>YES</b><br>{{/key}}
-      {{#private}}private access: <b>YES</b><br>{{/private}}
+      {{#linkit}}
+      <a target="_blank" rel="nolink" href="{{ base }}{{ path }}" style="color:brown"><b>{{ base }}{{ path }}</b></a>
+      {{/linkit}}
+      {{^linkit}}
+      <span style="color:brown"><b>{{ base }}{{ path }}</b></span>
+      {{/linkit}}
       <br>
-      <a target="_blank" rel="nolink" href="{{ base }}{{ path }}">{{ base }}{{ path }}</a>
+      REST: <b>{{ method }}</b>
+
+      {{#key}}use API key: <b style="color:red">YES</b>{{/key}}
+      {{#private}}private access: <b style="color:blue">YES</b>{{/private}}
+      {{#finished}}method finished: <b style="color:green">YES</b>{{/finished}}
+
       {{#count}}
       <br>
       <br>
@@ -120,6 +137,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
     </p>
   </li>
 {{/apis}}
+
   </ol>
 
 </div>

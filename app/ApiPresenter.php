@@ -22,8 +22,11 @@ use Symfony\Component\Lock\Store\FlockStore;
 class ApiPresenter extends APresenter
 {
     /** @var bool use cache? */
-    //const USE_CACHE = true;
-    const USE_CACHE = false;
+    const USE_CACHE = true;
+    //const USE_CACHE = false;
+
+    /** @var string API cache profile */
+    const API_CACHE = "tenminutes";
 
     /** @var string podcasts CSV */
     const PODCASTS_CSV = "podcasts.csv";
@@ -32,23 +35,19 @@ class ApiPresenter extends APresenter
     const PRIVATE_KEY_SALT = "2BH*L(H+]*H%&T)j-MqB._8'%_6:;UAu";
 
     /** @var int maximum of records */
-    const MAX_RECORDS = 100;
-    //const MAX_RECORDS = 3;
+    const MAX_RECORDS = 300;
 
-    /** @var int minimum CSV file size = the meaning of the universe! */
+    /** @var int minimum CSV filesize joke :) */
     const CSV_MIN_SIZE = 42;
 
     /** @var int maximum access hits */
     const MAX_API_HITS = 1000;
 
-    /** @var string API cache profile */
-    const API_CACHE = "tenminutes";
-
     /** @var string CSV headers */
-    const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,xmlid,uid";
+    const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,episodes,xmlid,uid";
 
-    /** @var string CSV headers for checksum */
-    const CSV_HEADERS_CHECKSUM = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link";
+    /** @var string checksum CSV headers */
+    const CSV_HEADERS_CHECKSUM = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,managingEditor,rssfeed,link";
 
     /**
      * Main controller
@@ -82,14 +81,15 @@ class ApiPresenter extends APresenter
         }
 
         $extras = [
-            "api_limit" => self::MAX_API_HITS,
-            "api_time_limit" => self::API_CACHE,
+            "api_limit" => (int) self::MAX_API_HITS,
+            "api_time_limit" => $this->getData("cache_profiles")[self::API_CACHE],
             "api_usage" => $this->accessLimiter(),
             "fn" => $view,
             "name" => "PodcastAPI",
             "uuid" => $this->getUID(),
         ];
 
+        // user authorization status
         $d["user"] = $this->getCurrentUser() ?? [];
         $d["admin"] = $g = $this->getUserGroup() ?? "";
         if ($g) {
@@ -308,7 +308,7 @@ class ApiPresenter extends APresenter
         $result = [
             "podcasts_count" => $count,
             "headers" => $columns,
-            "version_template" => "sha256($template)",
+            //"version_template" => "sha256($template)",
             "records" => $arr,
         ];
         return $result;
@@ -363,7 +363,7 @@ class ApiPresenter extends APresenter
         }
         // result
         $result = [
-            "max_records_limit" => self::MAX_RECORDS,
+            "records_limit" => self::MAX_RECORDS,
             "headers" => $columns,
             "records" => $records,
         ];
@@ -429,25 +429,33 @@ class ApiPresenter extends APresenter
      */
     private function getPublicStatus()
     {
-        $f = self::PODCASTS_CSV;
-        $records = $this->readCsv($f);
+        // records
+        $records = $this->readCsv(self::PODCASTS_CSV);
         if (\is_null($records)) {
             return null;
         }
-        $timestamp = file_exists(DATA . "/${f}") ? @filemtime(DATA . "/${f}") : null;
+
+        // timestamp
+        $file = DATA . "/" . self::PODCASTS_CSV;
+        $timestamp = file_exists($file) ? @filemtime($file) : null;
+
+        // records count
         $count = count($records["uid"]);
-        $today = date('j');
-        $x = round($today * $count / 31 );
+
         // podcast of the day
+        $x = round(date("j") * $count / 31);
         $potd_name = $records["title"][$x];
         $potd_url = $records["link"][$x];
         $potd_rss = $records["rssfeed"][$x];
+        $potd_img = $records["itunes_image"][$x];
+
         // result
         $result = [
             "potd" => [
                 "title" => $potd_name,
-                "link" => $potd_url,
+                "link" => str_replace("http://", "https://", $potd_url),
                 "rss" => $potd_rss,
+                "img" => $potd_img,
             ],
             "podcasts_count" => $count,
             "timestamp" => $timestamp,
@@ -496,32 +504,31 @@ class ApiPresenter extends APresenter
         if (empty($id)) {
             return null;
         }
-        // caches
+
+        // cache
         $cache_key = "{$id}_csv_processed";
-        $cache_key_bak = "{$id}_csv_backup";
-        // primary cache
         if ($data = Cache::read($cache_key, "csv")) {
             return $data;
         }
-        // secondary cache
-        if ($data = Cache::read($cache_key_bak, "csv_bak")) {
-            return $data;
-        }
+
         // load CSV file
         $csv = \file_get_contents(DATA . "/$id");
         if (strlen($csv) < self::CSV_MIN_SIZE) {
             return null;
         }
+
         // create a lock
         $store = new FlockStore();
         $factory = new Factory($store);
         $lock = $factory->createLock("podcasts-csv");
         if (!$lock->acquire()) {
-            // another thread is rebuilding the data
             return null;
         }
-        $data = [];
+
+        // CSV columns
         $columns = explode(",", self::CSV_HEADERS);
+
+        $data = [];
         foreach ($columns as $col) {
             $$col = [];
             try {
@@ -542,7 +549,6 @@ class ApiPresenter extends APresenter
             }
         }
         Cache::write($cache_key, $data, "csv");
-        Cache::write($cache_key_bak, $data, "csv_bak");
         $lock->release();
         return $data;
     }

@@ -23,8 +23,15 @@ class CorePresenter extends APresenter
     {
         $this->checkRateLimit();
 
+        $data = $this->getData();
         $presenter = $this->getPresenter();
         $view = $this->getView();
+
+        // fix locales
+        $data["l"] = $data["l"] ?? [];
+        foreach ($data["l"] as $k => $v) {
+            StringFilters::correct_text_spacing($data["l"][$k], $data["lang"]);
+        }
 
         switch ($view) {
 
@@ -54,6 +61,7 @@ class CorePresenter extends APresenter
                 return $this->setData("output", $output);
                 break;
 
+            // api
             case "api":
                 $this->setHeaderHTML();
                 $map = [];
@@ -65,8 +73,10 @@ class CorePresenter extends APresenter
                             "count" => count($p["api_example"]),
                             "desc" => $p["api_description"] ?? "",
                             "exam" => $p["api_example"] ?? [],
+                            "finished" => $p["finished"] ?? false,
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
                             "key" => $p["use_key"] ?? false,
+                            "linkit" => !(\strpos($p["path"], "[") ?? false),
                             "method" => \strtoupper($p["method"]),
                             "path" => trim($p["path"], "/ \t\n\r\0\x0B"),
                             "private" => $p["private"] ?? false,
@@ -79,8 +89,8 @@ class CorePresenter extends APresenter
                 return strcmp($a["desc"], $b["desc"]);
                 });
                  */
-
-                return $this->setData("output", $this->setData("apis", $map)->setData("l", $this->getLocale("en"))->renderHTML("apis"));
+                $output = $this->setData($data)->setData("apis", $map)->renderHTML("apis");
+                return $this->setData("output", $output);
                 break;
 
         }
