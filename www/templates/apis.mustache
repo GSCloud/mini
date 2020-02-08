@@ -99,7 +99,7 @@ window.addEventListener('load', function() {
 <div class="container">
   <div class="row">
     <div class="column">
-      <h3><a href="/">{{ l.title }}</a> PUBLIC REST API</h3>
+      <h3><a href="/">{{ l.title }}</a> <small>PUBLIC REST API</small></h3>
     </div>
   </div>
 </div>
@@ -118,11 +118,12 @@ window.addEventListener('load', function() {
       <span style="color:brown"><b>{{ base }}{{ path }}</b></span>
       {{/linkit}}
       <br>
-      REST: <b>{{ method }}</b>
 
-      {{#key}}use API key: <b style="color:red">YES</b>{{/key}}
-      {{#private}}private access: <b style="color:blue">YES</b>{{/private}}
-      {{#finished}}method finished: <b style="color:green">YES</b>{{/finished}}
+      REST method: <b>{{ method }}</b>&nbsp;&nbsp;&nbsp;
+      {{#private}}<b style="color:blue">PRIVATE ACCESS</b>&nbsp;&nbsp;&nbsp;{{/private}}
+      {{#key}}<b style="color:red">USE API KEY</b>&nbsp;&nbsp;&nbsp;{{/key}}
+      {{#finished}}<b style="color:green">CODE FINISHED</b>&nbsp;&nbsp;&nbsp;{{/finished}}
+      {{#deprecated}}<b style="color:red">METHOD IS DEPRECATED</b>&nbsp;&nbsp;&nbsp;{{/deprecated}}
 
       {{#count}}
       <br>

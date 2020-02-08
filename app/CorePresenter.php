@@ -74,6 +74,7 @@ class CorePresenter extends APresenter
                             "desc" => $p["api_description"] ?? "",
                             "exam" => $p["api_example"] ?? [],
                             "finished" => $p["finished"] ?? false,
+                            "deprecated" => $p["deprecated"] ?? false,
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
                             "key" => $p["use_key"] ?? false,
                             "linkit" => !(\strpos($p["path"], "[") ?? false),

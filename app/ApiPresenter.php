@@ -28,13 +28,22 @@ class ApiPresenter extends APresenter
     /** @var string API cache profile */
     const API_CACHE = "tenminutes";
 
+    /** @var string API access time limit */
+    const ACCESS_TIME_LIMIT = 3599;
+
     /** @var string podcasts CSV */
     const PODCASTS_CSV = "podcasts.csv";
+
+    /** @var string episodes path */
+    const EPISODES_PATH = ROOT . "/XML/";
+
+    /** @var string episodes file extension */
+    const EPIS_EXT = ".epis.json";
 
     /** @var string private API key salt */
     const PRIVATE_KEY_SALT = "2BH*L(H+]*H%&T)j-MqB._8'%_6:;UAu";
 
-    /** @var int maximum of records */
+    /** @var int maximum records */
     const MAX_RECORDS = 300;
 
     /** @var int minimum CSV filesize joke :) */
@@ -44,9 +53,12 @@ class ApiPresenter extends APresenter
     const MAX_API_HITS = 1000;
 
     /** @var string CSV headers */
-    const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,episodes,xmlid,uid";
+    const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,episodes,episodes_version,xmlid,uid";
 
-    /** @var string checksum CSV headers */
+    /** @var string CSV headers for episodes */
+    const CSV_HEADERS_EPIS = "title,uid,episodes,episodes_version";
+
+    /** @var string CSV headers for checksum hashing */
     const CSV_HEADERS_CHECKSUM = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,managingEditor,rssfeed,link";
 
     /**
@@ -81,9 +93,11 @@ class ApiPresenter extends APresenter
         }
 
         $extras = [
-            "api_limit" => (int) self::MAX_API_HITS,
-            "api_time_limit" => $this->getData("cache_profiles")[self::API_CACHE],
+            "api_quota" => (int) self::MAX_API_HITS,
             "api_usage" => $this->accessLimiter(),
+            "access_time_limit" => self::ACCESS_TIME_LIMIT,
+            "cache_time_limit" => $this->getData("cache_profiles")[self::API_CACHE],
+            "records_quota" => self::MAX_RECORDS,
             "fn" => $view,
             "name" => "PodcastAPI",
             "uuid" => $this->getUID(),
@@ -102,161 +116,203 @@ class ApiPresenter extends APresenter
             case "GetPublicStatus": // IMPLEMENTED
                 $data = $this->getPublicStatus();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
                 break;
 
             case "GetPrivateStatus": // IMPLEMENTED
-                if (!$d["user"]["id"] ?? null) { // user unauthorized
+                if (!$d["user"]["id"] ?? null) {
+                    // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
-                $data = $this->getPrivateStatus($d);
+                $data = $this->getPrivateStatus($d); // user data
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
+                break;
+
+            case "GetWordCloud":
+                $data = $this->getWordCloud();
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "GetAPIkey": // IMPLEMENTED
-                if (!$d["user"]["id"]) { // user unauthorized
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
                 $data = $this->getAPIkey($d);
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
+                break;
+
+            case "GetAPIkeys":
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
+                    return $this->writeJsonData(401, $extras);
+                }
+                $data = $this->getAPIkeys();
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
                 break;
 
             case "CheckAPIkey": // IMPLEMENTED
                 $key = $match["params"]["key"] ?? null;
-                $data = $this->checkAPIkey($key);
+                $data = $this->checkAPIkey($key); // user key
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
                 break;
 
             case "GetPodcasts": // IMPLEMENTED
                 $list = $match["params"]["list"] ?? null;
-                $data = $this->getPodcasts($list);
+                $data = $this->getPodcasts($list); // podcast list
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData((object) $data, $extras);
+                break;
+
+            case "GetEpisodes": // IMPLEMENTED
+                $list = $match["params"]["list"] ?? null;
+                $data = $this->getEpisodes($list); // podcast list
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData((object) $data, $extras);
                 break;
 
             case "GetPodcastsVersions": // IMPLEMENTED
-                if (self::USE_CACHE && $cache = Cache::read($view, self::API_CACHE)) {
-                    return $this->writeJsonData($cache, $extras);
+                if (self::USE_CACHE && $data = Cache::read($view, self::API_CACHE)) {
+                    $extras["keys"] = array_keys($data);
+                    return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 }
                 $data = $this->getPodcastsVersions();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
                 Cache::write($view, $data, self::API_CACHE);
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "GetEpisodesVersions":
-                if (self::USE_CACHE && $cache = Cache::read($view, self::API_CACHE)) {
-                    return $this->writeJsonData($cache, $extras);
+            case "GetEpisodesVersions": // IMPLEMENTED
+                if (self::USE_CACHE && $data = Cache::read($view, self::API_CACHE)) {
+                    $extras["keys"] = array_keys($data);
+                    return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 }
                 $data = $this->getEpisodesVersions();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
                 Cache::write($view, $data, self::API_CACHE);
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "GetEpisodes":
-                if (self::USE_CACHE && $cache = Cache::read($view, self::API_CACHE)) {
-                    return $this->writeJsonData($cache, $extras);
-                }
-                $data = $this->getEpisodes();
+            case "AddPodcast":
+                $data = $this->addPodcast();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
-                Cache::write($view, $data, self::API_CACHE);
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
-                break;
-
-            case "AddPodcasts":
-                $data = $this->addPodcasts();
-                if (is_null($data)) {
-                    sleep(2); // fail
-                    return $this->writeJsonData(404, $extras);
-                }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "CreateAPIkey":
-                if (!$d["user"]["id"]) { // user unauthorized
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
                 $data = $this->createAPIkey();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "DeleteAPIkey":
-                if (!$d["user"]["id"]) { // user unauthorized
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
                 $data = $this->deleteAPIkey();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "DeletePodcasts":
                 $data = $this->deletePodcasts();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "AddTag":
                 $data = $this->addTag();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "DeleteTag":
                 $data = $this->deleteTag();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
             case "DeleteAllTags":
                 $data = $this->deleteAllTags();
                 if (is_null($data)) {
-                    sleep(2); // fail
+                    sleep(2);
                     return $this->writeJsonData(404, $extras);
                 }
+                $extras["keys"] = array_keys($data);
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
@@ -280,16 +336,13 @@ class ApiPresenter extends APresenter
         if (\is_null($records)) {
             return null;
         }
+
         // records count
         $count = count($records["uid"]);
+
         // CRC columns
         $columns = explode(",", self::CSV_HEADERS_CHECKSUM);
-        // string template
-        $x = [];
-        foreach ($columns as $c) {
-            $x[] = $c . "<value>";
-        }
-        $template = join('', $x);
+
         // cycle through all records
         $i = 0;
         $arr = [];
@@ -302,13 +355,46 @@ class ApiPresenter extends APresenter
             $arr[$i]["title"] = $records["title"][$i];
             $arr[$i]["uid"] = $r;
             $arr[$i]["version"] = hash("sha256", $str);
-            $i++; // iterate over all records
+            $i++;
         }
-        // result
+
         $result = [
             "podcasts_count" => $count,
-            "headers" => $columns,
-            //"version_template" => "sha256($template)",
+            "hashed_headers" => $columns,
+            "records" => $arr,
+        ];
+        return $result;
+    }
+
+    /**
+     * Get episodes versions
+     *
+     * @return array
+     */
+    private function getEpisodesVersions()
+    {
+        // read data
+        $f = self::PODCASTS_CSV;
+        $records = $this->readCsv($f);
+        if (\is_null($records)) {
+            return null;
+        }
+
+        // records count
+        $count = count($records["uid"]);
+
+        // cycle through all records
+        $i = 0;
+        $arr = [];
+        foreach ($records["uid"] as $r) {
+            $arr[$i]["title"] = $records["title"][$i];
+            $arr[$i]["uid"] = $r;
+            $arr[$i]["version"] = $records["episodes_version"][$i];
+            $i++;
+        }
+
+        $result = [
+            "podcasts_count" => $count,
             "records" => $arr,
         ];
         return $result;
@@ -331,20 +417,22 @@ class ApiPresenter extends APresenter
         $list = array_map("abs", $list);
         $list = array_filter($list, "is_int");
         $list = array_unique($list);
-
         if (!count($list)) {
             return null;
         }
-        // CSV columns
-        $columns = explode(",", self::CSV_HEADERS);
-        // read data
+
+        // get CSV
         $f = self::PODCASTS_CSV;
         $csv = $this->readCsv($f);
         if (\is_null($csv)) {
             return null;
         }
+
         $count = 0;
         $records = [];
+        $columns = explode(",", self::CSV_HEADERS);
+
+        // traverse the list of IDs
         foreach ($list as $id) {
             $arr = [];
             foreach ($columns as $c) {
@@ -361,9 +449,71 @@ class ApiPresenter extends APresenter
                 break;
             }
         }
-        // result
+
         $result = [
-            "records_limit" => self::MAX_RECORDS,
+            "headers" => $columns,
+            "records" => $records,
+        ];
+        return $result;
+    }
+
+    /**
+     * Get episodes
+     *
+     * @param string $list list of records, separated by comma
+     * @return array
+     */
+    private function getEpisodes($list)
+    {
+        if (!strlen($list)) {
+            return null;
+        }
+        $list = explode(",", (string) $list);
+        $list = array_map("trim", $list);
+        $list = array_map("intval", $list);
+        $list = array_map("abs", $list);
+        $list = array_filter($list, "is_int");
+        $list = array_unique($list);
+        if (!count($list)) {
+            return null;
+        }
+
+        // get CSV
+        $f = self::PODCASTS_CSV;
+        $csv = $this->readCsv($f);
+        if (\is_null($csv)) {
+            return null;
+        }
+
+        $count = 0;
+        $records = [];
+        $columns = explode(",", self::CSV_HEADERS_EPIS);
+
+        // traverse the list of IDs
+        foreach ($list as $id) {
+            $arr = [];
+            foreach ($columns as $c) {
+                if (array_key_exists($id, $csv[$c])) {
+                    $arr[$c] = $csv[$c][$id];
+                } else {
+                    $arr = null;
+                }
+            }
+
+            // read-in items in JSON
+            $arr["items"] = \json_decode(@file_get_contents(self::EPISODES_PATH . $csv["xmlid"][$id] . self::EPIS_EXT));
+
+            $records[$id] = $arr;
+            $count++;
+            if ($count >= self::MAX_RECORDS) {
+                // limit reached
+                break;
+            }
+        }
+
+        // add "items" to "headers"
+        $columns[] = "items";
+        $result = [
             "headers" => $columns,
             "records" => $records,
         ];
@@ -385,8 +535,25 @@ class ApiPresenter extends APresenter
         if (@\file_put_contents(DATA . "/${key}_private.key", $d["user"]["email"], LOCK_EX) === false) {
             return null;
         }
+
         $result = [
             "apikey" => $key,
+        ];
+        return $result;
+    }
+
+    /**
+     * Get API key list
+     *
+     * @return array
+     */
+    private function getAPIkeys()
+    {
+        if (\is_null($d) || !isset($d["user"]["email"])) {
+            return null;
+        }
+
+        $result = [
         ];
         return $result;
     }
@@ -413,7 +580,7 @@ class ApiPresenter extends APresenter
         } else {
             return null;
         }
-        // result
+
         $result = [
             "apikey" => $key,
             "valid" => true,
@@ -449,16 +616,15 @@ class ApiPresenter extends APresenter
         $potd_rss = $records["rssfeed"][$x];
         $potd_img = $records["itunes_image"][$x];
 
-        // result
         $result = [
+            "timestamp" => $timestamp,
+            "podcasts_count" => $count,
             "potd" => [
                 "title" => $potd_name,
-                "link" => str_replace("http://", "https://", $potd_url),
+                "link" => $potd_url,
                 "rss" => $potd_rss,
-                "img" => $potd_img,
+                "img" => str_replace("http://", "https://", $potd_img),
             ],
-            "podcasts_count" => $count,
-            "timestamp" => $timestamp,
             "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
         ];
         return $result;
@@ -481,13 +647,15 @@ class ApiPresenter extends APresenter
             return null;
         }
         $timestamp = file_exists(DATA . "/${f}") ? @filemtime(DATA . "/${f}") : null;
-        // result
+
+        chdir(DATA);
         $result = [
-            "id" => $d["user"]["id"],
-            "email" => $d["user"]["email"],
-            "name" => $d["user"]["name"],
-            "podcasts_count" => count($records["uid"]),
             "timestamp" => $timestamp,
+            "podcasts_count" => count($records["uid"]),
+            "podcasts_dbs" => \array_filter(\glob("podcasts-????-??-??.csv"), "is_file"),
+            "user_id" => $d["user"]["id"],
+            "user_email" => $d["user"]["email"],
+            "user_name" => $d["user"]["name"],
             "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
         ];
         return $result;
@@ -579,7 +747,7 @@ class ApiPresenter extends APresenter
         try {
             @$redis->multi();
             @$redis->incr($key);
-            @$redis->expire($key, 3599);
+            @$redis->expire($key, self::ACCESS_TIME_LIMIT);
             @$redis->exec();
         } catch (\Exception $e) {
             return null;
