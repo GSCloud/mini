@@ -41,12 +41,12 @@ class ApiPresenter extends APresenter
     const EPIS_EXT = ".epis.json";
 
     /** @var string private API key salt */
-    const PRIVATE_KEY_SALT = "2BH*L(H+]*H%&T)j-MqB._8'%_6:;UAu";
+    const PRIVATE_KEY_PEPPER = "2BH*L(H+]*H%&T)j-MqB._8'%_6:;UAu";
 
     /** @var int maximum records */
     const MAX_RECORDS = 300;
 
-    /** @var int minimum CSV filesize joke :) */
+    /** @var int minimum CSV filesize as a joke :) */
     const CSV_MIN_SIZE = 42;
 
     /** @var int maximum access hits */
@@ -73,7 +73,7 @@ class ApiPresenter extends APresenter
 
         setlocale(LC_ALL, "cs_CZ.utf8");
 
-        // check API keys
+        // check API keys @TODO!!!
         $err = 0;
         if (isset($_GET["api"])) {
             $api = (string) $_GET["api"];
@@ -83,7 +83,6 @@ class ApiPresenter extends APresenter
                 // invalid API key
                 $err++;
             }
-            // @TODO!!! check user generated key
         } else {
             // no API key
             $err++;
@@ -92,25 +91,26 @@ class ApiPresenter extends APresenter
             $this->checkRateLimit();
         }
 
+        // general API properties
         $extras = [
             "api_quota" => (int) self::MAX_API_HITS,
             "api_usage" => $this->accessLimiter(),
+            "uuid" => $this->getUID(),
             "access_time_limit" => self::ACCESS_TIME_LIMIT,
             "cache_time_limit" => $this->getData("cache_profiles")[self::API_CACHE],
             "records_quota" => self::MAX_RECORDS,
             "fn" => $view,
             "name" => "PodcastAPI",
-            "uuid" => $this->getUID(),
         ];
 
-        // user authorization status
+        // user authorization
         $d["user"] = $this->getCurrentUser() ?? [];
         $d["admin"] = $g = $this->getUserGroup() ?? "";
         if ($g) {
             $d["admin_group_${g}"] = true;
         }
 
-        // API calls
+        // API call switch
         switch ($view) {
 
             case "GetPublicStatus": // IMPLEMENTED
@@ -147,12 +147,12 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "GetAPIkey": // IMPLEMENTED
+            case "GetKey": // IMPLEMENTED
                 if (!$d["user"]["id"]) {
                     // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
-                $data = $this->getAPIkey($d);
+                $data = $this->getKey($d);
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -161,23 +161,23 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras);
                 break;
 
-            case "GetAPIkeys":
-                if (!$d["user"]["id"]) {
-                    // unauthorized user
-                    return $this->writeJsonData(401, $extras);
-                }
-                $data = $this->getAPIkeys();
-                if (is_null($data)) {
-                    sleep(2);
-                    return $this->writeJsonData(404, $extras);
-                }
-                $extras["keys"] = array_keys($data);
-                return $this->writeJsonData($data, $extras);
-                break;
-
-            case "CheckAPIkey": // IMPLEMENTED
+            case "CheckKey": // IMPLEMENTED
                 $key = $match["params"]["key"] ?? null;
-                $data = $this->checkAPIkey($key); // user key
+                $data = $this->checkKey($key); // user key
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras);
+                break;
+
+            case "GetKeys":
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
+                    return $this->writeJsonData(401, $extras);
+                }
+                $data = $this->getKeys();
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -188,7 +188,7 @@ class ApiPresenter extends APresenter
 
             case "GetPodcasts": // IMPLEMENTED
                 $list = $match["params"]["list"] ?? null;
-                $data = $this->getPodcasts($list); // podcast list
+                $data = $this->getPodcasts($list); // podcasts list
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -199,7 +199,29 @@ class ApiPresenter extends APresenter
 
             case "GetEpisodes": // IMPLEMENTED
                 $list = $match["params"]["list"] ?? null;
-                $data = $this->getEpisodes($list); // podcast list
+                $data = $this->getEpisodes($list); // podcasts list
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData((object) $data, $extras);
+                break;
+
+            case "GetPodcastsByUid": // IMPLEMENTED
+                $list = $match["params"]["list"] ?? null;
+                $data = $this->getPodcastsByUid($list); // podcasts list, UIDs
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData((object) $data, $extras);
+                break;
+
+            case "GetEpisodesByUid": // IMPLEMENTED
+                $list = $match["params"]["list"] ?? null;
+                $data = $this->getEpisodesByUid($list); // podcasts list, UIDs
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -248,36 +270,36 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "CreateAPIkey":
-                if (!$d["user"]["id"]) {
-                    // unauthorized user
-                    return $this->writeJsonData(401, $extras);
-                }
-                $data = $this->createAPIkey();
-                if (is_null($data)) {
-                    sleep(2);
-                    return $this->writeJsonData(404, $extras);
-                }
-                $extras["keys"] = array_keys($data);
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
-                break;
-
-            case "DeleteAPIkey":
-                if (!$d["user"]["id"]) {
-                    // unauthorized user
-                    return $this->writeJsonData(401, $extras);
-                }
-                $data = $this->deleteAPIkey();
-                if (is_null($data)) {
-                    sleep(2);
-                    return $this->writeJsonData(404, $extras);
-                }
-                $extras["keys"] = array_keys($data);
-                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
-                break;
-
             case "DeletePodcasts":
                 $data = $this->deletePodcasts();
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                break;
+
+            case "CreateKey":
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
+                    return $this->writeJsonData(401, $extras);
+                }
+                $data = $this->createKey();
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                break;
+
+            case "DeleteKey":
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
+                    return $this->writeJsonData(401, $extras);
+                }
+                $data = $this->deleteKey();
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -296,6 +318,16 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
+            case "GetTagCloud":
+                $data = $this->getTagCloud();
+                if (is_null($data)) {
+                    sleep(2);
+                    return $this->writeJsonData(404, $extras);
+                }
+                $extras["keys"] = array_keys($data);
+                return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
+                break;
+
             case "DeleteTag":
                 $data = $this->deleteTag();
                 if (is_null($data)) {
@@ -306,8 +338,8 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "DeleteAllTags":
-                $data = $this->deleteAllTags();
+            case "DeleteTags":
+                $data = $this->deleteTags();
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -403,7 +435,7 @@ class ApiPresenter extends APresenter
     /**
      * Get podcasts
      *
-     * @param string $list list of records, separated by comma
+     * @param string $list list of IDs, separated by comma
      * @return array
      */
     private function getPodcasts($list)
@@ -417,6 +449,7 @@ class ApiPresenter extends APresenter
         $list = array_map("abs", $list);
         $list = array_filter($list, "is_int");
         $list = array_unique($list);
+
         if (!count($list)) {
             return null;
         }
@@ -442,6 +475,7 @@ class ApiPresenter extends APresenter
                     $arr = null;
                 }
             }
+
             $records[$id] = $arr;
             $count++;
             if ($count >= self::MAX_RECORDS) {
@@ -460,7 +494,7 @@ class ApiPresenter extends APresenter
     /**
      * Get episodes
      *
-     * @param string $list list of records, separated by comma
+     * @param string $list list of IDs, separated by comma
      * @return array
      */
     private function getEpisodes($list)
@@ -474,6 +508,7 @@ class ApiPresenter extends APresenter
         $list = array_map("abs", $list);
         $list = array_filter($list, "is_int");
         $list = array_unique($list);
+
         if (!count($list)) {
             return null;
         }
@@ -521,23 +556,182 @@ class ApiPresenter extends APresenter
     }
 
     /**
-     * Get private API key
+     * Get podcasts by UID
      *
+     * @param string $list list of UIDs, separated by comma
+     * @return array
+     */
+    private function getPodcastsByUid($list)
+    {
+        if (!strlen($list)) {
+            return null;
+        }
+        $list = explode(",", (string) $list);
+        $list = array_map("trim", $list);
+        $list = array_filter($list, function ($value) {
+            return preg_match("/^([a-f0-9]{64})$/", $value) === 1; // validate SHA-256 hash
+        });
+        $list = array_unique($list);
+        if (!count($list)) {
+            return null;
+        }
+
+        // get CSV
+        $f = self::PODCASTS_CSV;
+        $csv = $this->readCsv($f);
+        if (\is_null($csv)) {
+            return null;
+        }
+
+        $count = 0;
+        $records = [];
+        $columns = explode(",", self::CSV_HEADERS);
+        $ids = array_flip($csv["uid"]);
+
+        // traverse the list of UIDs
+        foreach ($list as $uid) {
+            $arr = [];
+            $id = $ids[$uid];
+            foreach ($columns as $c) {
+                if (array_key_exists($id, $csv[$c])) {
+                    $arr[$c] = $csv[$c][$id];
+                } else {
+                    $arr = null;
+                }
+            }
+
+            $records[$uid] = $arr;
+            $count++;
+            if ($count >= self::MAX_RECORDS) {
+                // limit reached
+                break;
+            }
+        }
+
+        $result = [
+            "headers" => $columns,
+            "records" => $records,
+        ];
+        return $result;
+    }
+
+    /**
+     * Get episodes by UID
+     *
+     * @param string $list list of UIDs, separated by comma
+     * @return array
+     */
+    private function getEpisodesByUid($list)
+    {
+        if (!strlen($list)) {
+            return null;
+        }
+        $list = explode(",", (string) $list);
+        $list = array_map("trim", $list);
+        $list = array_filter($list, function ($value) {
+            return preg_match("/^([a-f0-9]{64})$/", $value) === 1; // validate SHA-256 hash
+        });
+        $list = array_unique($list);
+        if (!count($list)) {
+            return null;
+        }
+
+        // get CSV
+        $f = self::PODCASTS_CSV;
+        $csv = $this->readCsv($f);
+        if (\is_null($csv)) {
+            return null;
+        }
+
+        $count = 0;
+        $records = [];
+        $columns = explode(",", self::CSV_HEADERS_EPIS);
+        $ids = array_flip($csv["uid"]);
+
+        // traverse the list of UIDs
+        foreach ($list as $uid) {
+            $arr = [];
+            $id = $ids[$uid];
+            foreach ($columns as $c) {
+                if (array_key_exists($id, $csv[$c])) {
+                    $arr[$c] = $csv[$c][$id];
+                } else {
+                    $arr = null;
+                }
+            }
+
+            // read-in items in JSON
+            $arr["items"] = \json_decode(@file_get_contents(self::EPISODES_PATH . $csv["xmlid"][$id] . self::EPIS_EXT));
+
+            $records[$uid] = $arr;
+            $count++;
+            if ($count >= self::MAX_RECORDS) {
+                // limit reached
+                break;
+            }
+        }
+
+        // add "items" to "headers"
+        $columns[] = "items";
+        $result = [
+            "headers" => $columns,
+            "records" => $records,
+        ];
+        return $result;
+    }
+
+    /**
+     * Get private user API key
+     *
+     * @param array $d user data
      * @return string
      */
-    private function getAPIkey($d = null)
+    private function getKey($d = null)
     {
         if (\is_null($d) || !isset($d["user"]["email"])) {
             return null;
         }
-        // generate API key and save it
-        $key = hash("sha256", self::PRIVATE_KEY_SALT . $d["user"]["email"]);
-        if (@\file_put_contents(DATA . "/${key}_private.key", $d["user"]["email"], LOCK_EX) === false) {
+
+        // prepare key data
+        $email = \strtolower($d["user"]["email"]);
+        $container = hash("sha256", $email);
+        $salt = hash("sha256", random_bytes(16));
+
+        // delete old API key
+        if ($x = @\file_get_contents(DATA . "/${container}_meta.key")) {
+            // extract JSON META data
+            $arr = @json_decode($x, true);
+            if (!\is_array($arr)) {
+                return null;
+            }
+            // delete private key file
+            @\unlink(DATA . "/" . $arr["key"] . "_private.key");
+        }
+
+        // generate new API key
+        $key = hash("sha256", self::PRIVATE_KEY_PEPPER . $email . $salt);
+        $meta = json_encode([
+            "email" => $email,
+            "ip" => $this->getIP(),
+            "key" => $key,
+            "salt" => $salt,
+            "timestamp" => \time(),
+            "type" => "user",
+            "uid" => $this->getUID(),
+        ]);
+
+        // write META data
+        if (@\file_put_contents(DATA . "/${container}_meta.key", $meta, LOCK_EX) === false) {
+            return null;
+        }
+
+        // write key data
+        if (@\file_put_contents(DATA . "/${key}_private.key", $container, LOCK_EX) === false) {
             return null;
         }
 
         $result = [
-            "apikey" => $key,
+            "key" => $key,
         ];
         return $result;
     }
@@ -545,9 +739,9 @@ class ApiPresenter extends APresenter
     /**
      * Get API key list
      *
-     * @return array
+     * @return array API keys
      */
-    private function getAPIkeys()
+    private function getKeys()
     {
         if (\is_null($d) || !isset($d["user"]["email"])) {
             return null;
@@ -561,30 +755,40 @@ class ApiPresenter extends APresenter
     /**
      * Check API key
      *
+     * @param string $key API key
      * @return bool
      */
-    private function checkAPIkey($key = null)
+    private function checkKey($key = null)
     {
         if (\is_null($key)) {
             return null;
         }
-        // hexadecimal only!!!
+        // hexadecimal & SHA256 length only
         $key = preg_replace("/[^a-fA-F0-9]+/", "", trim($key));
         if (strlen($key) != 64) {
             return null;
         }
-        // check key file existence
+
+        // check key file
+        $meta = null;
         $f = DATA . "/${key}_private.key";
         if (\file_exists($f)) {
-            $author = trim(\file_get_contents($f));
+            $container = trim(@\file_get_contents($f));
+            $f = DATA . "/${container}_meta.key";
+            if (\file_exists($f)) {
+                $meta = json_decode(\file_get_contents($f), TRUE);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
 
         $result = [
-            "apikey" => $key,
+            "container" => $container,
+            "key" => $key,
+            "meta" => $meta,
             "valid" => true,
-            "author" => $author,
         ];
         return $result;
     }

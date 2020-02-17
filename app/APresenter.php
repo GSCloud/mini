@@ -37,6 +37,7 @@ interface IPresenter
     public function getCookie($name);
     public function getCurrentUser();
     public function getData($key);
+    public function getIP();
     public function getIdentity();
     public function getMatch();
     public function getPresenter();
@@ -90,8 +91,8 @@ abstract class APresenter implements IPresenter
     /** @var integer Cookie time to live */
     const COOKIE_TTL = 86400 * 15;
 
-    /** @var integer Access limiter maximum hits */
-    const LIMITER_MAXIMUM = 50;
+    /** @var integer Access limiter maximum hits per second */
+    const LIMITER_MAXIMUM = 20;
 
     /** @var string Identity nonce filename */
     const IDENTITY_NONCE = "identity_nonce.key";
@@ -490,15 +491,25 @@ abstract class APresenter implements IPresenter
                 $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "NA",
                 $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "NA",
                 $_SERVER["HTTP_USER_AGENT"] ?? "UA",
-                $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
+                $this->getIP(),
             ]),
             " ", "_");
     }
 
     /**
+     * Get IP address
+     *
+     * @return string IP address
+     */
+    public function getIP()
+    {
+        return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "N/A";
+    }
+
+    /**
      * Get universal ID hash
      *
-     * @return string Universal ID SHA256 hash
+     * @return string Universal ID SHA-256 hash
      */
     public function getUID()
     {
@@ -508,7 +519,7 @@ abstract class APresenter implements IPresenter
     /**
      * Set user identity
      *
-     * @param array $identity Identity associative array
+     * @param array $identity Identity array
      * @return object Singleton instance
      */
     public function setIdentity($identity = [])
@@ -559,7 +570,7 @@ abstract class APresenter implements IPresenter
         // set remaining keys
         $i["timestamp"] = time();
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX";
-        $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
+        $i["ip"] = $this->getIP();
 
         // shuffle data
         $out = [];

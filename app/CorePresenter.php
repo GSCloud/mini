@@ -69,9 +69,10 @@ class CorePresenter extends APresenter
                     if (isset($p["api"]) && $p["api"]) {
                         $info = $p["api_info"] ?? "";
                         StringFilters::convert_eol_to_br($info);
+                        $info = \htmlspecialchars($info);
                         $map[] = [
                             "count" => count($p["api_example"]),
-                            "desc" => $p["api_description"] ?? "",
+                            "desc" => \htmlspecialchars($p["api_description"] ?? ""),
                             "exam" => $p["api_example"] ?? [],
                             "finished" => $p["finished"] ?? false,
                             "deprecated" => $p["deprecated"] ?? false,
@@ -85,11 +86,6 @@ class CorePresenter extends APresenter
                     }
                 }
 
-                /* // do not sort API list :)
-                usort($map, function ($a, $b) {
-                return strcmp($a["desc"], $b["desc"]);
-                });
-                 */
                 $output = $this->setData($data)->setData("apis", $map)->renderHTML("apis");
                 return $this->setData("output", $output);
                 break;
