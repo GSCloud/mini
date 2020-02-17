@@ -479,6 +479,16 @@ abstract class APresenter implements IPresenter
     }
 
     /**
+     * Get IP address
+     *
+     * @return string IP address
+     */
+    public function getIP()
+    {
+        return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "N/A";
+    }
+
+    /**
      * Get universal ID string
      *
      * @return string Universal ID string
@@ -487,24 +497,12 @@ abstract class APresenter implements IPresenter
     {
         return strtr(implode("_",
             [
-                $_SERVER["HTTP_ACCEPT"] ?? "NA",
-                $_SERVER["HTTP_ACCEPT_CHARSET"] ?? "NA",
                 $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "NA",
                 $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "NA",
                 $_SERVER["HTTP_USER_AGENT"] ?? "UA",
                 $this->getIP(),
             ]),
             " ", "_");
-    }
-
-    /**
-     * Get IP address
-     *
-     * @return string IP address
-     */
-    public function getIP()
-    {
-        return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "N/A";
     }
 
     /**
@@ -535,23 +533,30 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "ip" => "",
             "name" => "",
+            "timestamp" => 0,
         ];
-        $file = DATA . "/" . self::IDENTITY_NONCE;
 
-        // random nonce
+        // get nonce
+        $file = DATA . "/" . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
             try {
                 $nonce = hash("sha256", random_bytes(256) . time());
-                file_put_contents($file, $nonce);
+                if (@file_put_contents($file, $nonce, LOCK_EX) === false) {
+                    throw new \Exception("File write failed!");
+                }
                 @chmod($file, 0660);
                 $this->addMessage("ADMIN: nonce file created");
             } catch (Exception $e) {
-                $this->addError("500: Internal Server Error -> cannot create nonce file");
+                $this->addError("500: Internal Server Error -> cannot create nonce file: " . $e->getMessage());
                 $this->setLocation("/err/500");
                 exit;
             }
         }
-        $nonce = @file_get_contents($file);
+        if ($nonce = @file_get_contents($file) === false) {
+            $this->addError("500: Internal Server Error -> cannot read nonce file");
+            $this->setLocation("/err/500");
+            exit;
+        }
         $i["nonce"] = substr(trim($nonce), 0, 8);
 
         // check all keys

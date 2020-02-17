@@ -10,32 +10,33 @@
 namespace GSC;
 
 use Cake\Cache\Cache;
-use GSC\CliPresenter;
+#use GSC\CliPresenter;
 use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 use Nette\Neon\Neon;
 
-// sanity check
+// SANITY CHECK
 $x = "FATAL ERROR: broken chain of trust";
 defined("APP") || die($x);
 defined("CACHE") || die($x);
 defined("CLI") || die($x);
 defined("ROOT") || die($x);
 
-/** @const Cache prefix, defaults to "cakephpcache_" */
-defined("CACHEPREFIX") || define("CACHEPREFIX", "cakephpcache_");
+/** @const Cache prefix */
+defined("CACHEPREFIX") || define("CACHEPREFIX",
+    "cache_" . (string) ($cfg["app"] ?? sha1($cfg["canonical_url"]) ?? sha1($cfg["goauth_origin"]) ?? "") . "_");
 
-/** @const Domain name, extracted from $SERVER array */
+/** @const Domain name, extracted from $_SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
+
+/** @const Server name, extracted from $_SERVER array */
+defined("SERVER") || define("SERVER", strtoupper(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
 /** @const Project name, defaults to "TESSERACT" */
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
 
 /** @const Application name, defaults to "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
-
-/** @const Server name, extracted from $_SERVER array */
-defined("SERVER") || define("SERVER", strtoupper(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
 /** @const Monolog log file full path */
 defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . ".log");
@@ -127,7 +128,7 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
     $multisite_profiles["default"][] = $auth_domain;
 }
 
-// DATA
+// DATA POPULATION
 $data["cache_profiles"] = $cache_profiles;
 $data["multisite_names"] = $multisite_names;
 $data["multisite_profiles"] = $multisite_profiles;
@@ -152,7 +153,8 @@ foreach ($routes as $r) {
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
 }
-// set routing defaults
+
+// ROUTER DEFAULTS
 $presenter = [];
 $defaults = $router["defaults"] ?? [];
 foreach ($router as $k => $v) {
@@ -176,6 +178,8 @@ foreach ($presenter as $k => $v) {
         $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_slash");
     }
 }
+
+// DATA POPULATION
 $data["presenter"] = $presenter;
 $data["router"] = $router;
 
@@ -280,7 +284,7 @@ if (DEBUG) {
     unset($data["cf"]);
     unset($data["goauth_secret"]);
     unset($data["goauth_client_id"]);
-    unset($data["google_drive_backup "]);
+    unset($data["google_drive_backup"]);
     bdump($data, '$data');
     bdump($app->getIdentity(), "identity");
 }
