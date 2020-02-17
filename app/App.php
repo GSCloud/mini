@@ -24,16 +24,25 @@ defined("ROOT") || die($x);
 
 /** @const Cache prefix, defaults to "cakephpcache_" */
 defined("CACHEPREFIX") || define("CACHEPREFIX", "cakephpcache_");
+
 /** @const Domain name, extracted from $SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
+
 /** @const Project name, defaults to "TESSERACT" */
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
-/** @const Server name, extracted from $SERVER array */
-defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
+
+/** @const Application name, defaults to "app" */
+defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
+
+/** @const Server name, extracted from $_SERVER array */
+defined("SERVER") || define("SERVER", strtoupper(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
+
 /** @const Monolog log file full path */
 defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . ".log");
+
 /** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
+
 /** @const Google Cloud Platform JSON authentication keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 if (GCP_KEYS) {
@@ -84,7 +93,7 @@ foreach ($cache_profiles as $k => $v) {
         "duration" => $v,
         "lock" => true,
         "path" => CACHE,
-        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_",
+        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
     ]);
 
     // "redis" cache configurations
@@ -94,8 +103,8 @@ foreach ($cache_profiles as $k => $v) {
         "duration" => $v,
         "host" => "127.0.0.1",
         "persistent" => true,
-        "port" => 6377, // note special port 6377!!!
-        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_",
+        "port" => 6377, // SPECIAL PORT 6377 !!!
+        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
         "timeout" => 0.1,
         'fallback' => "file_{$k}", // fallback profile
     ]);

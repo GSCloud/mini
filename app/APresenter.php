@@ -346,6 +346,7 @@ abstract class APresenter implements IPresenter
         $dot->set(
             [
                 "CONST.APP" => APP,
+                "CONST.APPNAME" => APPNAME,
                 "CONST.CACHE" => CACHE,
                 "CONST.CACHEPREFIX" => CACHEPREFIX,
                 "CONST.CLI" => CLI,
