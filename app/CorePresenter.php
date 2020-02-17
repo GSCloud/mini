@@ -70,12 +70,17 @@ class CorePresenter extends APresenter
                         $info = $p["api_info"] ?? "";
                         StringFilters::convert_eol_to_br($info);
                         $info = \htmlspecialchars($info);
+                        $info = preg_replace(
+                            array('#href=&quot;(.*)&quot;#', '#&lt;(/?(?:pre|a|b|br|em|u|ul|li|ol)(\shref=".*")?/?)&gt;#'),
+                            array('href="\1"', '<\1>'), 
+                            $info
+                        );
                         $map[] = [
                             "count" => count($p["api_example"]),
+                            "deprecated" => $p["deprecated"] ?? false,
                             "desc" => \htmlspecialchars($p["api_description"] ?? ""),
                             "exam" => $p["api_example"] ?? [],
                             "finished" => $p["finished"] ?? false,
-                            "deprecated" => $p["deprecated"] ?? false,
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
                             "key" => $p["use_key"] ?? false,
                             "linkit" => !(\strpos($p["path"], "[") ?? false),
