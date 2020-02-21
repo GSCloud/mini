@@ -883,16 +883,13 @@ abstract class APresenter implements IPresenter
      */
     public function setCookie($name, $data)
     {
-        if (empty($name)) {
-            return $this;
-        }
-        if (is_null($name)) {
+        if (empty($name) || is_null($name) || CLI) {
             return $this;
         }
 
         // secure key
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
-        $keyfile = DATA . "/$key";
+        $keyfile = DATA . "/${key}";
         if (file_exists($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
         } else {
@@ -911,9 +908,7 @@ abstract class APresenter implements IPresenter
             $samesite = "strict";
             $secure = true;
         }
-        if (!CLI) {
-            $cookie->store($name, (string) $data, time() + self::COOKIE_TTL, "/", DOMAIN, $secure, $httponly, $samesite);
-        }
+        $cookie->store($name, (string) $data, time() + self::COOKIE_TTL, "/", DOMAIN, $secure, $httponly, $samesite);
         $this->cookies[$name] = (string) $data;
         return $this;
     }

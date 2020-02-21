@@ -19,36 +19,50 @@ error_reporting(E_ALL);
 @ini_set("default_socket_timeout", 15);
 @ini_set("display_errors", true);
 
-// CONSTANTS (in SPECIFIC ORDER !!!)
+// CONSTANTS
 
 /** @const Global timer start */
 define("TESSERACT_START", ((float) $usec + (float) $sec));
+
 /** @const Bootstrap root folder */
 defined("ROOT") || define("ROOT", __DIR__);
+
 /** @const Application folder */
 defined("APP") || define("APP", ROOT . "/app");
+
 /** @const Cache and logs folder, defaults to "cache" */
 defined("CACHE") || define("CACHE", ROOT . "/cache");
+
 /** @const Application data folder, defaults to "data" */
 defined("DATA") || define("DATA", ROOT . "/data");
+
 /** @const Website assets folder, defaults to "www" */
 defined("WWW") || define("WWW", ROOT . "/www");
+
 /** @const Configuration file, full path */
 defined("CONFIG") || define("CONFIG", ROOT . "/config.neon");
+
 /** @const Private configuration file, full path */
 defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", ROOT . "/config_private.neon");
-/** @const Website templates folder, defaults to "www/templates" */
+
+/** @const Application templates folder, defaults to "www/templates" */
 defined("TEMPLATES") || define("TEMPLATES", WWW . "/templates");
-/** @const Website template partials folder, defaults to "www/partials" */
+
+/** @const Application template partials folder, defaults to "www/partials" */
 defined("PARTIALS") || define("PARTIALS", WWW . "/partials");
-/** @const Website downloads folder, defaults to "www/download" */
+
+/** @const Application downloads folder, defaults to "www/download" */
 defined("DOWNLOAD") || define("DOWNLOAD", WWW . "/download");
-/** @const Website uploads folder, defaults to "www/upload" */
+
+/** @const Application uploads folder, defaults to "www/upload" */
 defined("UPLOAD") || define("UPLOAD", WWW . "/upload");
-/** @const Temporary files folder, defaults to "/tmp" */
+
+/** @const Temporary folder, defaults to "/tmp" */
 defined("TEMP") || define("TEMP", "/tmp");
+
 /** @const True if running from command line interface */
-define("CLI", (bool) (PHP_SAPI == "cli"));
+define("CLI", (bool) (PHP_SAPI === "cli"));
+
 /** @const True if running server locally */
 define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
 

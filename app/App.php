@@ -10,7 +10,6 @@
 namespace GSC;
 
 use Cake\Cache\Cache;
-#use GSC\CliPresenter;
 use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 use Nette\Neon\Neon;
@@ -19,44 +18,45 @@ use Nette\Neon\Neon;
 $x = "FATAL ERROR: broken chain of trust";
 defined("APP") || die($x);
 defined("CACHE") || die($x);
-defined("CLI") || die($x);
 defined("ROOT") || die($x);
 
 /** @const Cache prefix */
 defined("CACHEPREFIX") || define("CACHEPREFIX",
-    "cache_" . (string) ($cfg["app"] ?? sha1($cfg["canonical_url"]) ?? sha1($cfg["goauth_origin"]) ?? "") . "_");
+    "cache_" . (string) ($cfg["app"] ?? hash("sha256", $cfg["canonical_url"]) ?? hash("sha256", $cfg["goauth_origin"]) ?? "unknownapp")
+    . "_");
 
 /** @const Domain name, extracted from $_SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Server name, extracted from $_SERVER array */
-defined("SERVER") || define("SERVER", strtoupper(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
+/** @const Server name, extracted from $_SERVER array, altered */
+defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Project name, defaults to "TESSERACT" */
+/** @const Project name, default: "TESSERACT" */
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
 
-/** @const Application name, defaults to "app" */
+/** @const Application name, default: "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
 
 /** @const Monolog log file full path */
-defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . ".log");
+defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . APPNAME . ".log");
 
 /** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
 
 /** @const Google Cloud Platform JSON authentication keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
-if (GCP_KEYS) {
+
+// check GCP keys
+if (GCP_KEYS && \file_exists(APP . GCP_KEYS)) {
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . GCP_KEYS);
 }
 
-// STACKDRIVER
+// GOOGLE STACKDRIVER
 function logger($message, $severity = Logger::INFO)
 {
     if (empty($message) || is_null(GCP_PROJECTID) || is_null(GCP_KEYS)) {
         return;
     }
-
     try {
         $logging = new LoggingClient([
             "projectId" => GCP_PROJECTID,
@@ -71,24 +71,23 @@ function logger($message, $severity = Logger::INFO)
 
 // CACHING PROFILES
 $cache_profiles = array_replace([
-    "apiconsume" => "+60 minutes",
-    "csv" => "+180 minutes",
+    "apiconsume" => "+60 minutes", // for API access
+    "csv" => "+180 minutes", // storing CSV
     "day" => "+24 hours",
     "default" => "+5 minutes",
     "hour" => "+60 minutes",
-    "limiter" => "+1 seconds",
+    "limiter" => "+1 seconds", // access limiter
     "minute" => "+60 seconds",
-    "page" => "+3 minutes",
+    "page" => "+3 minutes", // public web page
     "second" => "+1 seconds",
-    "tenseconds" => "+10 seconds",
     "tenminutes" => "+10 minutes",
+    "tenseconds" => "+10 seconds",
 ],
     (array) ($cfg["cache_profiles"] ?? [])
 );
 
 foreach ($cache_profiles as $k => $v) {
-
-    // set "file" fallbacks
+    // file fallback
     Cache::setConfig("file_{$k}", [
         "className" => "File",
         "duration" => $v,
@@ -96,18 +95,17 @@ foreach ($cache_profiles as $k => $v) {
         "path" => CACHE,
         "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
     ]);
-
-    // "redis" cache configurations
+    // Redis cache
     Cache::setConfig($k, [
         "className" => "Redis",
-        "database" => 0,
+        "database" => $cfg["redis_database"] ?? 0,
         "duration" => $v,
-        "host" => "127.0.0.1",
-        "persistent" => true,
-        "port" => 6377, // SPECIAL PORT 6377 !!!
+        "host" => $cfg["redis_host"] ?? "127.0.0.1",
+        "persistent" => $cfg["redis_persistent"] ?? false,
+        "port" => $cfg["redis_port"] ?? 6377, // SPECIAL PORT 6377 !!!
         "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
-        "timeout" => 0.1,
-        'fallback' => "file_{$k}", // fallback profile
+        "timeout" => $cfg["redis_timeout"] ?? 0.1,
+        'fallback' => "file_{$k}", // cache fallback profile
     ]);
 }
 
@@ -128,27 +126,28 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
     $multisite_profiles["default"][] = $auth_domain;
 }
 
-// DATA POPULATION
+// DATA
 $data["cache_profiles"] = $cache_profiles;
 $data["multisite_names"] = $multisite_names;
 $data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTING CONFIGURATION
-$routes = $cfg["routes"] ?? [
-    APP . "/router_defaults.neon",
-    APP . "/router_admin.neon",
-    APP . "/router.neon",
+$routes = $cfg["routes"] ?? [ // configuration can override the defaults
+    "router_defaults.neon",
+    "router_admin.neon",
+    "router.neon",
 ];
 $router = [];
 foreach ($routes as $r) {
+    $r = APP . "/${r}";
     if (($content = @file_get_contents($r)) === false) {
         logger("Error in routing table: $r", Logger::EMERGENCY);
         if (ob_get_level()) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2><h3>Router: $r</h3>";
+        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Router: $r";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
@@ -170,16 +169,16 @@ foreach ($router as $k => $v) {
 // URL MAPPINGS
 $alto = new \AltoRouter();
 foreach ($presenter as $k => $v) {
-    if (!isset($v["path"])) { // skip presenters without path
+    if (!isset($v["path"])) { // skip invalid presenters
         continue;
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
-    if (substr($v["path"], -1) != "/") { // map duplicates ending with slash
+    if (substr($v["path"], -1) != "/") { // map extras with slash ending!
         $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_slash");
     }
 }
 
-// DATA POPULATION
+// DATA
 $data["presenter"] = $presenter;
 $data["router"] = $router;
 
@@ -196,15 +195,15 @@ if (CLI) {
     exit;
 }
 
-// PROCESS ROUTING
+// ROUTING
 $match = $alto->match();
 $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 
-// DATA POPULATION
+// DATA
 $data["match"] = $match;
 $data["view"] = $view;
 
-// PROCESS REDIRECTS
+// REDIRECTS
 if ($router[$view]["redirect"] ?? false) {
     $r = $router[$view]["redirect"];
     if (ob_get_level()) {
@@ -254,7 +253,7 @@ header(implode(" ", [
 // SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\$p";
-\Tracy\Debugger::timer("PROCESSING");   // measure performance
+\Tracy\Debugger::timer("PROCESSING"); // measure performance
 $app = $controller::getInstance()->setData($data)->process();
 $data = $app->getData();
 
