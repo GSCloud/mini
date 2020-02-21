@@ -46,7 +46,7 @@ class ErrorPresenter extends APresenter
         }
         $error = self::CODESET[$code];
         header("HTTP/1.1 ${code} ${error}");
-        $template = "<body><center><h1>🤔 HTTP Error $code 💣</h1><h2>" . self::CODESET[$code] . "</h2><h3><a href='/'>RELOAD ↻</a></h3></body>";
+        $template = "<body><center><h1>HTTP Error $code 💣</h1><h2>" . self::CODESET[$code] . "</h2><h3><a href='/'>RELOAD ↻</a></h3></body>";
         return $this->setData("output", $this->renderHTML($template));
     }
 }

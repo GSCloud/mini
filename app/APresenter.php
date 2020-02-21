@@ -91,7 +91,7 @@ abstract class APresenter implements IPresenter
     /** @var integer Cookie time to live */
     const COOKIE_TTL = 86400 * 15;
 
-    /** @var integer Access limiter maximum hits per second */
+    /** @var integer Access limiter maximum hits */
     const LIMITER_MAXIMUM = 20;
 
     /** @var string Identity nonce filename */
@@ -497,10 +497,12 @@ abstract class APresenter implements IPresenter
     {
         return strtr(implode("_",
             [
+                $_SERVER["HTTP_ACCEPT"] ?? "NA",
+                $_SERVER["HTTP_ACCEPT_CHARSET"] ?? "NA",
                 $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "NA",
                 $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "NA",
                 $_SERVER["HTTP_USER_AGENT"] ?? "UA",
-                $this->getIP(),
+                $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "NA",
             ]),
             " ", "_");
     }
@@ -533,30 +535,23 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "ip" => "",
             "name" => "",
-            "timestamp" => 0,
         ];
-
-        // get nonce
         $file = DATA . "/" . self::IDENTITY_NONCE;
+
+        // random nonce
         if (!file_exists($file)) {
             try {
                 $nonce = hash("sha256", random_bytes(256) . time());
-                if (@file_put_contents($file, $nonce, LOCK_EX) === false) {
-                    throw new \Exception("File write failed!");
-                }
+                file_put_contents($file, $nonce);
                 @chmod($file, 0660);
                 $this->addMessage("ADMIN: nonce file created");
             } catch (Exception $e) {
-                $this->addError("500: Internal Server Error -> cannot create nonce file: " . $e->getMessage());
+                $this->addError("500: Internal Server Error -> cannot create nonce file");
                 $this->setLocation("/err/500");
                 exit;
             }
         }
-        if ($nonce = @file_get_contents($file) === false) {
-            $this->addError("500: Internal Server Error -> cannot read nonce file");
-            $this->setLocation("/err/500");
-            exit;
-        }
+        $nonce = @file_get_contents($file);
         $i["nonce"] = substr(trim($nonce), 0, 8);
 
         // check all keys
@@ -576,7 +571,7 @@ abstract class APresenter implements IPresenter
         // set remaining keys
         $i["timestamp"] = time();
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX";
-        $i["ip"] = $this->getIP();
+        $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
 
         // shuffle data
         $out = [];
