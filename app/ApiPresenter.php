@@ -763,8 +763,9 @@ class ApiPresenter extends APresenter
         if (\is_null($key)) {
             return null;
         }
-        // hexadecimal & SHA256 length only
-        $key = preg_replace("/[^a-fA-F0-9]+/", "", trim($key));
+
+        // hexadecimal & SHA-256 length only
+        $key = strtolower(preg_replace("/[^a-fA-F0-9]+/", "", trim($key)));
         if (strlen($key) != 64) {
             return null;
         }
@@ -774,19 +775,29 @@ class ApiPresenter extends APresenter
         $f = DATA . "/${key}_private.key";
         if (\file_exists($f)) {
             $container = trim(@\file_get_contents($f));
-            $f = DATA . "/${container}_meta.key";
-            if (\file_exists($f)) {
-                $meta = json_decode(\file_get_contents($f), TRUE);
-            } else {
+            if (\strlen($container) != 64) { // invalid containter id
                 return null;
             }
+            $f = DATA . "/${container}_meta.key";
+            // get meta data from container file
+            if (\file_exists($f)) {
+                if (\strlen(\file_get_contents($f)) < 42) {
+                    return null;
+                }
+                $meta = json_decode(\file_get_contents($f), true);
+            } else {
+                return [
+                    "valid" => false,
+                ];
+            }
         } else {
-            return null;
+            return [
+                "valid" => false,
+            ];
         }
 
         $result = [
             "container" => $container,
-            "key" => $key,
             "meta" => $meta,
             "valid" => true,
         ];
