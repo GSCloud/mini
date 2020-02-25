@@ -5,15 +5,20 @@
 <title>{{#LOCALHOST}}LOCAL: {{/LOCALHOST}}{{ l.title }}</title>
 
 <meta http-equiv="x-ua-compatible" content="IE=edge">
+
 <meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}{{^l.author}}Fred Brooker{{/l.author}}">
 <meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}{{^l.description}}Tesseract MINI{{/l.description}}">
+<meta name="keywords" content="{{#l.keywords}}{{ l.keywords }}{{/l.keywords}}">
+
 <meta name="format-detection" content="address=no">
 <meta name="format-detection" content="date=no">
 <meta name="format-detection" content="email=no">
 <meta name="format-detection" content="telephone=no">
-<meta name="generator" content="Tesseract 1.6.{{ REVISIONS }}">
+
+<meta name="generator" content="Tesseract 1.9.{{ REVISIONS }}">
+
 <meta name="theme-color" content="{{#theme_color}}{{ theme_color }}{{/theme_color}}{{^theme_color}}#fff{{/theme_color}}">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 
 {{#base}}<base href="{{ base }}">{{/base}}
 {{#LOCALHOST}}{{#canonical_url}}<link rel="canonical" href="{{ base }}{{ request_path }}">{{/canonical_url}}{{/LOCALHOST}}
@@ -63,7 +68,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
       }
       catch(e) {}
     };
-    console.log("Delayed functions called: %s", l);
+    console.log("Delayed fn(s): %s", l);
   });
 
 </script>
@@ -72,9 +77,9 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 
 </head>
 <body>
-  <style>
+  <style type="text/css">
+    /* <!-- toggle # to debug --> */
     {{>body_css}}
-    /* remove # to debug */
     {{>#body_css_debug}}
   </style>
   {{>body_content}}

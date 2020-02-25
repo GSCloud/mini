@@ -5,15 +5,19 @@
 <meta http-equiv="x-ua-compatible" content="IE=edge">
 <title>{{ l.title }} PUBLIC REST API</title>
 
-<meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}{{^l.author}}Fred Brooker{{/l.author}}">
-<meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}{{^l.description}}Tesseract MINI{{/l.description}}">
+<meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}">
+<meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}">
+<meta name="keywords" content="{{#l.keywords}}{{ l.keywords }}{{/l.keywords}}">
+
 <meta name="format-detection" content="address=no">
 <meta name="format-detection" content="date=no">
 <meta name="format-detection" content="email=no">
 <meta name="format-detection" content="telephone=no">
-<meta name="generator" content="Tesseract 1.6.{{ REVISIONS }}">
+
+<meta name="generator" content="Tesseract 1.9.{{ REVISIONS }}">
+
 <meta name="theme-color" content="{{#theme_color}}{{ theme_color }}{{/theme_color}}{{^theme_color}}#fff{{/theme_color}}">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 
 <script>
 if (!window.JSON) document.write('<script src="/js/json2.min.js"><\/script>');

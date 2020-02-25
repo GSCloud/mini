@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" style="z-index:10000">
   <div class="float-right">
     <b>{{ user.name }}</b>
     <br>
@@ -6,7 +6,7 @@
     <br>
     <a href="/logout">
       {{ l.a_login }}
-      <i class="material-icons md-48">cloud</i><br><b>LOGOUT</b></a><br>
+      <i class="material-icons md-48 bla">cloud</i><br><b class="bla">LOGOUT</b></a><br>
     {{#LOCALHOST}}
     {{#local_goauth_redirect}}
     <a href="{{ local_goauth_redirect }}?relogin">
