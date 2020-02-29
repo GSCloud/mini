@@ -26,19 +26,25 @@ class ApiPresenter extends APresenter
     //const USE_CACHE = false;
 
     /** @var string API cache profile */
-    const API_CACHE = "tenminutes";
+    const API_CACHE = 'tenminutes';
 
     /** @var string API access time limit */
     const ACCESS_TIME_LIMIT = 3599;
 
     /** @var string podcasts CSV */
-    const PODCASTS_CSV = "podcasts.csv";
+    const PODCASTS_CSV = 'podcasts.csv';
+
+    /** @var string feed addendum */
+    const FEED_ADDENDUM = 'listennotes-addendum02.txt';
+
+    /** @var string LN redirect prefix */
+    const LN_REDIR_PREFIX = 'https://www.listennotes.com/c/r/';
 
     /** @var string episodes path */
-    const EPISODES_PATH = ROOT . "/XML/";
+    const EPISODES_PATH = ROOT . '/XML/';
 
     /** @var string episodes file extension */
-    const EPIS_EXT = ".epis.json";
+    const EPIS_EXT = '.epis.json';
 
     /** @var string private API key salt */
     const PRIVATE_KEY_PEPPER = "2BH*L(H+]*H%&T)j-MqB._8'%_6:;UAu";
@@ -53,13 +59,13 @@ class ApiPresenter extends APresenter
     const MAX_API_HITS = 1000;
 
     /** @var string CSV headers */
-    const CSV_HEADERS = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,episodes,episodes_version,xmlid,uid";
+    const CSV_HEADERS = 'title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,pubDate,lastBuildDate,ttl,managingEditor,docs,rssfeed,link,episodes,episodes_version,xmlid,uid';
 
     /** @var string CSV headers for episodes */
-    const CSV_HEADERS_EPIS = "title,uid,episodes,episodes_version";
+    const CSV_HEADERS_EPIS = 'title,uid,episodes,episodes_version';
 
     /** @var string CSV headers for checksum hashing */
-    const CSV_HEADERS_CHECKSUM = "title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,managingEditor,rssfeed,link";
+    const CSV_HEADERS_CHECKSUM = 'title,description,author,copyright,itunes_author,itunes_category,itunes_explicit,itunes_image,itunes_keywords,itunes_owner,itunes_subtitle,itunes_summary,itunes_type,generator,managingEditor,rssfeed,link';
 
     /**
      * Main controller
@@ -71,7 +77,7 @@ class ApiPresenter extends APresenter
         $match = $this->getMatch();
         $view = $this->getView();
 
-        setlocale(LC_ALL, "cs_CZ.utf8");
+        setlocale(LC_ALL, 'cs_CZ.utf8');
 
         // check API keys @TODO!!!
         $err = 0;
@@ -105,7 +111,7 @@ class ApiPresenter extends APresenter
 
         // user authorization
         $d["user"] = $this->getCurrentUser() ?? [];
-        $d["admin"] = $g = $this->getUserGroup() ?? "";
+        $d["admin"] = $g = $this->getUserGroup() ?? '';
         if ($g) {
             $d["admin_group_${g}"] = true;
         }
@@ -172,7 +178,7 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras);
                 break;
 
-            case "GetKeys":
+            case "GetKeys": // IMPLEMENTED
                 if (!$d["user"]["id"]) {
                     // unauthorized user
                     return $this->writeJsonData(401, $extras);
@@ -260,8 +266,13 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "AddPodcast":
-                $data = $this->addPodcast();
+            case "AddPodcast": // IMPLEMENTED
+                if (!$d["user"]["id"]) {
+                    // unauthorized user
+                    return $this->writeJsonData(401, $extras);
+                }
+                $feed = $_POST["url"] ?? null;
+                $data = $this->addPodcast($feed);
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -280,12 +291,13 @@ class ApiPresenter extends APresenter
                 return $this->writeJsonData($data, $extras, JSON_FORCE_OBJECT);
                 break;
 
-            case "CreateKey":
+            case "CreateKey": // IMPLEMENTED
                 if (!$d["user"]["id"]) {
                     // unauthorized user
                     return $this->writeJsonData(401, $extras);
                 }
-                $data = $this->createKey();
+                $name = $_POST["name"] ?? null;
+                $data = $this->createKey($name, $d);
                 if (is_null($data)) {
                     sleep(2);
                     return $this->writeJsonData(404, $extras);
@@ -373,7 +385,7 @@ class ApiPresenter extends APresenter
         $count = count($records["uid"]);
 
         // CRC columns
-        $columns = explode(",", self::CSV_HEADERS_CHECKSUM);
+        $columns = explode(',', self::CSV_HEADERS_CHECKSUM);
 
         // cycle through all records
         $i = 0;
@@ -443,7 +455,7 @@ class ApiPresenter extends APresenter
         if (!strlen($list)) {
             return null;
         }
-        $list = explode(",", (string) $list);
+        $list = explode(',', (string) $list);
         $list = array_map("trim", $list);
         $list = array_map("intval", $list);
         $list = array_map("abs", $list);
@@ -463,7 +475,7 @@ class ApiPresenter extends APresenter
 
         $count = 0;
         $records = [];
-        $columns = explode(",", self::CSV_HEADERS);
+        $columns = explode(',', self::CSV_HEADERS);
 
         // traverse the list of IDs
         foreach ($list as $id) {
@@ -502,7 +514,7 @@ class ApiPresenter extends APresenter
         if (!strlen($list)) {
             return null;
         }
-        $list = explode(",", (string) $list);
+        $list = explode(',', (string) $list);
         $list = array_map("trim", $list);
         $list = array_map("intval", $list);
         $list = array_map("abs", $list);
@@ -522,7 +534,7 @@ class ApiPresenter extends APresenter
 
         $count = 0;
         $records = [];
-        $columns = explode(",", self::CSV_HEADERS_EPIS);
+        $columns = explode(',', self::CSV_HEADERS_EPIS);
 
         // traverse the list of IDs
         foreach ($list as $id) {
@@ -566,7 +578,7 @@ class ApiPresenter extends APresenter
         if (!strlen($list)) {
             return null;
         }
-        $list = explode(",", (string) $list);
+        $list = explode(',', (string) $list);
         $list = array_map("trim", $list);
         $list = array_filter($list, function ($value) {
             return preg_match("/^([a-f0-9]{64})$/", $value) === 1; // validate SHA-256 hash
@@ -585,7 +597,7 @@ class ApiPresenter extends APresenter
 
         $count = 0;
         $records = [];
-        $columns = explode(",", self::CSV_HEADERS);
+        $columns = explode(',', self::CSV_HEADERS);
         $ids = array_flip($csv["uid"]);
 
         // traverse the list of UIDs
@@ -626,7 +638,7 @@ class ApiPresenter extends APresenter
         if (!strlen($list)) {
             return null;
         }
-        $list = explode(",", (string) $list);
+        $list = explode(',', (string) $list);
         $list = array_map("trim", $list);
         $list = array_filter($list, function ($value) {
             return preg_match("/^([a-f0-9]{64})$/", $value) === 1; // validate SHA-256 hash
@@ -645,7 +657,7 @@ class ApiPresenter extends APresenter
 
         $count = 0;
         $records = [];
-        $columns = explode(",", self::CSV_HEADERS_EPIS);
+        $columns = explode(',', self::CSV_HEADERS_EPIS);
         $ids = array_flip($csv["uid"]);
 
         // traverse the list of UIDs
@@ -714,6 +726,7 @@ class ApiPresenter extends APresenter
             "email" => $email,
             "ip" => $this->getIP(),
             "key" => $key,
+            "name" => $email,
             "salt" => $salt,
             "timestamp" => \time(),
             "type" => "user",
@@ -731,7 +744,77 @@ class ApiPresenter extends APresenter
         }
 
         $result = [
+            "added" => true,
             "key" => $key,
+            "message" => "Key was created.",
+        ];
+        return $result;
+    }
+
+    /**
+     * Create application API key
+     *
+     * @param string $name app name
+     * @param array $d user data
+     * @return string
+     */
+    private function createKey($name = null, $d = null)
+    {
+        if (\is_null($name)) {
+            return null;
+        }
+        if (\is_null($d) || !isset($d["user"]["email"])) {
+            return null;
+        }
+        $name = trim($name);
+        if (empty($name)) {
+            return null;
+        }
+
+        // prepare key data
+        $name = strtolower($name);
+        $email = \strtolower($d["user"]["email"]);
+        $container = hash("sha256", $name);
+        $salt = hash("sha256", random_bytes(16));
+
+        // delete old API key
+        if ($x = @\file_get_contents(DATA . "/${container}_meta.key")) {
+            // extract JSON META data
+            $arr = @json_decode($x, true);
+            if (!\is_array($arr)) {
+                return null;
+            }
+            // delete private key file
+            @\unlink(DATA . "/" . $arr["key"] . "_app.key");
+        }
+
+        // generate new API key
+        $key = hash("sha256", self::PRIVATE_KEY_PEPPER . $name . $salt);
+        $meta = json_encode([
+            "email" => $email,
+            "ip" => $this->getIP(),
+            "key" => $key,
+            "name" => $name,
+            "salt" => $salt,
+            "timestamp" => \time(),
+            "type" => "app",
+            "uid" => $this->getUID(),
+        ]);
+
+        // write META data
+        if (@\file_put_contents(DATA . "/${container}_meta.key", $meta, LOCK_EX) === false) {
+            return null;
+        }
+
+        // write key data
+        if (@\file_put_contents(DATA . "/${key}_app.key", $container, LOCK_EX) === false) {
+            return null;
+        }
+
+        $result = [
+            "added" => true,
+            "key" => $key,
+            "message" => "Key was created.",
         ];
         return $result;
     }
@@ -743,11 +826,9 @@ class ApiPresenter extends APresenter
      */
     private function getKeys()
     {
-        if (\is_null($d) || !isset($d["user"]["email"])) {
-            return null;
-        }
-
         $result = [
+            "users" => $this->getUserKeys(),
+            "apps" => $this->getAppKeys(),
         ];
         return $result;
     }
@@ -765,14 +846,19 @@ class ApiPresenter extends APresenter
         }
 
         // hexadecimal & SHA-256 length only
-        $key = strtolower(preg_replace("/[^a-fA-F0-9]+/", "", trim($key)));
+        $key = strtolower(preg_replace("/[^a-fA-F0-9]+/", '', trim($key)));
         if (strlen($key) != 64) {
             return null;
         }
 
         // check key file
         $meta = null;
-        $f = DATA . "/${key}_private.key";
+        $f = DATA . "/${key}_private.key"; // user key
+        if (!\file_exists($f)) {
+            $f = DATA . "/${key}_app.key"; // app key
+        }
+
+        // check container file
         if (\file_exists($f)) {
             $container = trim(@\file_get_contents($f));
             if (\strlen($container) != 64) { // invalid containter id
@@ -784,13 +870,13 @@ class ApiPresenter extends APresenter
                 if (\strlen(\file_get_contents($f)) < 42) {
                     return null;
                 }
-                $meta = json_decode(\file_get_contents($f), true);
-            } else {
+                $meta = json_decode(\file_get_contents($f), true); // @todo test JSON for validity!!!
+            } else { // invalid meta file
                 return [
                     "valid" => false,
                 ];
             }
-        } else {
+        } else { // invalid containter
             return [
                 "valid" => false,
             ];
@@ -801,6 +887,7 @@ class ApiPresenter extends APresenter
             "meta" => $meta,
             "valid" => true,
         ];
+        sleep(1);
         return $result;
     }
 
@@ -838,7 +925,7 @@ class ApiPresenter extends APresenter
                 "title" => $potd_name,
                 "link" => $potd_url,
                 "rss" => $potd_rss,
-                "img" => str_replace("http://", "https://", $potd_img),
+                "img" => str_replace('http://', 'https://', $potd_img),
             ],
             "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
         ];
@@ -863,17 +950,108 @@ class ApiPresenter extends APresenter
         }
         $timestamp = file_exists(DATA . "/${f}") ? @filemtime(DATA . "/${f}") : null;
 
-        chdir(DATA);
         $result = [
             "timestamp" => $timestamp,
             "podcasts_count" => count($records["uid"]),
-            "podcasts_dbs" => \array_filter(\glob("podcasts-????-??-??.csv"), "is_file"),
+            "databases" => $this->getDatabases(),
             "user_id" => $d["user"]["id"],
             "user_email" => $d["user"]["email"],
             "user_name" => $d["user"]["name"],
             "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
         ];
         return $result;
+    }
+
+    /**
+     * Add podcast
+     *
+     * @param string $feed URL
+     * @return void
+     */
+    private function addPodcast($feed = null)
+    {
+        if (\is_null($feed)) {
+            return null;
+        }
+        $feed = \strtolower(trim($feed));
+        if (\strpos($feed, self::LN_REDIR_PREFIX) === false) {
+            $result = [
+                "added" => false,
+                "message" => "Malformed URL received. Operation failed.",
+                "url" => $feed,
+            ];
+            return $result;
+        }
+
+        // check XMLID
+        $xmlid = \str_replace(self::LN_REDIR_PREFIX, '', $feed);
+        if (strlen($xmlid) > 32) {
+            $result = [
+                "added" => false,
+                "message" => "Incorrect XMLID. Operation failed.",
+                "url" => $feed,
+            ];
+            return $result;
+        }
+        $f = self::PODCASTS_CSV;
+        $records = $this->readCsv($f);
+        if (!\is_null($records)) {
+            if (\in_array($xmlid, $records["xmlid"])) {
+                $result = [
+                    "added" => false,
+                    "message" => "Duplicate entry.",
+                    "url" => $feed,
+                ];
+                return $result;
+            }
+        }
+
+        \file_put_contents(DATA . "/" . self::FEED_ADDENDUM, $feed . "\n", FILE_APPEND | LOCK_EX);
+
+        $result = [
+            "added" => true,
+            "message" => "URL was added for the next feeding cycle.",
+            "url" => $feed,
+        ];
+        return $result;
+    }
+
+    /* Get databases
+     *
+     * @return array list of CSV files
+     */
+    private function getDatabases()
+    {
+        chdir(DATA); // IMPORTANT!
+        return \array_filter(\glob("podcasts-????-??-??.csv"), "is_file");
+    }
+
+    /* Get user keys
+     *
+     * @return array list of user keys
+     */
+    private function getUserKeys()
+    {
+        chdir(DATA); // IMPORTANT!
+        $arr = \array_filter(\glob("*_private.key"), "is_file");
+        array_walk($arr, function (&$value, &$key) {
+            $value = \substr($value, 0, 16);
+        });
+        return $arr;
+    }
+
+    /* Get app keys
+     *
+     * @return array list of app keys
+     */
+    private function getAppKeys()
+    {
+        chdir(DATA); // IMPORTANT!
+        $arr = \array_filter(\glob("*_app.key"), "is_file");
+        array_walk($arr, function (&$value, &$key) {
+            $value = \substr($value, 0, 64);
+        });
+        return $arr;
     }
 
     /**
@@ -909,7 +1087,7 @@ class ApiPresenter extends APresenter
         }
 
         // CSV columns
-        $columns = explode(",", self::CSV_HEADERS);
+        $columns = explode(',', self::CSV_HEADERS);
 
         $data = [];
         foreach ($columns as $col) {

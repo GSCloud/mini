@@ -27,16 +27,18 @@ class LoginPresenter extends APresenter
         $this->checkRateLimit()->setHeaderHtml();
 
         $cfg = $this->getCfg();
-        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+
         // set return URI
+        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
         $uri = "/${nonce}";
         if ($refhost ?? null) {
             if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
-                $uri = $_SERVER["HTTP_REFERER"];
+                $uri = $_SERVER["HTTP_REFERER"].$nonce;
             }
         }
         \setcookie("return_uri", $uri);
+
         try {
             $provider = new \League\OAuth2\Client\Provider\Google([
                 // set OAuth 2.0 credentials
@@ -85,6 +87,7 @@ class LoginPresenter extends APresenter
                     "id" => $ownerDetails->getId(),
                     "name" => $ownerDetails->getName(),
                 ]);
+
                 // debugging
 /*
                 dump("NEW IDENTITY:");
@@ -104,12 +107,14 @@ class LoginPresenter extends APresenter
                 if (strlen($ownerDetails->getEmail())) {
                     \setcookie("login_hint", $ownerDetails->getEmail() ?? "", time() + 86400 * 31, "/", DOMAIN);
                 }
+
                 // set correct URL location
+                $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
                 if (isset($_COOKIE["return_uri"])) {
-                    $c = $_COOKIE["return_uri"];
+                    $cook = $_COOKIE["return_uri"];
                     $this->clearCookie("return_uri");
                     $this->clearCookie("oauth2state");
-                    $this->setLocation($c);
+                    $this->setLocation("${cook}");
                 } else {
                     $this->setLocation("/${nonce}");
                 }

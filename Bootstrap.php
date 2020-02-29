@@ -117,6 +117,8 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
 $base58 = new \Tuupola\Base58;
 $data = (array) $cfg;
 $data["cfg"] = $cfg;
+$data["GET"] = array_map("htmlspecialchars", $_GET);
+$data["POST"] = array_map("htmlspecialchars", $_POST);
 $data["VERSION"] = $version = trim(@file_get_contents(ROOT . "/VERSION") ?? "", "\r\n");
 $data["VERSION_DATE"] = date("j. n. Y", @filemtime(ROOT . "/VERSION") ?? time());
 $data["REVISIONS"] = (int) trim(@file_get_contents(ROOT . "/REVISIONS") ?? "0", "\r\n");
