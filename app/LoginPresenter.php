@@ -29,12 +29,14 @@ class LoginPresenter extends APresenter
         $cfg = $this->getCfg();
 
         // set return URI
-        $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+        //$nonce = "nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
-        $uri = "/${nonce}";
-        if ($refhost ?? null) {
+        //$uri = "/${nonce}";
+        $uri = "/";
+        if ($refhost) {
             if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
-                $uri = $_SERVER["HTTP_REFERER"].$nonce;
+                //$uri = $_SERVER["HTTP_REFERER"].$nonce;
+                $uri = $_SERVER["HTTP_REFERER"];
             }
         }
         \setcookie("return_uri", $uri);
@@ -109,14 +111,15 @@ class LoginPresenter extends APresenter
                 }
 
                 // set correct URL location
-                $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+                $nonce = "nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
                 if (isset($_COOKIE["return_uri"])) {
-                    $cook = $_COOKIE["return_uri"];
+                    $c = $_COOKIE["return_uri"];
                     $this->clearCookie("return_uri");
                     $this->clearCookie("oauth2state");
-                    $this->setLocation("${cook}");
+                    //$this->setLocation("${c}&${nonce}");
+                    $this->setLocation("${c}");
                 } else {
-                    $this->setLocation("/${nonce}");
+                    $this->setLocation("/?${nonce}");
                 }
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();
@@ -128,7 +131,7 @@ class LoginPresenter extends APresenter
         $this->clearCookie("login_hint");
         $this->clearCookie("oauth2state");
         $this->clearcookie("return_uri");
-        echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
+        echo "<html><body><center><h1>AUTHENTICATION ERROR 😐</h1>";
         echo '<h2><a href="/login?relogin">RELOAD ↻</a></h2><hr>';
         echo join("<br>", $errors);
         exit;
