@@ -122,7 +122,7 @@ class ApiPresenter extends APresenter
             case "GetPublicStatus": // IMPLEMENTED
                 $data = $this->getPublicStatus();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -136,7 +136,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->getPrivateStatus($d); // user data
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -146,7 +146,7 @@ class ApiPresenter extends APresenter
             case "GetWordCloud":
                 $data = $this->getWordCloud();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -160,7 +160,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->getKey($d);
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -171,7 +171,7 @@ class ApiPresenter extends APresenter
                 $key = $match["params"]["key"] ?? null;
                 $data = $this->checkKey($key); // user key
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -185,7 +185,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->getKeys();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -196,7 +196,7 @@ class ApiPresenter extends APresenter
                 $list = $match["params"]["list"] ?? null;
                 $data = $this->getPodcasts($list); // podcasts list
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -207,7 +207,7 @@ class ApiPresenter extends APresenter
                 $list = $match["params"]["list"] ?? null;
                 $data = $this->getEpisodes($list); // podcasts list
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -218,7 +218,7 @@ class ApiPresenter extends APresenter
                 $list = $match["params"]["list"] ?? null;
                 $data = $this->getPodcastsByUid($list); // podcasts list, UIDs
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -229,7 +229,7 @@ class ApiPresenter extends APresenter
                 $list = $match["params"]["list"] ?? null;
                 $data = $this->getEpisodesByUid($list); // podcasts list, UIDs
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -243,7 +243,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->getPodcastsVersions();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 Cache::write($view, $data, self::API_CACHE);
@@ -258,7 +258,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->getEpisodesVersions();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 Cache::write($view, $data, self::API_CACHE);
@@ -274,7 +274,7 @@ class ApiPresenter extends APresenter
                 $feed = $_POST["url"] ?? null;
                 $data = $this->addPodcast($feed);
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -284,7 +284,7 @@ class ApiPresenter extends APresenter
             case "DeletePodcasts":
                 $data = $this->deletePodcasts();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -299,7 +299,7 @@ class ApiPresenter extends APresenter
                 $name = $_POST["name"] ?? null;
                 $data = $this->createKey($name, $d);
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -313,7 +313,7 @@ class ApiPresenter extends APresenter
                 }
                 $data = $this->deleteKey();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -323,7 +323,7 @@ class ApiPresenter extends APresenter
             case "AddTag":
                 $data = $this->addTag();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -333,7 +333,7 @@ class ApiPresenter extends APresenter
             case "GetTagCloud":
                 $data = $this->getTagCloud();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -343,7 +343,7 @@ class ApiPresenter extends APresenter
             case "DeleteTag":
                 $data = $this->deleteTag();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -353,7 +353,7 @@ class ApiPresenter extends APresenter
             case "DeleteTags":
                 $data = $this->deleteTags();
                 if (is_null($data)) {
-                    sleep(2);
+                    sleep(3);
                     return $this->writeJsonData(404, $extras);
                 }
                 $extras["keys"] = array_keys($data);
@@ -361,7 +361,7 @@ class ApiPresenter extends APresenter
                 break;
 
             default:
-                sleep(2);
+                sleep(3);
                 return ErrorPresenter::getInstance()->process(404);
         }
         return $this;
@@ -842,12 +842,14 @@ class ApiPresenter extends APresenter
     private function checkKey($key = null)
     {
         if (\is_null($key)) {
+            sleep(3);
             return null;
         }
 
         // hexadecimal & SHA-256 length only
         $key = strtolower(preg_replace("/[^a-fA-F0-9]+/", '', trim($key)));
         if (strlen($key) != 64) {
+            sleep(3);
             return null;
         }
 
@@ -862,21 +864,25 @@ class ApiPresenter extends APresenter
         if (\file_exists($f)) {
             $container = trim(@\file_get_contents($f));
             if (\strlen($container) != 64) { // invalid containter id
+                sleep(3);
                 return null;
             }
             $f = DATA . "/${container}_meta.key";
             // get meta data from container file
             if (\file_exists($f)) {
                 if (\strlen(\file_get_contents($f)) < 42) {
+                    sleep(3);
                     return null;
                 }
                 $meta = json_decode(\file_get_contents($f), true); // @todo test JSON for validity!!!
             } else { // invalid meta file
+                sleep(3);
                 return [
                     "valid" => false,
                 ];
             }
         } else { // invalid containter
+            sleep(3);
             return [
                 "valid" => false,
             ];
@@ -887,7 +893,6 @@ class ApiPresenter extends APresenter
             "meta" => $meta,
             "valid" => true,
         ];
-        sleep(1);
         return $result;
     }
 
@@ -993,6 +998,8 @@ class ApiPresenter extends APresenter
             ];
             return $result;
         }
+
+        // test duplicity
         $f = self::PODCASTS_CSV;
         $records = $this->readCsv($f);
         if (!\is_null($records)) {
@@ -1006,6 +1013,7 @@ class ApiPresenter extends APresenter
             }
         }
 
+        // save to feed file
         \file_put_contents(DATA . "/" . self::FEED_ADDENDUM, $feed . "\n", FILE_APPEND | LOCK_EX);
 
         $result = [
