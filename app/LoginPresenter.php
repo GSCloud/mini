@@ -29,13 +29,10 @@ class LoginPresenter extends APresenter
         $cfg = $this->getCfg();
 
         // set return URI
-        //$nonce = "nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
-        //$uri = "/${nonce}";
         $uri = "/";
         if ($refhost) {
             if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
-                //$uri = $_SERVER["HTTP_REFERER"].$nonce;
                 $uri = $_SERVER["HTTP_REFERER"];
             }
         }
@@ -91,13 +88,13 @@ class LoginPresenter extends APresenter
                 ]);
 
                 // debugging
-/*
+                /*
                 dump("NEW IDENTITY:");
                 dump($this->getIdentity());
                 dump("OAuth IDENTITY:");
                 dump($ownerDetails);
                 exit;
-*/
+                 */
                 if ($this->getUserGroup() == "admin") {
                     // set Tracy debug cookie
                     if ($this->getCfg("DEBUG_COOKIE")) {
@@ -116,8 +113,7 @@ class LoginPresenter extends APresenter
                     $c = $_COOKIE["return_uri"];
                     $this->clearCookie("return_uri");
                     $this->clearCookie("oauth2state");
-                    //$this->setLocation("${c}&${nonce}");
-                    $this->setLocation("${c}");
+                    $this->setLocation("${c}&${nonce}");
                 } else {
                     $this->setLocation("/?${nonce}");
                 }
@@ -131,9 +127,10 @@ class LoginPresenter extends APresenter
         $this->clearCookie("login_hint");
         $this->clearCookie("oauth2state");
         $this->clearcookie("return_uri");
-        echo "<html><body><center><h1>AUTHENTICATION ERROR 😐</h1>";
-        echo '<h2><a href="/login?relogin">RELOAD ↻</a></h2><hr>';
-        echo join("<br>", $errors);
+        $nonce = "nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+        echo "<html><body><center><h1>💀 AUTHENTICATION ERROR</h1>";
+        echo '<h2><a href="/login?relogin&' . $nonce . '">RELOAD ↻</a></h2>';
+        //echo join("<br>", $errors);
         exit;
     }
 }

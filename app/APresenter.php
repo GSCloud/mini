@@ -945,7 +945,7 @@ abstract class APresenter implements IPresenter
         if (empty($location)) {
             $location = "/?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         }
-        header("Location: $location", true, ($code > 300) ? $code : 303);
+        header("Location: $location", true, $code);
         exit;
     }
 
@@ -955,7 +955,8 @@ abstract class APresenter implements IPresenter
     public function logout()
     {
         header('Clear-Site-Data: "cookies"');
-        $this->setIdentity([])->clearCookie("identity")->setLocation();
+        $this->clearCookie("identity");
+        $this->setLocation();
         exit;
     }
 

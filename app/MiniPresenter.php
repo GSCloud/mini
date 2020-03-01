@@ -37,7 +37,7 @@ class MiniPresenter extends APresenter
         $use_cache = $data["use_cache"] ?? false;
         $use_cache = false;
 
-        $cache_key = strtolower(join([$data["host"], $data["request_path"]], "_"));
+        $cache_key = strtolower(join("_", [$data["host"], $data["request_path"]]));
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
             $output .= "\n<script>console.log('*** page content cached');</script>";
             return $this->setData("output", $output);
