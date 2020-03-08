@@ -739,7 +739,7 @@ abstract class APresenter implements IPresenter
     /**
      * Presenter getter
      *
-     * @return mixed Rresenter data array
+     * @return mixed Presenter data array
      */
     public function getPresenter()
     {
