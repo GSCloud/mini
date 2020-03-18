@@ -61,11 +61,11 @@ class CorePresenter extends APresenter
                 return $this->setData("output", $output);
                 break;
 
-            // api
+            // API
             case "api":
                 $this->setHeaderHTML();
                 $map = [];
-                foreach ($presenter as $p) {
+                foreach ($presenter as $fn => $p) {
                     if (isset($p["api"]) && $p["api"]) {
                         $info = $p["api_info"] ?? "";
                         StringFilters::convert_eol_to_br($info);
@@ -83,10 +83,12 @@ class CorePresenter extends APresenter
                             "finished" => $p["finished"] ?? false,
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
                             "key" => $p["use_key"] ?? false,
-                            "linkit" => !(\strpos($p["path"], "[") ?? false),
+                            "linkit" => (\stripos($p["path"], "get") && !(\strpos($p["path"], "[")) ?? false),
                             "method" => \strtoupper($p["method"]),
                             "path" => trim($p["path"], "/ \t\n\r\0\x0B"),
                             "private" => $p["private"] ?? false,
+                            "usage" => ApiPresenter::getCallUsage($fn),
+                            "fn" => $fn,
                         ];
                     }
                 }

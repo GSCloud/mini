@@ -68,9 +68,9 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
 }
-li{padding:1em}
-.filtered{font-size:1.2em!important;background-color:#ddd}
-.nonfiltered{font-size:0.8em}
+li {padding:1em}
+.filtered {font-size:1.2em!important;background-color:#ddd}
+.nonfiltered {font-size:0.8em}
 .b_public {color:#fff;background-color:#aaa}
 .b_private {color:blue;background-color:#ccc}
 .b_key {color:red;background-color:#ccc}
@@ -117,6 +117,9 @@ window.addEventListener('load', function() {
 </div>
 
 <div class="container">
+Use API key as URL parameter <strong>"?apikey=1234567890abcdef"</strong>.
+<br>
+<br>
 
   <ol>
 
@@ -129,9 +132,11 @@ window.addEventListener('load', function() {
       {{/linkit}}
 
       {{^linkit}}
-      <span style="color:brown"><b>{{ base }}{{ path }}</b></span>
+      <span style="color:blue"><strong>{{ base }}{{ path }}</strong></span>
       {{/linkit}}
       
+      <br>
+      fn: <strong>{{ fn }}</strong> usage: <strong>{{ usage }}</strong>
       <br>
 
       REST: <b>{{ method }}</b>&nbsp;&nbsp;
