@@ -9,13 +9,6 @@
 
 namespace GSC;
 
-use Cake\Cache\Cache;
-use League\Csv\Reader;
-use League\Csv\Statement;
-use RedisClient\RedisClient;
-use Symfony\Component\Lock\Factory;
-use Symfony\Component\Lock\Store\FlockStore;
-
 /**
  * API Presenter
  */
@@ -51,6 +44,10 @@ class ApiPresenter extends APresenter
         }
 
         $fn = trim($fn);
+        if (!\file_exists(DATA . self::OPLOG)) {
+            return null;
+        }
+
         $l = @\file(DATA . self::OPLOG);
         if (!$l) {
             return null;
