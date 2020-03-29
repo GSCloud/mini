@@ -11,8 +11,10 @@
 use Nette\Neon\Neon;
 use Tracy\Debugger;
 
+/** @const Global timer start */
+define("TESSERACT_START", microtime(true));
+
 // START
-list($usec, $sec) = explode(" ", microtime());
 ob_start();
 error_reporting(E_ALL);
 @ini_set("auto_detect_line_endings", true);
@@ -20,10 +22,6 @@ error_reporting(E_ALL);
 @ini_set("display_errors", true);
 
 // CONSTANTS
-
-/** @const Global timer start */
-define("TESSERACT_START", ((float) $usec + (float) $sec));
-
 /** @const Bootstrap root folder */
 defined("ROOT") || define("ROOT", __DIR__);
 

@@ -36,8 +36,9 @@ Architecture:
 
 API calls examples:
 
-* **[/api/v1/GetCall1](/api/v1/GetCall1)**
-* **[/api/v1/GetCall2/someparameter](/api/v1/GetCall2/someparameter)**
+* **[API dashboard](/api)**
+* **[API call example #1](/api/v1/GetCall1)**
+* **[API call example #2](/api/v1/GetCall2/someparameter)**
 
 Execution flow:
 

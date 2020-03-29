@@ -29,6 +29,8 @@ class ApiPresenter extends APresenter
         $d = $this->getData();
         $match = $this->getMatch();
         $view = $this->getView();
+
+        return $this;
     }
 
     /**
@@ -45,14 +47,11 @@ class ApiPresenter extends APresenter
 
         $fn = trim($fn);
         if (!\file_exists(DATA . self::OPLOG)) {
-            return null;
+            return "-";
         }
-
-        $l = @\file(DATA . self::OPLOG);
-        if (!$l) {
-            return null;
+        if (!$l = @\file(DATA . self::OPLOG)) {
+            return "-";
         }
-
         $l = \array_filter($l, function ($value) use ($fn) {
             return \strpos($value, "fn:$fn");
         });
