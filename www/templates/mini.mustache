@@ -5,18 +5,14 @@
 <title>{{#LOCALHOST}}LOCAL: {{/LOCALHOST}}{{ l.title }}</title>
 
 <meta http-equiv="x-ua-compatible" content="IE=edge">
-
 <meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}{{^l.author}}Fred Brooker{{/l.author}}">
 <meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}{{^l.description}}Tesseract MINI{{/l.description}}">
 <meta name="keywords" content="{{#l.keywords}}{{ l.keywords }}{{/l.keywords}}">
-
 <meta name="format-detection" content="address=no">
 <meta name="format-detection" content="date=no">
 <meta name="format-detection" content="email=no">
 <meta name="format-detection" content="telephone=no">
-
 <meta name="generator" content="Tesseract 1.9.{{ REVISIONS }}">
-
 <meta name="theme-color" content="{{#theme_color}}{{ theme_color }}{{/theme_color}}{{^theme_color}}#fff{{/theme_color}}">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 
@@ -35,11 +31,12 @@ if (window.location != window.top.location) window.top.location.replace(window.l
 {{>head_html5shim}}
 {{>head_favicons}}
 
-<!-- feel free to replace or extend the jQuery library -->
+<!-- libraries -->
 <script src="/js/es5-shim.min.js"></script>
 <script src="/js/es6-shim.min.js"></script>
 <script src="/js/jquery-3.4.1.min.js"></script>
 
+<!-- manifest -->
 <link rel="manifest" href="/manifest.json">
 
 <style type="text/css">
@@ -48,7 +45,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}h1{font-size:2
 </style>
 
 <script>
-  'use strict';
+'use strict';
 
   window.GSC = {_fn:[]};
 

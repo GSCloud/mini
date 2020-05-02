@@ -1,40 +1,37 @@
-Tesseract MINI framework
-========================
+Tesseract MINI
+==============
 
-for building microsites and apps
---------------------------------
+building microsites and apps
+----------------------------
 
-* **PHP 7.3+ OOP**
-* **MVP** architectural pattern
-* **Progressive Web App** (PWA)
-* **CLI functions**
-* **Google OAuth 2.0** sign-in
-* **asynchronous client code** (Vanilla JS, jQuery)
-* **access limiter**
-* **advanced caching** and **assets versioning**, * **alpha** and **beta** versions
-* **API calls**
+* Pure **PHP OOP** 7.4+ via **Composer**,
+* **MVP** architecture,
+* installable **Progressive Web App**,
+* **CLI** support,
+* **Google OAuth 2.0** sign-in,
+* **asynchronous client code** (Vanilla JS, jQuery),
+* **access limiter**,
+* **caching**, assets **versioning** and **branching**,
+* built-in**REST API**,
+* **MIT** license.
 
 Components:
 
-* **CakePHP cache** library
-* **Halite** encrypted cookies
-* **Markdown** library
-* **NE-ON** library
-* **Nette Tracy** debugger
-* **Alto Router**
-* **monolog** logging
-* **mustache** templates
-* support for **Cloudflare**
-* support for **Google Cloud Platform**
-* support for **PHP Google Analytics**
+* **CakePHP** cache,
+* **Halite** encryption,
+* **NE-ON** config notation,
+* **Tracy** debugger,
+* **Alto** router,
+* **Monolog** logging,
+* **Mustache** templates.
 
 Architecture:
 
-* **Model** = multi-dimensional data array
-* **View** = mustache templates
-* **Presenter** = Singleton presenters extending abstract presenter
+* **Model** is a multi-dimensional array,
+* **View** are mustache templates,
+* **Presenter** are loadable classes extending abstract presenter.
 
-API calls examples:
+REST API calls examples:
 
 * **[API dashboard](/api)**
 * **[API call example #1](/api/v1/GetCall1)**
@@ -53,14 +50,15 @@ Configuration:
 * **config_private.neon** - private configuration
 * **app/router.neon** - routing table
 
-How to:
+Run:
 
-* **./INSTALL.sh** - installer
-* **./UPDATE.sh** - updater
-* **./cli.sh doctor** - installation doctor
-* **./cli.sh local** - local integration test
+* **./INSTALL.sh** for quick installer,
+* **./UPDATE.sh** to update the installation,
+* **./cli.sh doctor** for installation doctor,
+* **./cli.sh local** for local integration test.
 
-License: **MIT**
+---
 
-* app: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
-* git: **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
+Demo: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
+
+Repository:  **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**

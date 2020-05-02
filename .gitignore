@@ -27,4 +27,3 @@ package-lock.json
 vendor/
 www/cdn-assets
 
-!app/v1/data/krestni_jmena_cs.csv
