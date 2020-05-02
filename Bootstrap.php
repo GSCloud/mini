@@ -18,7 +18,7 @@ define("TESSERACT_START", microtime(true));
 ob_start();
 error_reporting(E_ALL);
 @ini_set("auto_detect_line_endings", true);
-@ini_set("default_socket_timeout", 15);
+@ini_set("default_socket_timeout", 9);
 @ini_set("display_errors", true);
 
 // CONSTANTS

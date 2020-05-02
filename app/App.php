@@ -22,8 +22,7 @@ defined("ROOT") || die($x);
 
 /** @const Cache prefix */
 defined("CACHEPREFIX") || define("CACHEPREFIX",
-    "cache_" . (string) ($cfg["app"] ?? hash("sha256", $cfg["canonical_url"]) ?? hash("sha256", $cfg["goauth_origin"]) ?? "unknownapp")
-    . "_");
+    "cache_" . (string) ($cfg["app"] ?? hash("sha256", $cfg["canonical_url"]) ?? hash("sha256", $cfg["goauth_origin"]) ?? "someapp") . "_");
 
 /** @const Domain name, extracted from $_SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
@@ -32,7 +31,7 @@ defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/"
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
 /** @const Project name, default: "TESSERACT" */
-defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSERACT"));
+defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSMINI"));
 
 /** @const Application name, default: "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
@@ -45,17 +44,24 @@ defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? nu
 
 /** @const Google Cloud Platform JSON authentication keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
-
-// check GCP keys
 if (GCP_KEYS && \file_exists(APP . GCP_KEYS)) {
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . GCP_KEYS);
 }
 
-// GOOGLE STACKDRIVER
+/**
+ * Stackdriver logger
+ *
+ * @param string $message
+ * @param mixed $severity (optional)
+ * @return void
+ */
 function logger($message, $severity = Logger::INFO)
 {
     if (empty($message) || is_null(GCP_PROJECTID) || is_null(GCP_KEYS)) {
         return;
+    }
+    if (ob_get_level()) {
+        ob_end_clean();
     }
     try {
         $logging = new LoggingClient([
@@ -72,40 +78,26 @@ function logger($message, $severity = Logger::INFO)
 // CACHING PROFILES
 $cache_profiles = array_replace([
     "apiconsume" => "+60 minutes", // for API access
-    "csv" => "+180 minutes", // storing CSV
+    "csv" => "+100 minutes", // storing CSV
     "day" => "+24 hours",
     "default" => "+5 minutes",
     "hour" => "+60 minutes",
     "limiter" => "+1 seconds", // access limiter
     "minute" => "+60 seconds",
-    "page" => "+3 minutes", // public web page
+    "page" => "+3 minutes", // public web page, user not logged
     "second" => "+1 seconds",
     "tenminutes" => "+10 minutes",
     "tenseconds" => "+10 seconds",
 ],
     (array) ($cfg["cache_profiles"] ?? [])
 );
-
 foreach ($cache_profiles as $k => $v) {
-    // file fallback
-    Cache::setConfig("file_{$k}", [
+    Cache::setConfig($k, [
         "className" => "File",
         "duration" => $v,
         "lock" => true,
         "path" => CACHE,
         "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
-    ]);
-    // Redis cache
-    Cache::setConfig($k, [
-        "className" => "Redis",
-        "database" => $cfg["redis_database"] ?? 0,
-        "duration" => $v,
-        "host" => $cfg["redis_host"] ?? "127.0.0.1",
-        "persistent" => $cfg["redis_persistent"] ?? false,
-        "port" => $cfg["redis_port"] ?? 6377, // SPECIAL PORT 6377 !!!
-        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
-        "timeout" => $cfg["redis_timeout"] ?? 0.1,
-        'fallback' => "file_{$k}", // cache fallback profile
     ]);
 }
 
@@ -126,19 +118,19 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
     $multisite_profiles["default"][] = $auth_domain;
 }
 
-// DATA
+// DATA POPULATION
 $data["cache_profiles"] = $cache_profiles;
 $data["multisite_names"] = $multisite_names;
 $data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTING CONFIGURATION
-$routes = $cfg["routes"] ?? [ // configuration can override the defaults
+$router = [];
+$routes = $cfg["routes"] ?? [ // configuration can override defaults
     "router_defaults.neon",
     "router_admin.neon",
     "router.neon",
 ];
-$router = [];
 foreach ($routes as $r) {
     $r = APP . "/${r}";
     if (($content = @file_get_contents($r)) === false) {
@@ -147,7 +139,7 @@ foreach ($routes as $r) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Router: $r";
+        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Router: <b>$r</b>";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
@@ -166,19 +158,19 @@ foreach ($router as $k => $v) {
     $presenter[$k] = $router[$k];
 }
 
-// URL MAPPINGS
+// ROUTER MAPPINGS
 $alto = new \AltoRouter();
 foreach ($presenter as $k => $v) {
     if (!isset($v["path"])) { // skip invalid presenters
         continue;
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
-    if (substr($v["path"], -1) != "/") { // map extras with slash ending!
+    if (substr($v["path"], -1) != "/") { // map slash endings
         $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_slash");
     }
 }
 
-// DATA
+// DATA POPULATION
 $data["presenter"] = $presenter;
 $data["router"] = $router;
 
@@ -199,7 +191,7 @@ if (CLI) {
 $match = $alto->match();
 $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 
-// DATA
+// DATA POPULATION
 $data["match"] = $match;
 $data["view"] = $view;
 
@@ -260,21 +252,21 @@ $data = $app->getData();
 // ANALYTICS DATA
 $events = null;
 $data = $app->getData();
-$data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "");
+$data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
 $data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUNNING") * 1000, 2);
 $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESSING") * 1000, 2);
 
 // FINAL HEADERS
 header("X-Country: $country");
-header("X-Runtime: $time1 msec.");
-header("X-Processing: $time2 msec.");
+header("X-Runtime: $time1 ms");
+header("X-Processing: $time2 ms");
 
 // ANALYTICS
 if (method_exists($app, "SendAnalytics")) {
     $app->setData($data)->SendAnalytics();
 }
 
-// OUTPUT
+// DATA OUTPUT
 echo $data["output"] ?? "";
 
 // DEBUG

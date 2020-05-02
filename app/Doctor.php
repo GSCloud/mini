@@ -106,7 +106,7 @@ class Doctor
 
         $climate->out("\n<blue><bold>PHP");
 
-        validate("version <bold>7.3+", (PHP_VERSION_ID >= 70300));
+        validate("version <bold>7.4+", (PHP_VERSION_ID >= 70400));
         validate("lib <bold>curl", (in_array("curl", get_loaded_extensions())));
         validate("lib <bold>json", (in_array("json", get_loaded_extensions())));
         validate("lib <bold>mbstring", (in_array("mbstring", get_loaded_extensions())));

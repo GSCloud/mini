@@ -24,42 +24,35 @@ class MiniPresenter extends APresenter
      */
     public function process()
     {
+        // rate limiter + set HTML headers
         $this->checkRateLimit()->setHeaderHtml();
-
         $data = $this->getData();
         $presenter = $this->getPresenter();
         $view = $this->getView();
-
-        // expand data model
         $this->dataExpander($data);
 
         // advanced caching
-        $use_cache = $data["use_cache"] ?? false;
-        $use_cache = false;
-
-        $cache_key = strtolower(join("_", [$data["host"], $data["request_path"]]));
+        $use_cache = (DEBUG === true) ? false : $data["use_cache"] ?? false;
+        $cache_key = strtolower(join("_", [$data["host"], $data["request_path"]])) . "_htmlpage";
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
             $output .= "\n<script>console.log('*** page content cached');</script>";
             return $this->setData("output", $output);
         }
 
-        // create content
-        $file = ROOT . "/README.md";
-        if (file_exists($file)) {
-            // convert README.md to HTML
+        // create HTML content
+        if (file_exists($file = ROOT . "/README.md")) {
             $data["l"]["readme"] = MarkdownExtra::defaultTransform(@file_get_contents($file));
         }
 
         // fix locales
-        $data["l"] = $data["l"] ?? [];
-        foreach ($data["l"] as $k => $v) {
+        foreach ($data["l"] ??= [] as $k => $v) {
             StringFilters::correct_text_spacing($data["l"][$k], $data["lang"]);
         }
 
-        // render output & save to model & cache
+        // render output
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
-        StringFilters::trim_html_comment($output);
-        Cache::write($cache_key, $output, "page");
-        return $this->setData("output", $output);
+        StringFilters::trim_html_comment($output); // fix content
+        Cache::write($cache_key, $output, "page"); // save to cache
+        return $this->setData("output", $output); // save model
     }
 }

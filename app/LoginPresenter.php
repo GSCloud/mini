@@ -95,6 +95,7 @@ class LoginPresenter extends APresenter
                 dump($ownerDetails);
                 exit;
                  */
+
                 if ($this->getUserGroup() == "admin") {
                     // set Tracy debug cookie
                     if ($this->getCfg("DEBUG_COOKIE")) {

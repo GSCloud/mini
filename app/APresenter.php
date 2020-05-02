@@ -66,7 +66,6 @@ interface IPresenter
 
     /** tools */
     public function clearCookie($name);
-    public function cloudflarePurgeCache($cf);
     public function dataExpander(&$data);
     public function logout();
     public function renderHTML($template);
@@ -95,7 +94,7 @@ abstract class APresenter implements IPresenter
     const LIMITER_MAXIMUM = 20;
 
     /** @var string Identity nonce filename */
-    const IDENTITY_NONCE = "identity_nonce.key";
+    const IDENTITY_NONCE = "/identity_nonce.key";
 
     // PRIVATE VARS
 
@@ -198,11 +197,10 @@ abstract class APresenter implements IPresenter
      */
     public function __destruct()
     {
-        if (ob_get_level()) {
-            ob_flush();
+        if (\ob_get_level()) {
+            \ob_end_flush();
         }
-        ob_start();
-
+        \ob_start();
         $monolog = new Logger("Tesseract log");
         $streamhandler = new StreamHandler(MONOLOG, Logger::INFO, true, self::LOG_FILEMODE);
         $streamhandler->setFormatter(new LineFormatter);
@@ -212,16 +210,13 @@ abstract class APresenter implements IPresenter
         $monolog->pushProcessor(new GitProcessor);
         $monolog->pushProcessor(new MemoryUsageProcessor);
         $monolog->pushProcessor(new WebProcessor);
-
         $criticals = $this->getCriticals();
         $errors = $this->getErrors();
         $messages = $this->getMessages();
-
         list($usec, $sec) = explode(" ", microtime());
         defined("TESSERACT_STOP") || define("TESSERACT_STOP", ((float) $usec + (float) $sec));
         $add = "| processing: " . round(((float) TESSERACT_STOP - (float) TESSERACT_START) * 1000, 2) . " msec."
             . "| request_uri: " . ($_SERVER["REQUEST_URI"] ?? "N/A");
-
         try {
             if (count($criticals) + count($errors) + count($messages)) {
                 if (GCP_PROJECTID && GCP_KEYS) {
@@ -302,7 +297,7 @@ abstract class APresenter implements IPresenter
     public function renderHTML($template = "index")
     {
         if (empty($template)) {
-            return "";
+            return "ERROR: Empty template!";
         }
         $type = (file_exists(TEMPLATES . "/${template}.mustache")) ? true : false;
         $renderer = new \Mustache_Engine(array(
@@ -341,9 +336,7 @@ abstract class APresenter implements IPresenter
     public function getData($key = null)
     {
         $dot = new \Adbar\Dot((array) $this->data);
-
-        // global constants
-        $dot->set(
+        $dot->set( // global constants
             [
                 "CONST.APP" => APP,
                 "CONST.APPNAME" => APPNAME,
@@ -364,9 +357,7 @@ abstract class APresenter implements IPresenter
                 "CONST.WWW" => WWW,
             ]
         );
-
-        // class constants
-        $dot->set(
+        $dot->set( // class constants
             [
                 "CONST.COOKIE_KEY_FILEMODE" => self::COOKIE_KEY_FILEMODE,
                 "CONST.COOKIE_TTL" => self::COOKIE_TTL,
@@ -374,7 +365,6 @@ abstract class APresenter implements IPresenter
                 "CONST.LOG_FILEMODE" => self::LOG_FILEMODE,
             ]
         );
-
         if (is_string($key)) {
             return $dot->get($key);
         }
@@ -536,9 +526,7 @@ abstract class APresenter implements IPresenter
             "ip" => "",
             "name" => "",
         ];
-        $file = DATA . "/" . self::IDENTITY_NONCE;
-
-        // random nonce
+        $file = DATA . self::IDENTITY_NONCE;
         if (!file_exists($file)) {
             try {
                 $nonce = hash("sha256", random_bytes(256) . time());
@@ -551,9 +539,8 @@ abstract class APresenter implements IPresenter
                 exit;
             }
         }
-        $nonce = @file_get_contents($file);
+        $nonce = @file_get_contents($file); // random nonce
         $i["nonce"] = substr(trim($nonce), 0, 8);
-
         // check all keys
         if (array_key_exists("avatar", $identity)) {
             $i["avatar"] = (string) $identity["avatar"];
@@ -567,12 +554,9 @@ abstract class APresenter implements IPresenter
         if (array_key_exists("name", $identity)) {
             $i["name"] = (string) $identity["name"];
         }
-
-        // set remaining keys
-        $i["timestamp"] = time();
+        $i["time"] = time();
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX";
         $i["ip"] = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
-
         // shuffle data
         $out = [];
         $keys = array_keys($i);
@@ -580,14 +564,11 @@ abstract class APresenter implements IPresenter
         foreach ($keys as $k) {
             $out[$k] = $i[$k];
         }
-
-        // new identity
-        $this->identity = $out;
+        $this->identity = $out; // new identity
         if ($i["id"]) {
-            $this->setCookie("identity", json_encode($out));
+            $this->setCookie($this->getCfg("app"), json_encode($out));
         } else {
-            // no user id = no cookie
-            $this->clearCookie("identity");
+            $this->clearCookie($this->getCfg("app")); // no user id = no cookie
         }
         return $this;
     }
@@ -606,9 +587,7 @@ abstract class APresenter implements IPresenter
         if ($id && $email && $name) {
             return $this->identity;
         }
-
-        // get nonce
-        $file = DATA . "/" . self::IDENTITY_NONCE;
+        $file = DATA . "/" . self::IDENTITY_NONCE; // get nonce
         if (!file_exists($file)) {
             // initialize nonce
             $this->setIdentity();
@@ -616,7 +595,6 @@ abstract class APresenter implements IPresenter
         }
         $nonce = @file_get_contents($file);
         $nonce = substr(trim($nonce), 0, 8);
-
         // empty identity
         $i = [
             "avatar" => "",
@@ -624,7 +602,6 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "name" => "",
         ];
-
         // mock identity
         if (CLI) {
             $i = [
@@ -634,24 +611,19 @@ abstract class APresenter implements IPresenter
                 "name" => "Mr. Robot",
             ];
         }
-
         do {
-            // URL identity
-            if (isset($_GET["identity"])) {
-                // set cookie and reload
+            if (isset($_GET["identity"])) { // URL identity
                 $tls = "";
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off") {
                     $tls = "s";
                 }
-                $this->setCookie("identity", $_GET["identity"]);
+                $this->setCookie($this->getCfg("app"), $_GET["identity"]);
                 $this->setLocation("http{$tls}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
                 exit;
             }
-
-            // COOKIE identity
-            if (isset($_COOKIE["identity"])) {
+            if (isset($_COOKIE[$this->getCfg("app")])) { // COOKIE identity
                 $x = 0;
-                $q = json_decode($this->getCookie("identity"), true);
+                $q = json_decode($this->getCookie($this->getCfg("app")), true);
                 if (!is_array($q)) {
                     $x++;
                 } else {
@@ -672,8 +644,7 @@ abstract class APresenter implements IPresenter
                     }
                 }
                 if ($x) {
-                    // something is wrong!
-                    $this->logout();
+                    $this->logout(); // something is wrong!!!
                     break;
                 }
                 if ($q["nonce"] == $nonce) {
@@ -681,15 +652,14 @@ abstract class APresenter implements IPresenter
                     break;
                 }
             }
-            // empty / mock identity
-            $this->setIdentity($i);
+            $this->setIdentity($i); // empty or mock identity
             break;
         } while (true);
         return $this->identity;
     }
 
     /**
-     * Get current user
+     * Get current user identity (array)
      *
      * @return array Get current user data
      */
@@ -854,15 +824,10 @@ abstract class APresenter implements IPresenter
         if (empty($name)) {
             return null;
         }
-        if (is_null($name)) {
-            return null;
-        }
         if (CLI) {
             return $this->cookies[$name] ?? null;
         }
-
-        // secure key
-        $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
+        $key = $this->getCfg("secret_cookie_key") ?? "secure.key"; // secure key
         $keyfile = DATA . "/${key}";
         if (file_exists($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
@@ -886,9 +851,7 @@ abstract class APresenter implements IPresenter
         if (empty($name) || is_null($name) || CLI) {
             return $this;
         }
-
-        // secure key
-        $key = $this->getCfg("secret_cookie_key") ?? "secure.key";
+        $key = $this->getCfg("secret_cookie_key") ?? "secure.key"; // secure key
         $keyfile = DATA . "/${key}";
         if (file_exists($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
@@ -927,9 +890,9 @@ abstract class APresenter implements IPresenter
         if (!is_string($name)) {
             return $this;
         }
-        \setcookie($name, "", time() - 3600, "/");
         unset($_COOKIE[$name]);
         unset($this->cookies[$name]);
+        \setcookie($name, "", time() - 3600, "/");
         return $this;
     }
 
@@ -943,7 +906,7 @@ abstract class APresenter implements IPresenter
     {
         $code = (int) $code;
         if (empty($location)) {
-            $location = "/?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
+            $location = "/?nonce=" . substr(hash("sha256", random_bytes(4) . (string) time()), 0, 4);
         }
         header("Location: $location", true, $code);
         exit;
@@ -954,8 +917,9 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
-        header('Clear-Site-Data: "cookies"');
         $this->clearCookie("identity");
+        $this->clearCookie($this->getCfg("app"));
+        header('Clear-Site-Data: "cookies"');
         $this->setLocation();
         exit;
     }
@@ -963,22 +927,21 @@ abstract class APresenter implements IPresenter
     /**
      * Check current user rate limits
      *
-     * @param integer $maximum Maximum hits per time (optional)
+     * @param integer $max Hits per time (optional)
      * @return object Singleton instance
      */
-    public function checkRateLimit($maximum = 0)
+    public function checkRateLimit($max = 0)
     {
-        $maximum = ((int) $maximum > 0) ? (int) $maximum : self::LIMITER_MAXIMUM;
         $uid = $this->getUID();
-        $file = "${uid}_rate_limit";
-        if (!$rate = Cache::read($file, "limiter")) {
+        $f = "${uid}_rate_limit";
+        if (!$rate = Cache::read($f, "limiter")) {
             $rate = 0;
         }
         $rate++;
-        if ($rate > $maximum) {
+        if ($rate > ((int) $max > 0) ? (int) $max : self::LIMITER_MAXIMUM) {
             $this->setLocation("/err/420");
         }
-        Cache::write($file, $rate, "limiter");
+        Cache::write($f, $rate, "limiter");
         return $this;
     }
 
@@ -997,22 +960,19 @@ abstract class APresenter implements IPresenter
         $email = $this->getIdentity()["email"] ?? "";
         $groups = $this->getCfg("admin_groups") ?? [];
         if (strlen($role) && strlen($email)) {
-            // email allowed
-            if (in_array($email, $groups[$role] ?? [], true)) {
+            if (in_array($email, $groups[$role] ?? [], true)) { // email allowed
                 return $this;
             }
-            // any Google users allowed
-            if (in_array("*", $groups[$role] ?? [], true)) {
+            if (in_array("*", $groups[$role] ?? [], true)) { // any Google users allowed
                 return $this;
             }
         }
-        // not authorized
-        $this->setLocation("/err/401");
+        $this->setLocation("/err/401"); // not authorized
         exit;
     }
 
     /**
-     * Get current user group
+     * Get current user group name (string)
      *
      * @return string User group name
      */
@@ -1082,9 +1042,9 @@ abstract class APresenter implements IPresenter
     /**
      * Write JSON data to output
      *
-     * @param array $d array of data / integer error code
-     * @param array $headers JSON array (optional)
-     * @param mixed $switches JSON encoder switches
+     * @param array $data array of data / integer error code
+     * @param array $headers extra headers JSON array (optional)
+     * @param mixed $switches JSON encoder switches (optional)
      * @return object Singleton instance
      */
     public function writeJsonData($data, $headers = [], $switches = null)
@@ -1093,7 +1053,6 @@ abstract class APresenter implements IPresenter
         $code = 200;
         $out["timestamp"] = time();
         $out["version"] = (string) ($this->getCfg("version") ?? "v1");
-
         // last decoding error
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
@@ -1122,12 +1081,12 @@ abstract class APresenter implements IPresenter
                 break;
             default:
                 $code = 500;
-                $msg = "Internal server error.";
+                $msg = "Internal server error 🍄";
                 break;
         }
         if (is_null($data)) {
             $code = 500;
-            $msg = "Internal server error. Data is null.";
+            $msg = "Internal server error 🍄";
         }
         if (is_string($data)) {
             $data = [$data];
@@ -1151,19 +1110,16 @@ abstract class APresenter implements IPresenter
                     $msg = "Not found.";
                     break;
                 default:
-                    $msg = "Unknown error >:{";
+                    $msg = "Unknown error 🦄";
             }
             $data = null;
         }
-
-        // output array
-        $this->setHeaderJson();
+        $this->setHeaderJson(); // set JSON output
         $out["code"] = (int) $code;
         $out["message"] = $msg;
-        $out["processing_time"] = round((microtime(true) - TESSERACT_START) * 1000, 2) . " msec.";
+        $out["processing_time"] = round((microtime(true) - TESSERACT_START) * 1000, 2) . " ms";
         $out = array_merge_recursive($out, $headers);
         $out["data"] = $data ?? null;
-
         if (is_null($switches)) {
             return $this->setData("output", json_encode($out, JSON_PRETTY_PRINT));
         }
@@ -1171,9 +1127,9 @@ abstract class APresenter implements IPresenter
     }
 
     /**
-     * Data Expander
+     * Data expander by reference
      *
-     * @param array $data Model array
+     * @param array $data model data array
      * @return void
      */
     public function dataExpander(&$data)
@@ -1181,36 +1137,25 @@ abstract class APresenter implements IPresenter
         if (empty($data)) {
             return;
         }
-
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $use_cache = true;
-
-        // do not cache pages with ?nonce
-        if (array_key_exists("nonce", $_GET)) {
+        if (array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
             $use_cache = false;
         }
-
-        // check logged user
-        $data["user"] = $user = $this->getCurrentUser();
-        $data["admin"] = $group = $this->getUserGroup();
+        $data["user"] = $user = $this->getCurrentUser(); // get logged user email
+        $data["admin"] = $group = $this->getUserGroup(); // get logged user group
         if ($group) {
-            $data["admin_group_${group}"] = true;
+            $data["admin_group_${group}"] = true; // set group semaphore
         }
         if ($user["id"]) {
             $use_cache = false; // do not cache logged users
         }
         $data["use_cache"] = $use_cache;
-
-        // set language
-        $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs";
+        $data["lang"] = $language = strtolower($presenter[$view]["language"]) ?? "cs"; // set language
         $data["lang{$language}"] = true;
-
-        // compute data hash
-        $data["DATA_VERSION"] = hash('sha256', (string) json_encode($data["l"]));
-
-        // extract request path slug
-        if (($pos = strpos($data["request_path"], $language)) !== false) {
+        $data["DATA_VERSION"] = hash('sha256', (string) json_encode($data["l"])); // compute data hash
+        if (($pos = strpos($data["request_path"], $language)) !== false) { // extract request path slug
             $data["request_path_slug"] = substr_replace($data["request_path"], "", $pos, strlen($language));
         } else {
             $data["request_path_slug"] = $data["request_path"] ?? "";
