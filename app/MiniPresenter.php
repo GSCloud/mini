@@ -42,7 +42,7 @@ class MiniPresenter extends APresenter
         }
 
         foreach ($data["l"] ??= [] as $k => $v) { // fix locales
-            StringFilters::correct_text_spacing($data["l"][$k], $data["lang"]);
+            StringFilters::correct_text_spacing($data["l"][$k], $data["lang"] ?? "en");
         }
 
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render output
