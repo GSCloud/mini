@@ -24,33 +24,28 @@ class MiniPresenter extends APresenter
      */
     public function process()
     {
-        // rate limiter + set HTML headers
-        $this->checkRateLimit()->setHeaderHtml();
+        $this->checkRateLimit()->setHeaderHtml(); // rate limiter + set HTML headers
         $data = $this->getData();
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $this->dataExpander($data);
 
-        // advanced caching
         $use_cache = (DEBUG === true) ? false : $data["use_cache"] ?? false;
         $cache_key = strtolower(join("_", [$data["host"], $data["request_path"]])) . "_htmlpage";
-        if ($use_cache && $output = Cache::read($cache_key, "page")) {
+        if ($use_cache && $output = Cache::read($cache_key, "page")) { // advanced caching
             $output .= "\n<script>console.log('*** page content cached');</script>";
             return $this->setData("output", $output);
         }
 
-        // create HTML content
-        if (file_exists($file = ROOT . "/README.md")) {
+        if (file_exists($file = ROOT . "/README.md")) { // create HTML content
             $data["l"]["readme"] = MarkdownExtra::defaultTransform(@file_get_contents($file));
         }
 
-        // fix locales
-        foreach ($data["l"] ??= [] as $k => $v) {
+        foreach ($data["l"] ??= [] as $k => $v) { // fix locales
             StringFilters::correct_text_spacing($data["l"][$k], $data["lang"]);
         }
 
-        // render output
-        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
+        $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render output
         StringFilters::trim_html_comment($output); // fix content
         Cache::write($cache_key, $output, "page"); // save to cache
         return $this->setData("output", $output); // save model

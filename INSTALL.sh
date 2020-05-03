@@ -8,14 +8,16 @@ info "Setting up ..."
 
 chmod +x *.sh
 mkdir -p app cache ci data www/cdn-assets
-chmod -R 0775 cache ci data
+chmod 0775 cache ci data
 sudo chgrp www-data cache ci data www/cdn-assets
+sudo rm -f cache/* ci/*
 
-command -v composer >/dev/null 2>&1 || {
-    warn "You need PHP composer installed!"
-}
+# check php parser
+command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
+# check php composer
+command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
 
-info "Done."
+echo -en "\nDone.\n\n"
 
 ./UPDATE.sh
 

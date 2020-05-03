@@ -12,7 +12,7 @@ building microsites and apps
 * **asynchronous client code** (Vanilla JS, jQuery),
 * **access limiter**,
 * **caching**, assets **versioning** and **branching**,
-* built-in**REST API**,
+* built-in **REST API**,
 * **MIT** license.
 
 Components:

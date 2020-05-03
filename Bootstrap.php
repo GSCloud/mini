@@ -18,7 +18,7 @@ define("TESSERACT_START", microtime(true));
 ob_start();
 error_reporting(E_ALL);
 @ini_set("auto_detect_line_endings", true);
-@ini_set("default_socket_timeout", 9);
+@ini_set("default_socket_timeout", 15);
 @ini_set("display_errors", true);
 
 // CONSTANTS
@@ -97,16 +97,16 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
     Debugger::$showBar = (bool) ($cfg["DEBUG_SHOW_BAR"] ?? true);
     Debugger::$showFireLogger = (bool) ($cfg["DEBUG_SHOW_FIRELOGGER"] ?? false);
     Debugger::$showLocation = (bool) ($cfg["DEBUG_SHOW_LOCATION"] ?? false);
-    Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? false);
-    // debug cookie name: tracy-debug
-    if ($cfg["DEBUG_COOKIE"] ?? null) {
-        $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+    Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? true);
+
+    if ($cfg["DEBUG_COOKIE"] ?? null) { // debug cookie name: tracy-debug
+        $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
         $debug_cookie = (string) $cfg["DEBUG_COOKIE"]; // private config value
         Debugger::enable(
-            "${debug_cookie}@${address}", CACHE, (string) ($cfg["DEBUG_EMAIL"] ?? "")
+            "${debug_cookie}@${address}", TEMP, (string) ($cfg["DEBUG_EMAIL"] ?? "")
         );
     } else {
-        Debugger::enable(Debugger::DETECT, CACHE);
+        Debugger::enable(Debugger::DETECT, TEMP);
     }
     Debugger::timer("RUNNING"); // start measuring performance
 }

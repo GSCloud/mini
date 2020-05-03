@@ -15,10 +15,11 @@ use Monolog\Logger;
 use Nette\Neon\Neon;
 
 // SANITY CHECK
-$x = "FATAL ERROR: broken chain of trust";
-defined("APP") || die($x);
-defined("CACHE") || die($x);
-defined("ROOT") || die($x);
+foreach (["APP", "CACHE", "DATA", "ROOT", "TEMP"] as $x) {
+    if (!\defined($x)) {
+        die("FATAL ERROR: sanity check failed!");
+    }
+}
 
 /** @const Cache prefix */
 defined("CACHEPREFIX") || define("CACHEPREFIX",
@@ -37,14 +38,15 @@ defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSMINI")
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
 
 /** @const Monolog log file full path */
-defined("MONOLOG") || define("MONOLOG", CACHE . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . APPNAME . ".log");
+defined("MONOLOG") || define("MONOLOG", TEMP . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . APPNAME . ".log");
 
 /** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
 
 /** @const Google Cloud Platform JSON authentication keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
-if (GCP_KEYS && \file_exists(APP . GCP_KEYS)) {
+
+if (GCP_KEYS && \file_exists(APP . GCP_KEYS)) { // load GCP keys
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . GCP_KEYS);
 }
 
