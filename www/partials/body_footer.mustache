@@ -1,6 +1,10 @@
-<script>
+<!-- fonts, frameworks etc. put here! -->
+<link rel="stylesheet" href="{{ cdn }}/css/milligram.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap">
 
-  // register the PWA Service Worker
+<script>
+  // register PWA Service Worker
   window.addEventListener("load", function () {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
@@ -12,9 +16,5 @@
       console.log("Service worker not supported!");
     }
   });
-</script>
 
-<!-- CSS includes like fonts, frameworks etc. put here! -->
-<link rel="stylesheet" href="{{ cdn }}/css/milligram.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap">
+</script>

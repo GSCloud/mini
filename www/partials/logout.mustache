@@ -1,12 +1,13 @@
 <div class="container">
   <div class="center">
     <a href="/logout">
-      <img alt="LOGOUT" title="LOGOUT" src="/img/g.png" height=32><br>
+      <img alt="LOGOUT" title="LOGOUT" src="/img/g.png" height=32>
+      <br>
       <b class="bla">LOGOUT</b>
-    </a><br>
+    </a>
+    <br>
     <b>{{ user.name }}</b><br>
     <small>{{ user.email }}</small><br>
-
     {{#LOCALHOST}}
     {{#local_goauth_redirect}}
     <a href="{{ local_goauth_redirect }}?relogin">
@@ -14,7 +15,6 @@
     </a>
     {{/local_goauth_redirect}}
     {{/LOCALHOST}}
-
     {{^LOCALHOST}}
     {{#goauth_redirect}}
     <a href="{{ goauth_redirect }}?relogin">
@@ -22,6 +22,5 @@
     </a>
     {{/goauth_redirect}}
     {{/LOCALHOST}}
-
   </div>
 </div>

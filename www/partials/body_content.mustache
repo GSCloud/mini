@@ -1,12 +1,14 @@
+<div class="clearfix" style="padding:1rem"></div>
+
 {{^user.id}}
 <div class="container">
   <div class="float-right center">
     {{>login}}
+    <a id="fullscreen" class="button" href="javascript:void(0);" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
   </div>
   <div class="row">
     <div class="column">
       <h1 class="hidden">{{ l.title }}</h1>
-      <a id="fullscreen" class="button" href="javascript:void(0);" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
       <h2>{{ l.title }}</h2>
       <p>{{ l.readme }}</p>
     </div>
@@ -19,10 +21,10 @@
   <div class="row">
     <div class="column column-20 center">
       {{>logout}}
+      <a id="fullscreen" class="button" href="javascript:void(0);" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
     </div>
     <div class="column column-80">
       <h1 class="hidden">{{ l.title }}</h1>
-      <a id="fullscreen" class="button" href="javascript:blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
       <h2>{{ l.title }}</h2>
       <p>{{ l.readme }}</p>
     </div>

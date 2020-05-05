@@ -1,6 +1,5 @@
 <div class="container">
   <div class="float-right">
-
     {{#LOCALHOST}}
     {{#local_goauth_redirect}}
     <a href="{{ local_goauth_redirect }}">
@@ -8,7 +7,6 @@
     </a>
     {{/local_goauth_redirect}}
     {{/LOCALHOST}}
-
     {{^LOCALHOST}}
     {{#goauth_redirect}}
     <a href="{{ goauth_redirect }}">
@@ -16,6 +14,5 @@
     </a>
     {{/goauth_redirect}}
     {{/LOCALHOST}}
-
   </div>
 </div>
