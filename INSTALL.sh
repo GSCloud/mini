@@ -12,6 +12,8 @@ chmod 0775 cache ci data
 sudo chgrp www-data cache ci data www/cdn-assets
 sudo rm -f cache/* ci/*
 
+echo "\n"
+
 info "Checking setup ...\n"
 sleep 2
 
