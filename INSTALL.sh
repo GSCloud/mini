@@ -23,7 +23,7 @@ command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
 # check composer
 command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
 
-echo -en "\nDone.\n\n"
+echo -en "Done.\n\n"
 
 info "Updating PHP vendors ...\n"
 sleep 2
