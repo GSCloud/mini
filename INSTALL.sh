@@ -4,7 +4,7 @@
 dir="$(dirname "$0")"
 . $dir"/_includes.sh"
 
-info "Setting up ..."
+info "Basic setup ..."
 
 chmod +x *.sh
 mkdir -p app cache ci data www/cdn-assets
@@ -14,17 +14,18 @@ sudo rm -f cache/* ci/*
 
 echo -en "\n"
 
-info "Checking setup ...\n"
+info "Checking components ...\n"
 sleep 2
 
 # check php
 command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
+
 # check composer
 command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
 
 echo -en "\nDone.\n\n"
 
-info "Updating PHP components ...\n"
+info "Updating PHP vendors ...\n"
 sleep 2
 
 ./UPDATE.sh
