@@ -77,12 +77,6 @@
     }
 
     if (GSC) {
-      GSC.multisite_profiles = {
-        {
-          multisite_profiles_json
-        }
-      };
-
       // feature detection: "touch"
       GSC.touch = ("ontouchstart" in w || w.DocumentTouch && d instanceof DocumentTouch) ?
         true : false;
