@@ -12,12 +12,18 @@ chmod 0775 cache ci data
 sudo chgrp www-data cache ci data www/cdn-assets
 sudo rm -f cache/* ci/*
 
-# check php parser
+info "Checking setup ...\n"
+sleep 2
+
+# check php
 command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
-# check php composer
+# check composer
 command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
 
 echo -en "\nDone.\n\n"
+
+info "Updating PHP components ...\n"
+sleep 2
 
 ./UPDATE.sh
 
