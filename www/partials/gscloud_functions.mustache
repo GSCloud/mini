@@ -27,10 +27,12 @@
       if ("onLine" in navigator) {
         if (navigator.onLine) {
           d.getElementsByTagName("html")[0].setAttribute("offline", false);
+          d.getElementsByTagName("html")[0].setAttribute("online", true);
           if (GSC) GSC.offline = false;
           if (GSC) GSC.online = true;
         } else {
           d.getElementsByTagName("html")[0].setAttribute("offline", true);
+          d.getElementsByTagName("html")[0].setAttribute("online", false);
           if (GSC) GSC.offline = true;
           if (GSC) GSC.online = false;
         }

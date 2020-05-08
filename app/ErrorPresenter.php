@@ -17,10 +17,9 @@ class ErrorPresenter extends APresenter
     const CODESET = [
         400 => "Bad Request",
         401 => "Unauthorized",
+        402 => "Payment Required",
         403 => "Forbidden",
         404 => "Not Found",
-        406 => "Not Acceptable",
-        410 => "Gone",
         420 => "Enhance Your Calm",
         429 => "Too Many Requests",
         500 => "Internal Server Error",

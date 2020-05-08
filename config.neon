@@ -27,6 +27,11 @@ goauth_redirect: "https://mini.gscloud.cz/login"
 local_goauth_origin: "http://localhost:8020"
 local_goauth_redirect: "http://localhost:8020/login"
 
+# Google properties
+google: [
+  UA: "UA-89950317-17"
+]
+
 # ALPHA/BETA
 alpha_hosts: [
   mini
