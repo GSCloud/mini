@@ -24,7 +24,9 @@
     "tuupola/base58": "^0.2.3",
     "adbario/php-dot-notation": "^2.2",
     "nette/tester": "^2.2",
-    "michelf/php-markdown": "^1.8"
+    "michelf/php-markdown": "^1.8",
+    "cheprasov/php-redis-client": "^1.9",
+    "ethanhann/redis-raw": "^0.3.1"
   },
   "autoload": {
     "psr-4": {
