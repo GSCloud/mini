@@ -20,8 +20,6 @@ where **Model** is a multi-dimensional array, **View** are mustache templates an
 REST API calls examples:
 
 * **[API dashboard](/api)**
-* **[API call example #1](/api/v1/GetCall1)**
-* **[API call example #2](/api/v1/GetCall2/someparameter)**
 
 Demo: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
 Repository:  **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
