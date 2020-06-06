@@ -38,10 +38,10 @@ defined("DATA") || define("DATA", ROOT . "/data");
 defined("WWW") || define("WWW", ROOT . "/www");
 
 /** @const Configuration file, full path */
-defined("CONFIG") || define("CONFIG", ROOT . "/config.neon");
+defined("CONFIG") || define("CONFIG", APP . "/config.neon");
 
 /** @const Private configuration file, full path */
-defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", ROOT . "/config_private.neon");
+defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", APP . "/config_private.neon");
 
 /** @const Application templates folder, defaults to "www/templates" */
 defined("TEMPLATES") || define("TEMPLATES", WWW . "/templates");
@@ -56,10 +56,13 @@ defined("DOWNLOAD") || define("DOWNLOAD", WWW . "/download");
 defined("UPLOAD") || define("UPLOAD", WWW . "/upload");
 
 /** @const Temporary folder, defaults to "/tmp" */
-defined("TEMP") || define("TEMP", "/tmp");
+defined("TEMP") || define("TEMP", ROOT . "/temp");
 
 /** @const True if running from command line interface */
 define("CLI", (bool) (PHP_SAPI === "cli"));
+
+/** @const Log files folder */
+defined("LOGS") || define("LOGS", ROOT . "/logs");
 
 /** @const True if running server locally */
 define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
@@ -68,7 +71,7 @@ define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || C
 require_once ROOT . "/vendor/autoload.php";
 
 // CONFIGURATION
-$cfg = @Neon::decode(@file_get_contents(CONFIG));
+$cfg = @Neon::decode(file_get_contents(CONFIG));
 if (file_exists(CONFIG_PRIVATE)) {
     $cfg = array_replace_recursive($cfg, @Neon::decode(@file_get_contents(CONFIG_PRIVATE)));
 }
@@ -103,10 +106,10 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
         $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"] ?? "127.0.0.1";
         $debug_cookie = (string) $cfg["DEBUG_COOKIE"]; // private config value
         Debugger::enable(
-            "${debug_cookie}@${address}", TEMP, (string) ($cfg["DEBUG_EMAIL"] ?? "")
+            "${debug_cookie}@${address}", LOGS, (string) ($cfg["DEBUG_EMAIL"] ?? "")
         );
     } else {
-        Debugger::enable(Debugger::DETECT, TEMP);
+        Debugger::enable(Debugger::DETECT, LOGS);
     }
     Debugger::timer("RUNNING"); // start measuring performance
 }
