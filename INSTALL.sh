@@ -7,8 +7,8 @@ dir="$(dirname "$0")"
 info "Basic setup ..."
 
 chmod +x *.sh
-mkdir -p app cache ci data www/cdn-assets
-chmod 0775 cache ci data
+mkdir -p app cache ci data www/cdn-assets logs
+chmod 0775 cache ci data logs
 sudo chgrp www-data cache ci data www/cdn-assets
 sudo rm -f cache/* ci/*
 
