@@ -7,10 +7,10 @@ dir="$(dirname "$0")"
 info "Basic setup ..."
 
 chmod +x *.sh
-mkdir -p app cache ci data www/cdn-assets logs
-chmod 0775 cache ci data logs
-sudo chgrp www-data cache ci data www/cdn-assets logs
-sudo rm -f cache/* ci/* logs/*
+mkdir -p app cache ci data www/cdn-assets logs temp
+chmod 0775 cache ci data logs temp
+sudo chgrp www-data cache ci data www/cdn-assets logs temp
+sudo rm -f cache/* ci/* logs/* temp/*
 
 # check php
 command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
