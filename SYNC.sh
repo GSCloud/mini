@@ -30,7 +30,6 @@ info "Version: $VERSION Revisions: $REVISIONS"
 rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" --exclude "www/download" \
   *.json \
   *.md \
-  *.neon \
   *.php \
   *.sh \
   LICENSE \
