@@ -1,0 +1,65 @@
+### TESSERACT MINI
+
+# uncomment to force debug !!!
+#dbg: TRUE
+
+# CORE
+app: mini
+date_default_timezone: "Europe/Prague"
+project: TESSERACT
+secret_cookie_key: secure.key
+version: v1
+canonical_url: "https://mini.gscloud.cz/"
+# BETA
+#canonical_url: "https://bmini.gscloud.cz/"
+
+# GCP ID
+gcp_project_id: "gscloudcz-163314"
+
+# Google OAUTH 2.0
+goauth_origin: "https://mini.gscloud.cz"
+goauth_redirect: "https://mini.gscloud.cz/login"
+# BETA
+#goauth_origin: "https://bmini.gscloud.cz"
+#goauth_redirect: "https://bmini.gscloud.cz/login"
+
+# local Google OAUTH 2.0
+local_goauth_origin: "http://localhost:8020"
+local_goauth_redirect: "http://localhost:8020/login"
+
+# Google properties
+google: [
+  UA: "UA-89950317-17"
+]
+
+# ALPHA/BETA
+alpha_hosts: [
+  mini
+  amini.gscloud.cz
+]
+beta_hosts: [
+  mini
+  bmini.gscloud.cz
+]
+multisite_profiles: [
+  default: [
+    mini
+    amini.gscloud.cz
+    bmini.gscloud.cz
+  ]
+]
+
+# cache profiles
+cache_profiles: [
+]
+
+# router configs
+routers: [
+]
+
+# localization
+lang: en
+l:
+  title: "Tesseract MINI"
+  author: "Fred Brooker @ GS Cloud Ltd."
+  noscript: "Please enable JavaScript!"
