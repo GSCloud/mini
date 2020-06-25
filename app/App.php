@@ -5,6 +5,7 @@
  * @category Framework
  * @author   Fred Brooker <oscadal@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -15,7 +16,7 @@ use Monolog\Logger;
 use Nette\Neon\Neon;
 
 // SANITY CHECK
-foreach (["APP", "CACHE", "DATA", "ROOT", "TEMP"] as $x) {
+foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP"] as $x) {
     if (!\defined($x)) {
         die("FATAL ERROR: sanity check failed!");
     }
@@ -23,31 +24,32 @@ foreach (["APP", "CACHE", "DATA", "ROOT", "TEMP"] as $x) {
 
 /** @const Cache prefix */
 defined("CACHEPREFIX") || define("CACHEPREFIX",
-    "cache_" . (string) ($cfg["app"] ?? hash("sha256", $cfg["canonical_url"]) ?? hash("sha256", $cfg["goauth_origin"]) ?? "someapp") . "_");
+    "cache_" . (string) ($cfg["app"] ?? sha1($cfg["canonical_url"]) ?? sha1($cfg["goauth_origin"]) ?? "app") . "_");
 
 /** @const Domain name, extracted from $_SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Server name, extracted from $_SERVER array, altered */
+/** @const Server name, extracted from $_SERVER array */
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Project name, default: "TESSERACT" */
-defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "TESSMINI"));
+/** @const Project name, default "LASAGNA" */
+defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "LASAGNA"));
 
-/** @const Application name, default: "app" */
+/** @const Application name, default "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
 
-/** @const Monolog log file full path */
-defined("MONOLOG") || define("MONOLOG", TEMP . "/MONOLOG_" . SERVER . "_" . PROJECT . "_" . APPNAME . ".log");
+/** @const Monolog filename, full path */
+defined("MONOLOG") || define("MONOLOG", LOGS . DS . "MONOLOG_" . SERVER . "_" . PROJECT . ".log");
 
 /** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
 
-/** @const Google Cloud Platform JSON authentication keys */
+/** @const Google Cloud Platform JSON auth keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 
-if (GCP_KEYS && \file_exists(APP . GCP_KEYS)) { // load GCP keys
-    putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . GCP_KEYS);
+// include GCP keys
+if (GCP_KEYS && \file_exists(APP . DS . GCP_KEYS)) {
+    putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . DS . GCP_KEYS);
 }
 
 /**
@@ -79,7 +81,6 @@ function logger($message, $severity = Logger::INFO)
 
 // CACHING PROFILES
 $cache_profiles = array_replace([
-    "apiconsume" => "+60 minutes", // for API access
     "csv" => "+100 minutes", // storing CSV
     "day" => "+24 hours",
     "default" => "+5 minutes",
@@ -90,16 +91,28 @@ $cache_profiles = array_replace([
     "second" => "+1 seconds",
     "tenminutes" => "+10 minutes",
     "tenseconds" => "+10 seconds",
-],
-    (array) ($cfg["cache_profiles"] ?? [])
-);
+], (array) ($cfg["cache_profiles"] ?? []));
 foreach ($cache_profiles as $k => $v) {
-    Cache::setConfig($k, [
-        "className" => "File",
+    Cache::setConfig("${k}_file", [
+        "className" => "Cake\Cache\Engine\FileEngine", // fallback file engine
         "duration" => $v,
         "lock" => true,
         "path" => CACHE,
-        "prefix" => CACHEPREFIX . SERVER . "_" . PROJECT . "_" . APPNAME . "_",
+        "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
+    ]);
+    Cache::setConfig($k, [
+        "className" => "Cake\Cache\Engine\RedisEngine",
+        "database" => $cfg["redis"]["database"] ?? 0,
+        "duration" => $v,
+        "fallback" => "${k}_file", // fallback to file engine
+        "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
+        "password" => $cfg["redis"]["password"] ?? "",
+        "path" => CACHE,
+        "persistent" => false,
+        "port" => $cfg["redis"]["port"] ?? 6379,
+        "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
+        "timeout" => $cfg["redis"]["timeout"] ?? 1,
+        "unix_socket" => $cfg["redis"]["unix_socket"] ?? "",
     ]);
 }
 
@@ -122,8 +135,8 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
 
 // DATA POPULATION
 $data["cache_profiles"] = $cache_profiles;
-$data["multisite_names"] = $multisite_names;
 $data["multisite_profiles"] = $multisite_profiles;
+$data["multisite_names"] = $multisite_names;
 $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTING CONFIGURATION
@@ -134,7 +147,7 @@ $routes = $cfg["routes"] ?? [ // configuration can override defaults
     "router.neon",
 ];
 foreach ($routes as $r) {
-    $r = APP . "/${r}";
+    $r = APP . DS . $r;
     if (($content = @file_get_contents($r)) === false) {
         logger("Error in routing table: $r", Logger::EMERGENCY);
         if (ob_get_level()) {
@@ -163,12 +176,17 @@ foreach ($router as $k => $v) {
 // ROUTER MAPPINGS
 $alto = new \AltoRouter();
 foreach ($presenter as $k => $v) {
-    if (!isset($v["path"])) { // skip invalid presenters
+    if (!isset($v["path"])) {
         continue;
+    }
+    if ($v["path"] == "/") {
+        if ($data["request_path_hash"] == "") { // set homepage hash to default language
+            $data["request_path_hash"] = hash("sha256", $v["language"]);
+        }
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
     if (substr($v["path"], -1) != "/") { // map slash endings
-        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_slash");
+        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x");
     }
 }
 
@@ -196,6 +214,24 @@ $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 // DATA POPULATION
 $data["match"] = $match;
 $data["view"] = $view;
+
+// sethl
+if ($router[$view]["sethl"] ?? false) {
+    $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? null));
+    switch ($r) {
+        case "cs":
+        case "en":
+            break;
+
+        default:
+            $r = null;
+    }
+    if ($r) {
+        \setcookie("hl", $r, time() + 86400 * 31, "/");
+        $presenter[$view]["language"] = $r;
+        $data["presenter"] = $presenter;
+    }
+}
 
 // REDIRECTS
 if ($router[$view]["redirect"] ?? false) {
@@ -246,8 +282,8 @@ header(implode(" ", [
 
 // SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
-$controller = "\\GSC\\$p";
-\Tracy\Debugger::timer("PROCESSING"); // measure performance
+$controller = "\\GSC\\${p}";
+\Tracy\Debugger::timer("PROCESS");
 $app = $controller::getInstance()->setData($data)->process();
 $data = $app->getData();
 
@@ -255,13 +291,14 @@ $data = $app->getData();
 $events = null;
 $data = $app->getData();
 $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
-$data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUNNING") * 1000, 2);
-$data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESSING") * 1000, 2);
+$data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUN") * 1000, 2);
+$data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESS") * 1000, 2);
 
 // FINAL HEADERS
 header("X-Country: $country");
-header("X-Runtime: $time1 ms");
+header("X-RunTime: $time1 ms");
 header("X-Processing: $time2 ms");
+header("X-RateLimiting: {$app->getRateLimit()}");
 
 // ANALYTICS
 if (method_exists($app, "SendAnalytics")) {
@@ -271,7 +308,7 @@ if (method_exists($app, "SendAnalytics")) {
 // DATA OUTPUT
 echo $data["output"] ?? "";
 
-// DEBUG
+// DEBUG OUTPUT
 if (DEBUG) {
     // remove private information
     unset($data["cf"]);

@@ -1,7 +1,5 @@
 !.gitignore
 !composer.lock
-
-**keys/
 *.bak
 *.csv
 *.lock
@@ -9,12 +7,10 @@
 *.tgz
 *.zip
 *~
-
 .DS_Store
 .Trash-1000
 .phpintel/
 .vscode/
-
 Thumbs.db
 VERSION
 _site_cfg.sh
@@ -22,8 +18,9 @@ cache/*
 ci/*
 config_private.neon
 data/*
+logs/*
 node_modules/
 package-lock.json
+temp/*
 vendor/
 www/cdn-assets
-
