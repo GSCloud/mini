@@ -27,7 +27,3 @@ function yes_or_no () {
     esac
   done
 }
-
-function generate_password () {
-  < /dev/urandom tr -dc '_A-Z-a-z-0-9*/+-,./;][={}' | head -c${1:-32}
-}
