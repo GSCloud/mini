@@ -1,0 +1,75 @@
+____
+A minimalist CSS framework.
+____
+
+https://travis-ci.org/milligram/milligram?branch=master[image:https://travis-ci.org/milligram/milligram.svg?branch=master[Travis
+Status]]
+https://ci.appveyor.com/project/cjpatoilo/milligram[image:https://ci.appveyor.com/api/projects/status/xcm8meymwerq0r82?svg=true[AppVeyor
+Status]]
+https://www.codacy.com/app/milligram/milligram/dashboard[image:https://img.shields.io/codacy/grade/848fb4bd6902434fab0bcfb5461284fe/master.svg[Codacy
+Status]]
+https://david-dm.org/milligram/milligram[image:https://david-dm.org/milligram/milligram.svg[Dependencies
+Status]]
+https://www.npmjs.com/package/milligram[image:https://badge.fury.io/js/milligram.svg[Version
+Status]]
+https://www.npmjs.com/package/milligram[image:https://img.shields.io/npm/dt/milligram.svg[Download
+Status]]
+https://gitter.im/milligram/milligram[image:https://img.shields.io/badge/gitter-join_the_chat-4cc61e.svg[Gitter
+Chat]]
+
+== Why it’s awesome
+
+Milligram provides a minimal setup of styles for a fast and clean
+starting point. Just it! *Only 2kb gzipped!* It’s not about a UI
+framework. Specially designed for better performance and higher
+productivity with fewer properties to reset resulting in cleaner code.
+Hope you enjoy!
+
+== Download
+
+*Install with Bower*
+
+[source,sh]
+----
+$ bower install milligram
+----
+
+*Install with npm*
+
+[source,sh]
+----
+$ npm install milligram
+----
+
+*Install with Yarn*
+
+[source,sh]
+----
+$ yarn add milligram
+----
+
+== Table of Contents
+
+* https://milligram.github.io/#getting-started[Getting Started]
+* https://milligram.github.io/#typography[Typography]
+* https://milligram.github.io/#blockquotes[Blockquotes]
+* https://milligram.github.io/#buttons[Buttons]
+* https://milligram.github.io/#lists[Lists]
+* https://milligram.github.io/#forms[Forms]
+* https://milligram.github.io/#tables[Tables]
+* https://milligram.github.io/#grids[Grids]
+* https://milligram.github.io/#codes[Codes]
+* https://milligram.github.io/#utilities[Utilities]
+* https://milligram.github.io/#tips[Tips]
+* https://milligram.github.io/#browser-support[Browser Support]
+* https://milligram.github.io/#examples[Examples]
+
+== Contributing
+
+Want to contribute? Follow these
+https://github.com/milligram/milligram/blob/master/.github/contributing.md[recommendations].
+
+== License
+
+Designed with ♥ by http://cjpatoilo.com[CJ Patoilo]. Licensed under the
+http://cjpatoilo.mit-license.org[MIT License].
