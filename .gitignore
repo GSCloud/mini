@@ -24,4 +24,4 @@ package-lock.json
 temp/*
 vendor/
 www/cdn-assets
-XML/*
+XML/**
