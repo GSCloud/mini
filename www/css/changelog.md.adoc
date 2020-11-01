@@ -1,8 +1,0 @@
-== Changelog
-
-*Milligram* uses
-https://github.com/blog/1547-release-your-software[GitHub’s Releases
-feature] for its changelogs.
-
-See our https://github.com/milligram/milligram/releases[releases] to
-accompany at the improvements for each version of *Milligram*.

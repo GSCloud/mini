@@ -27,6 +27,18 @@ self.addEventListener("fetch", function (event) {
     console.log("NOT caching %s", event.request.url);
     return;
   }
+  if (event.request.url.indexOf("/api/") !== -1) {
+    console.log("NO caching for %s", event.request.url);
+    return;
+  }
+  if (event.request.url.indexOf("/embed/") !== -1) {
+    console.log("NO caching for  %s", event.request.url);
+    return;
+  }
+  if (event.request.url.indexOf("/print/") !== -1) {
+    console.log("NO caching for  %s", event.request.url);
+    return;
+  }
   //console.log("fetch event for", event.request.url);
 
   event.respondWith(
