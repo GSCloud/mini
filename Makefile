@@ -1,10 +1,10 @@
 all: info
 
 info:
-	@echo "\e[1;32m👾 Welcome to Tesseract Mini 👾"
+	@echo "\e[1;32m👾 Welcome to Tesseract Lasagna 👾\n"
+
 	@echo "🆘 \e[0;1mmake docs\e[0m - rebuild documentation"
 	@echo "🆘 \e[0;1mmake doctor\e[0m - run Tesseract doctor"
-	@echo "🆘 \e[0;1mmake everything\e[0m - run all make points"
 	@echo "🆘 \e[0;1mmake install\e[0m - install"
 	@echo "🆘 \e[0;1mmake sync\e[0m - sync to remote"
 	@echo "🆘 \e[0;1mmake update\e[0m - update installation"

@@ -1,35 +1,56 @@
 defaults:
   api: false
   api_description: ""
-  api_info: ""
   api_example: []
+  api_info: ""
   assert_httpcode: 200
   assert_json: false
   assert_values: []
-  language: en
+  cached: false
+  deprecated: false
+  finished: false
+  language: cs
   method: GET
   presenter: home
+  private: false
+  sethl: false
   sitemap: false
   template: mini
-  view: home
   use_key: false
-  private: false
+  view: home
 
-sitemap:
+GetWebManifest:
+  path: /manifest.json
+  presenter: core
+  cached: true
+
+GetSitemap:
   path: /sitemap.txt
   presenter: core
+  cached: true
 
-swjs:
+GetServiceWorker:
   path: /sw.js
   presenter: core
+  cached: true
 
-error:
-  path: '/err/[a:code]'
-  presenter: error
-
-api:
+API:
   path: /api
   api: true
-  api_description: "Show public REST API list"
-  api_info: "Exactly this page :)"
+  api_description: "Show REST API dashboard"
+  api_info: "This page 🐱"
   presenter: core
+
+GetError:
+  path: '/err/[i:code]'
+  api: true
+  api_description: "Get error page"
+  api_info: "Parameters:\n<b><code></b> - numeric error code\n\nReturns: HTML page."
+  cached: true
+  method: GET|POST
+  presenter: error
+  api_example: [
+    "err/404"
+    "err/420"
+    "err/500"
+  ]

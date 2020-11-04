@@ -2,26 +2,22 @@
 #@author Filip Oščádal <oscadal@gscloud.cz>
 
 dir="$(dirname "$0")"
+cd $dir
 . $dir"/_includes.sh"
 
-info "Basic setup ..."
+info "Setting up ..."
 
-chmod +x *.sh
-mkdir -p app cache ci data www/cdn-assets logs temp
-chmod 0775 cache ci data logs temp
-sudo chgrp www-data cache ci data www/cdn-assets logs temp
-sudo rm -f cache/* ci/* logs/* temp/*
+find . -name "*.sh" -exec chmod +x {} \;
+mkdir -p ci data logs temp www/cdn-assets www/download www/upload
+sudo chmod 0777 ci data logs temp www/download www/upload
+sudo chgrp -R www-data ci data www www/cdn-assets www/download www/upload
+sudo apt install php7.4-cli php7.4-curl php7.4-mbstring php7.4-zip
 
-# check php
-command -v php >/dev/null 2>&1 || fail "php-cli is NOT installed!"
+command -v composer >/dev/null 2>&1 || fail "PHP composer is not installed!"
 
-# check composer
-command -v composer >/dev/null 2>&1 || warn "PHP composer is NOT installed!"
+if [ ! -d "vendor" ]; then
+  . ./UPDATE.sh
+fi
 
-echo -en "Done.\n\n"
-info "Updating PHP vendors ...\n"
-sleep 2
-
-./UPDATE.sh
-
+info "Done."
 echo -en "\nRun \e[1m\e[4m./cli.sh doctor\e[0m to check your configuration.\n\n"

@@ -21,10 +21,7 @@ Architecture:
 * **View** is a set of mustache templates,
 * **Presenter** is a set of classes extending basic abstract presenter.
 
-REST API calls examples:
+API: **[/api](/api)**
 
-* **[API dashboard](https://mini.gscloud.cz/api)**
-
-Demo: **[https://mini.gscloud.cz](https://mini.gscloud.cz)**
-
-Repository:  **[https://github.com/GSCloud/mini](https://github.com/GSCloud/mini)**
+Demo: **[mini.gscloud.cz](https://mini.gscloud.cz)**  
+Repository:  **[github.com/GSCloud/mini](https://github.com/GSCloud/mini)**

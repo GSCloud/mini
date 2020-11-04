@@ -17,87 +17,98 @@ class CorePresenter extends APresenter
     /**
      * Main controller
      *
-     * @return object Singleton instance
+     * @return void
      */
     public function process()
     {
-        $this->checkRateLimit();
-
-        $data = $this->getData();
-        $presenter = $this->getPresenter();
-        $view = $this->getView();
-
-        // fix locales
-        $data["l"] = $data["l"] ?? [];
-        foreach ($data["l"] as $k => $v) {
-            StringFilters::correct_text_spacing($data["l"][$k], $data["lang"]);
+        if (isset($_GET["api"])) {
+            $api = (string) $_GET["api"];
+            $key = $this->getCfg("ci_tester.api_key") ?? null;
+            if ($key !== $api) {
+                $this->checkRateLimit();
+            }
+        } else {
+            $this->checkRateLimit();
         }
 
-        switch ($view) {
+        $data = $this->getData();
+        $match = $this->getMatch();
+        $presenter = $this->getPresenter();
+        $view = $this->getView();
+        $extras = [
+            "name" => "LASAGNA Core",
+            "fn" => $view,
+        ];
 
-            // sitemap
-            case "sitemap":
+        switch ($view) {
+            case "GetWebManifest":
+                $this->setHeaderJson();
+                $lang = $_GET["lang"] ?? "cs"; // language switch by GET parameter
+                if (!in_array($lang, ["cs", "en"])) {
+                    $lang = "cs";
+                }
+                return $this->setData("output", $this->setData("l", $this->getLocale($lang))->renderHTML("manifest"));
+                break;
+
+            case "GetSitemap":
                 $this->setHeaderText();
                 $map = [];
                 foreach ($presenter as $p) {
                     if (isset($p["sitemap"]) && $p["sitemap"]) {
-                        $map[] = trim($p["path"], "/ \t\n\r\0\x0B");
+                        $map[] = \trim($p["path"], "/ \t\n\r\0\x0B");
                     }
                 }
-                $output = $this->setData("sitemap", $map)->renderHTML("sitemap.txt");
-                return $this->setData("output", $output);
+                return $this->setData("output", $this->setData("sitemap", $map)->renderHTML("sitemap.txt"));
                 break;
 
-            // sw.js
-            case "swjs":
+            case "GetServiceWorker":
                 $this->setHeaderJavaScript();
                 $map = [];
                 foreach ($presenter as $p) {
                     if (isset($p["sitemap"]) && $p["sitemap"]) {
-                        $map[] = trim($p["path"], "/ \t\n\r\0\x0B");
+                        $map[] = \trim($p["path"], "/ \t\n\r\0\x0B");
                     }
                 }
-                $output = $this->setData("sitemap", $map)->renderHTML("sw.js");
-                return $this->setData("output", $output);
+                return $this->setData("output", $this->setData("sitemap", $map)->renderHTML("sw.js"));
                 break;
 
-            // API
-            case "api":
+            case "API":
                 $this->setHeaderHTML();
                 $map = [];
-                foreach ($presenter as $fn => $p) {
+                foreach ($presenter as $p) {
                     if (isset($p["api"]) && $p["api"]) {
                         $info = $p["api_info"] ?? "";
                         StringFilters::convert_eol_to_br($info);
                         $info = \htmlspecialchars($info);
-                        $info = preg_replace(
+                        $info = \preg_replace(
                             array('#href=&quot;(.*)&quot;#', '#&lt;(/?(?:pre|a|b|br|em|u|ul|li|ol)(\shref=".*")?/?)&gt;#'),
-                            array('href="\1"', '<\1>'), 
+                            array('href="\1"', '<\1>'),
                             $info
                         );
                         $map[] = [
-                            "count" => count($p["api_example"]),
+                            "count" => \count($p["api_example"]),
                             "deprecated" => $p["deprecated"] ?? false,
                             "desc" => \htmlspecialchars($p["api_description"] ?? ""),
                             "exam" => $p["api_example"] ?? [],
                             "finished" => $p["finished"] ?? false,
                             "info" => $info ? "<br><blockquote>${info}</blockquote>" : "",
                             "key" => $p["use_key"] ?? false,
-                            "linkit" => (\stripos($p["path"], "get") && !(\strpos($p["path"], "[")) ?? false),
+                            "linkit" => !(\strpos($p["path"], "[") ?? false), // do not link path with parameters
                             "method" => \strtoupper($p["method"]),
-                            "path" => trim($p["path"], "/ \t\n\r\0\x0B"),
+                            "path" => \trim($p["path"], "/ \t\n\r\0\x0B"),
                             "private" => $p["private"] ?? false,
-                            "usage" => ApiPresenter::getCallUsage($fn),
-                            "fn" => $fn,
                         ];
                     }
                 }
-
-                $output = $this->setData($data)->setData("apis", $map)->renderHTML("apis");
-                return $this->setData("output", $output);
+                \usort($map, function ($a, $b) {
+                    return \strcmp($a["desc"], $b["desc"]);
+                });
+                return $this->setData("output", $this->setData("apis", $map)->setData("l", $this->getLocale("en"))->renderHTML("apis"));
                 break;
-
+            default:
+                ErrorPresenter::getInstance()->process(404);
         }
         return $this;
     }
+
 }

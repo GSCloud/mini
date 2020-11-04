@@ -15,29 +15,35 @@ if [ -z "$GLOBALSYNC" ]; then
 fi
 . $dir"/_site_cfg.sh"
 
-if [ -z "${DEST}" ]; then fail "Error *DEST* in _site_cfg.sh !"; fi
-if [ -z "${HOST}" ]; then fail "Error *HOST* in _site_cfg.sh !"; fi
-if [ -z "${USER}" ]; then fail "Error *USER* in _site_cfg.sh !"; fi
+if [ -z "${DEST}" ]; then fail "Error in _site_cfg.sh !"; fi
+if [ -z "${HOST}" ]; then fail "Error in _site_cfg.sh !"; fi
+if [ -z "${USER}" ]; then fail "Error in _site_cfg.sh !"; fi
+
+mkdir -p app ci data temp www/cdn-assets www/download www/upload
+chmod 0777 www/download www/upload
+find www/ -type f -exec chmod 0644 {} \;
+find . -type f -iname "*.sh" -exec chmod +x {} \;
 
 VERSION=`git rev-parse HEAD`
 echo $VERSION > VERSION
 REVISIONS=`git rev-list --all --count`
 echo $REVISIONS > REVISIONS
-
 ln -s ../. www/cdn-assets/$VERSION >/dev/null 2>&1
 info "Version: $VERSION Revisions: $REVISIONS"
 
-rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" --exclude "www/download" \
+rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   *.json \
-  *.md \
   *.php \
-  *.sh \
   LICENSE \
   REVISIONS \
   VERSION \
+  _includes.sh \
+  _site_cfg.sh \
   app \
+  cli.sh \
+  remote_fixer.sh \
   vendor \
   www \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
-ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA}
+ssh root@$HOST $DEST/remote_fixer.sh ${BETA}

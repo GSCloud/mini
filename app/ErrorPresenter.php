@@ -17,9 +17,10 @@ class ErrorPresenter extends APresenter
     const CODESET = [
         400 => "Bad Request",
         401 => "Unauthorized",
-        402 => "Payment Required",
         403 => "Forbidden",
         404 => "Not Found",
+        406 => "Not Acceptable",
+        410 => "Gone",
         420 => "Enhance Your Calm",
         429 => "Too Many Requests",
         500 => "Internal Server Error",
@@ -28,24 +29,28 @@ class ErrorPresenter extends APresenter
     /**
      * Main controller
      *
-     * @return object Singleton instance
+     * @param int $error error code (optional)
      */
-    public function process()
+    public function process($err = null)
     {
         $this->setHeaderHtml();
-        $match = $this->getMatch();
-        $params = (array) ($match["params"] ?? []);
-        if (array_key_exists("code", $params)) {
-            $code = (int) $params["code"];
+        if (is_int($err)) {
+            $code = $err;
         } else {
-            $code = 404;
+            $match = $this->getMatch();
+            $params = (array) ($match["params"] ?? []);
+            if (array_key_exists("code", $params)) {
+                $code = (int) $params["code"];
+            } else {
+                $code = 404;
+            }
         }
         if (!isset(self::CODESET[$code])) {
             $code = 400;
         }
         $error = self::CODESET[$code];
         header("HTTP/1.1 ${code} ${error}");
-        $template = "<body><center><h1>HTTP Error $code 💣</h1><h2>" . self::CODESET[$code] . "</h2><h3><a href='/'>RELOAD ↻</a></h3></body>";
+        $template = "<body><center><h1><br>🤔 WebApp Error $code 💣</h1><h2>" . self::CODESET[$code] . "<br><br><br></h2><h1><a style='color:red;text-decoration:none' href='/'>RELOAD ↻</a></h1><img alt='' src='/img/logo.png'></body>";
         return $this->setData("output", $this->renderHTML($template));
     }
 }

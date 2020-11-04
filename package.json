@@ -7,7 +7,7 @@
   },
   "author": "Fred Brooker",
   "license": "MIT",
-  "description": "Tesseract MINI framework\r ========================",
+  "description": "Tesseract MINI framework",
   "devDependencies": {
     "gulp": "^4.0.2"
   },

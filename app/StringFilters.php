@@ -118,7 +118,6 @@ class StringFilters implements IStringFilters
     {
         $replace = array(
             "  " => " ",
-            "<a href" => "<a\nhref",
             " % " => "&nbsp;% ",
             " - " => " – ",
             " ... " => "&nbsp;… ",
@@ -190,7 +189,6 @@ class StringFilters implements IStringFilters
     {
         $replace = array(
             "  " => " ",
-            "<a href" => "<a\nhref",
             " % " => "&nbsp;%",
             " - " => " – ",
             " ... " => "&nbsp;… ",

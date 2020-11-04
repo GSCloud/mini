@@ -1,3 +1,8 @@
+admin:
+  method: GET|POST|DELETE
+  path: '/admin/[a:p]'
+  presenter: admin
+
 login:
   assert_httpcode: 303
   path: /login

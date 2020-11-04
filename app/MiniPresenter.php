@@ -41,10 +41,6 @@ class MiniPresenter extends APresenter
             $data["l"]["readme"] = MarkdownExtra::defaultTransform(@file_get_contents($file));
         }
 
-        foreach ($data["l"] ??= [] as $k => $v) { // fix locale text
-            StringFilters::correct_text_spacing($data["l"][$k], $data["lang"] ?? "en");
-        }
-
         // output
         $output = $this->setData($data)->renderHTML($presenter[$view]["template"]); // render
         StringFilters::trim_html_comment($output); // fix content
