@@ -14,7 +14,6 @@ namespace GSC;
  */
 class LogoutPresenter extends APresenter
 {
-
     /**
      * Main controller
      *
