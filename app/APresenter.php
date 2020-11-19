@@ -111,7 +111,8 @@ abstract class APresenter implements IPresenter
     const GS_CSV_PREFIX = "https://docs.google.com/spreadsheets/d/e/";
 
     /** @var string Google CSV URL postfix */
-    const GS_CSV_POSTFIX = "/pub?output=csv";
+    //const GS_CSV_POSTFIX = "/pub?output=csv";
+    const GS_CSV_POSTFIX = "/pub?gid=0&single=true&output=csv";
 
     /** @var string Google Sheet URL prefix */
     const GS_SHEET_PREFIX = "https://docs.google.com/spreadsheets/d/";
@@ -1209,7 +1210,7 @@ abstract class APresenter implements IPresenter
                     // 1. read from CSV file
                     $csv = false;
                     $subfile = \strtolower($k);
-                    if ($csv === false) {
+                    if ($csv === false && \file_exists((DATA . DS . "${subfile}.csv"))) {
                         $csv = @file_get_contents(DATA . DS . "${subfile}.csv");
                         if ($csv === false || \strlen($csv) < self::CSV_MIN_SIZE) {
                             $csv = false;
@@ -1217,11 +1218,13 @@ abstract class APresenter implements IPresenter
                     }
 
                     // 2. read from CSV file backup
-                    if ($csv === false) {
+                    if ($csv === false && \file_exists(DATA . DS . "${subfile}.bak")) {
                         $csv = @file_get_contents(DATA . DS . "${subfile}.bak");
                         if ($csv === false || \strlen($csv) < self::CSV_MIN_SIZE) {
                             $csv = false;
                             continue; // skip this CSV
+                        } else {
+                            \copy(DATA . DS . "${subfile}.bak", DATA . DS . "${subfile}.csv");
                         }
                     }
 
@@ -1359,11 +1362,23 @@ abstract class APresenter implements IPresenter
                     $force = true;
                 }
                 if ($force) {
-                    $data = @\file_get_contents(self::GS_CSV_PREFIX . $csvkey . self::GS_CSV_POSTFIX . "&time=" . time());
+                    if (\strpos($csvkey, "https") === 0) { // contains full path
+                        $data = @\file_get_contents($csvkey);
+                    } else {
+                        if (\strpos($csvkey, "?gid=") > 0) { // contains path incl. parameters
+                            $data = @\file_get_contents(self::GS_CSV_PREFIX . $csvkey);
+                        } else {
+                            $data = @\file_get_contents(self::GS_CSV_PREFIX . $csvkey . self::GS_CSV_POSTFIX);
+                        }
+                    }
+                }
+                if (\strpos($data, "!DOCTYPE html") > 0) {
+                    $data = ""; // we got HTML document
                 }
                 if (\strlen($data) >= self::CSV_MIN_SIZE) {
                     Cache::write($file, $data, "csv");
                     // @todo add OPERATION LOCK!!!
+
                     // delete old backup
                     if (\file_exists(DATA . DS . "${file}.bak")) {
                         if (@\unlink(DATA . DS . "${file}.bak") === false) {
@@ -1420,12 +1435,25 @@ abstract class APresenter implements IPresenter
             return null;
         }
         if (!$csv = Cache::read($file, "csv")) { // read CSV
-            $csv = @\file_get_contents(DATA . DS . "${file}.csv");
+            $csv = false;
+            if (file_exists(DATA . DS . "${file}.csv")) {
+                $csv = @\file_get_contents(DATA . DS . "${file}.csv");
+            }
+            if (\strpos($csv, "!DOCTYPE html") > 0) {
+                $csv = false; // we got HTML document
+            }
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
                 Cache::write($file, $csv, "csv");
                 return $csv;
             }
-            $csv = @\file_get_contents(DATA . DS . "${file}.bak"); // read CSV backup
+            $csv = false;
+            if (\file_exists(DATA . DS . "${file}.bak")) {
+                $csv = @\file_get_contents(DATA . DS . "${file}.bak"); // read CSV backup
+            }
+            if (\strpos($csv, "!DOCTYPE html") > 0) {
+                $csv = false; // we got HTML document
+            }
+            \copy(DATA . DS . "${file}.bak", DATA . DS . "${file}.csv");
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
                 Cache::write($file, $csv, "csv");
                 return $csv;

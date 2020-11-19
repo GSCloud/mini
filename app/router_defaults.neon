@@ -13,7 +13,6 @@ defaults:
   method: GET
   presenter: home
   private: false
-  sethl: false
   sitemap: false
   template: mini
   use_key: false
