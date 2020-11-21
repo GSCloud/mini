@@ -220,7 +220,7 @@ abstract class APresenter implements IPresenter
     /**
      * Class constructor
      */
-    final private function __construct()
+    private function __construct()
     {
         $class = get_called_class();
         if (array_key_exists($class, self::$instances)) {
@@ -233,7 +233,7 @@ abstract class APresenter implements IPresenter
      *
      * @return void
      */
-    final private function __clone()
+    private function __clone()
     {}
 
     /**
@@ -241,7 +241,7 @@ abstract class APresenter implements IPresenter
      *
      * @return void
      */
-    final private function __sleep()
+    public final function __sleep()
     {}
 
     /**
@@ -249,7 +249,7 @@ abstract class APresenter implements IPresenter
      *
      * @return void
      */
-    final private function __wakeup()
+    public final function __wakeup()
     {}
 
     /**
@@ -259,7 +259,7 @@ abstract class APresenter implements IPresenter
      * @param mixed $parameter
      * @return void
      */
-    final public function __call($name, $parameter)
+    public function __call($name, $parameter)
     {}
 
     /**
@@ -269,7 +269,7 @@ abstract class APresenter implements IPresenter
      * @param mixed $parameter
      * @return void
      */
-    final public static function __callStatic($name, $parameter)
+    public static function __callStatic($name, $parameter)
     {}
 
     /**
@@ -277,7 +277,7 @@ abstract class APresenter implements IPresenter
      *
      * @return string Serialized JSON model
      */
-    final public function __toString()
+    public function __toString()
     {
         return (string) json_encode($this->getData(), JSON_PRETTY_PRINT);
     }
@@ -674,7 +674,7 @@ abstract class APresenter implements IPresenter
             $this->setLocation("/err/500");
             exit;
         }
-        $i["nonce"] = \substr(\trim($nonce), 0, 8); // final nonce
+        $i["nonce"] = \substr(\trim($nonce), 0, 8); // nonce
         // check all keys
         if (\array_key_exists("avatar", $identity)) {
             $i["avatar"] = (string) $identity["avatar"];
@@ -744,7 +744,7 @@ abstract class APresenter implements IPresenter
             $this->setLocation("/err/500");
             exit;
         }
-        $nonce = \substr(\trim($nonce), 0, 8); // final nonce
+        $nonce = \substr(\trim($nonce), 0, 8); // nonce
         $i = [ // empty identity
             "avatar" => "",
             "country" => "",
