@@ -23,8 +23,9 @@ foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP"] as $x) {
 }
 
 /** @const Cache prefix */
+$x = $cfg["app"] ?? $cfg["canonical_url"] ?? $cfg["goauth_origin"] ?? "";
 defined("CACHEPREFIX") || define("CACHEPREFIX",
-    "cache_" . (string) ($cfg["app"] ?? sha1($cfg["canonical_url"]) ?? sha1($cfg["goauth_origin"]) ?? "app") . "_");
+    "cache_" . hash("sha256", $x) . "_");
 
 /** @const Domain name, extracted from $_SERVER array */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));

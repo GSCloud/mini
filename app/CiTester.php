@@ -44,7 +44,10 @@ class CiTester
                 $case = "production";
                 $target = $cfg["goauth_origin"] ?? "";
         }
-
+        if (!isset($cfg['app'])) {
+            $climate->out("<red>FATAL ERROR: missing app definition!\n\007");
+            exit;
+        }
         if (!strlen($target)) {
             $climate->out("<bold><green>${cfg['app']} ${case}");
             $climate->out("<red>FATAL ERROR: missing target URI!\n\007");
