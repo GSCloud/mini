@@ -1,7 +1,7 @@
 all: info
 
 info:
-	@echo "\e[1;32m👾 Welcome to Tesseract Lasagna 👾\n"
+	@echo "\e[1;32m👾 Welcome to Tesseract 👾\n"
 
 	@echo "🆘 \e[0;1mmake docs\e[0m - rebuild documentation"
 	@echo "🆘 \e[0;1mmake doctor\e[0m - run Tesseract doctor"
