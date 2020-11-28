@@ -35,6 +35,7 @@ rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   *.json \
   *.php \
   LICENSE \
+  README.md \
   REVISIONS \
   VERSION \
   _includes.sh \
