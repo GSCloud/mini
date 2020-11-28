@@ -77,7 +77,7 @@ class CorePresenter extends APresenter
                 $this->setHeaderXML();
                 $language = "en";
                 $l = [];
-                if (class_exists("RSSPresenter")) {
+                if (class_exists("\\GSC\\RSSPresenter")) {
                     $map = RSSPresenter::getInstance()->process(); // get items map from RSSPresenter
                 } else {
                     $map = [];
