@@ -271,6 +271,7 @@ switch ($presenter[$view]["template"]) {
             "*.googletagmanager.com",
             "*.ytimg.com",
             "cdn.onesignal.com",
+            "cdn.syndication.twimg.com",
             "cdnjs.cloudflare.com",
             "onesignal.com",
             "platform.twitter.com",

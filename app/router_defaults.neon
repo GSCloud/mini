@@ -23,8 +23,18 @@ GetWebManifest:
   presenter: core
   cached: true
 
-GetSitemap:
+GetTXTSitemap:
   path: /sitemap.txt
+  presenter: core
+  cached: true
+
+GetXMLSitemap:
+  path: /sitemap.xml
+  presenter: core
+  cached: true
+
+GetRSSXML:
+  path: /rss.xml
   presenter: core
   cached: true
 

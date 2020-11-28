@@ -50,7 +50,7 @@ class CorePresenter extends APresenter
                 return $this->setData("output", $this->setData("l", $this->getLocale($lang))->renderHTML("manifest"));
                 break;
 
-            case "GetSitemap":
+            case "GetTXTSitemap":
                 $this->setHeaderText();
                 $map = [];
                 foreach ($presenter as $p) {
@@ -59,6 +59,29 @@ class CorePresenter extends APresenter
                     }
                 }
                 return $this->setData("output", $this->setData("sitemap", $map)->renderHTML("sitemap.txt"));
+                break;
+
+            case "GetXMLSitemap":
+                $this->setHeaderXML();
+                $this->setHeaderText();
+                $map = [];
+                foreach ($presenter as $p) {
+                    if (isset($p["sitemap"]) && $p["sitemap"]) {
+                        $map[] = \trim($p["path"], "/ \t\n\r\0\x0B");
+                    }
+                }
+                return $this->setData("output", $this->setData("sitemap", $map)->renderHTML("sitemap.xml"));
+                break;
+
+            case "GetRSSXML":
+                $this->setHeaderXML();
+                $language = "en";
+                $l = $this->getLocale($language);
+                $map = RSSPresenter::getInstance()->process() ?? []; // get items map from RSSPresenter
+                $this->setData("rss_channel_description", $l["meta_description"] ?? "");
+                $this->setData("rss_channel_link", $l['$canonical_url'] ?? "");
+                $this->setData("rss_channel_title", $l["title"] ?? "");
+                return $this->setData("output", $this->setData("rss_items", $map)->renderHTML("rss.xml"));
                 break;
 
             case "GetServiceWorker":

@@ -68,6 +68,7 @@ interface IPresenter
     public function setHeaderJson();
     public function setHeaderPdf();
     public function setHeaderText();
+    public function setHeaderXML();
     public function setIdentity($identity);
     public function setLocation($locationm, $code);
 
@@ -952,6 +953,17 @@ abstract class APresenter implements IPresenter
     }
 
     /**
+     * Set HTTP header for XML content
+     *
+     * @return object Singleton instance
+     */
+    public function setHeaderXML()
+    {
+        \header('Content-Type: application/xml; charset=utf-8');
+        return $this;
+    }
+
+    /**
      * Get encrypted cookie
      *
      * @param string $name Cookie name
@@ -1344,9 +1356,9 @@ abstract class APresenter implements IPresenter
     /**
      * Load CSV data into cache
      *
-     * @param string $name CSV filename w/o ext.
-     * @param string $csvkey Google CSV token
-     * @param boolean $force do force load? (optional)
+     * @param string $name CSV nickname (foobar)
+     * @param string $csvkey Google CSV token (partial or full)
+     * @param boolean $force force load? (optional)
      * @return object Singleton instance
      */
     private function csv_preloader($name, $csvkey, $force = false)
@@ -1363,38 +1375,38 @@ abstract class APresenter implements IPresenter
                 }
                 if ($force) {
                     if (\strpos($csvkey, "https") === 0) { // contains full path
-                        $data = @\file_get_contents($csvkey);
+                        $remote = $csvkey;
                     } else {
                         if (\strpos($csvkey, "?gid=") > 0) { // contains path incl. parameters
-                            $data = @\file_get_contents(self::GS_CSV_PREFIX . $csvkey);
+                            $remote = self::GS_CSV_PREFIX . $csvkey;
                         } else {
-                            $data = @\file_get_contents(self::GS_CSV_PREFIX . $csvkey . self::GS_CSV_POSTFIX);
+                            $remote = self::GS_CSV_PREFIX . $csvkey . self::GS_CSV_POSTFIX;
                         }
                     }
+                    // fetch the remote file
+                    $this->addMessage("FILE: fetching ${remote}");
+                    $data = \file_get_contents($remote);
                 }
                 if (\strpos($data, "!DOCTYPE html") > 0) {
-                    $data = ""; // we got HTML document
+                    return $this; // we got HTML document = failure
                 }
                 if (\strlen($data) >= self::CSV_MIN_SIZE) {
                     Cache::write($file, $data, "csv");
-                    // @todo add OPERATION LOCK!!!
-
                     // delete old backup
                     if (\file_exists(DATA . DS . "${file}.bak")) {
                         if (@\unlink(DATA . DS . "${file}.bak") === false) {
-                            $this->addError("FILE: Deleting ${file}.bak failed!");
+                            $this->addError("FILE: delete ${file}.bak failed!");
                         }
                     }
                     // move CSV to backup
                     if (\file_exists(DATA . DS . "${file}.csv")) {
                         if (@\rename(DATA . DS . "${file}.csv", DATA . DS . "${file}.bak") === false) {
-                            $this->addError("FILE: Backuping ${file}.csv failed!");
+                            $this->addError("FILE: backup ${file}.csv failed!");
                         }
                     }
                     // write new CSV
-                    if (@\file_put_contents(DATA . DS . "${file}.csv", $data, LOCK_EX) === false) {
-                        $this->addError("FILE: Saving data to ${file}.csv failed!");
-                        return false;
+                    if (\file_put_contents(DATA . DS . "${file}.csv", $data, LOCK_EX) === false) {
+                        $this->addError("FILE: save ${file}.csv failed!");
                     }
                 }
             }
@@ -1415,6 +1427,7 @@ abstract class APresenter implements IPresenter
         $cfg = $this->getCfg();
         if (\array_key_exists($key, $cfg)) {
             foreach ((array) $cfg[$key] as $name => $csvkey) {
+                // fetch all CSV remotes and store locally
                 $this->csv_preloader($name, $csvkey, (bool) $force);
             }
         }
@@ -1424,39 +1437,41 @@ abstract class APresenter implements IPresenter
     /**
      * Read application CSV data
      *
-     * @param string $name naked CSV filename w/o ext
+     * @param string $name CSV nickname (foobar)
      * @return string CSV data
      */
     public function readAppData($name)
     {
-        $file = \strtolower(\trim((string) $name));
+        $name = \trim((string) $name);
+        $file = \strtolower($name);
         if (empty($file)) {
             $this->addCritical("EMPTY readAppData() filename parameter!");
             return null;
         }
-        if (!$csv = Cache::read($file, "csv")) { // read CSV
+        if (!$csv = Cache::read($file, "csv")) { // read CSV from cache
             $csv = false;
             if (file_exists(DATA . DS . "${file}.csv")) {
-                $csv = @\file_get_contents(DATA . DS . "${file}.csv");
+                $csv = \file_get_contents(DATA . DS . "${file}.csv");
             }
             if (\strpos($csv, "!DOCTYPE html") > 0) {
-                $csv = false; // we got HTML document
+                $csv = false; // we got HTML document, try backup
             }
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
-                Cache::write($file, $csv, "csv");
-                return $csv;
+                Cache::write($file, $csv, "csv"); // store into cache
+                //dump($csv);exit;
+                return $csv; // OK
             }
             $csv = false;
             if (\file_exists(DATA . DS . "${file}.bak")) {
                 $csv = @\file_get_contents(DATA . DS . "${file}.bak"); // read CSV backup
             }
             if (\strpos($csv, "!DOCTYPE html") > 0) {
-                $csv = false; // we got HTML document
+                return null; // we got HTML document = failure
             }
-            \copy(DATA . DS . "${file}.bak", DATA . DS . "${file}.csv");
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
-                Cache::write($file, $csv, "csv");
-                return $csv;
+                \copy(DATA . DS . "${file}.bak", DATA . DS . "${file}.csv"); // copy BAK to CSV
+                Cache::write($file, $csv, "csv"); // store into cache
+                return $csv; // OK
             }
             $csv = null; // failure
         }
