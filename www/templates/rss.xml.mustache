@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+  <title>{{ rss_channel_title }}</title>
+  <link>{{ rss_channel_link }}</link>
+  <description>{{ rss_channel_description }}</description>
+{{#rss_items}}
+  <item>
+    <title>{{ title }}</title>
+    <link>{{ link }}</link>
+    <description>{{ description }}</description>
+  </item>
+{{/rss_items}}
+</channel>
+
+</rss>
