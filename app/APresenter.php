@@ -322,7 +322,7 @@ abstract class APresenter implements IPresenter
                 if (GCP_PROJECTID && GCP_KEYS && !LOCALHOST) {
                     $logging = new LoggingClient([
                         "projectId" => GCP_PROJECTID,
-                        "keyFilePath" => APP . GCP_KEYS,
+                        "keyFilePath" => APP . DS . GCP_KEYS,
                     ]);
                     $google_logger = $logging->logger(PROJECT);
                 } else {

@@ -9,6 +9,9 @@
 
 namespace GSC;
 
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+
 /**
  * Core Presenter
  */
@@ -41,6 +44,7 @@ class CorePresenter extends APresenter
         ];
 
         switch ($view) {
+
             case "GetWebManifest":
                 $this->setHeaderJson();
                 $lang = $_GET["lang"] ?? "cs"; // language switch by GET parameter
@@ -48,6 +52,24 @@ class CorePresenter extends APresenter
                     $lang = "cs";
                 }
                 return $this->setData("output", $this->setData("l", $this->getLocale($lang))->renderHTML("manifest"));
+                break;
+
+            case "ReadEpubBook":
+                if (isset($match["params"]["trailing"])) {
+                    $epub = \trim($match["params"]["trailing"]);
+                    // security tweaks
+                    $epub = \str_replace("..", "", $epub);
+                    $epub = \str_replace("\\", "", $epub);
+                    $epub = \str_ireplace(".epub", "", $epub);
+                }
+                $file = WWW . "/${epub}.epub";
+                if ($epub && \file_exists($file)) {
+                    $this->setHeaderHTML();
+                    $data["epub"] = "/${epub}.epub";
+                    $output = $this->setData($data)->renderHTML($presenter[$view]["template"]);
+                    return $this->setData("output", $output);
+                }
+                return $this->writeJsonData(400, $extras);
                 break;
 
             case "GetTXTSitemap":
@@ -63,7 +85,6 @@ class CorePresenter extends APresenter
 
             case "GetXMLSitemap":
                 $this->setHeaderXML();
-                $this->setHeaderText();
                 $map = [];
                 foreach ($presenter as $p) {
                     if (isset($p["sitemap"]) && $p["sitemap"]) {
@@ -76,16 +97,90 @@ class CorePresenter extends APresenter
             case "GetRSSXML":
                 $this->setHeaderXML();
                 $language = "en";
-                $l = [];
+                $l = $this->getLocale($language);
                 if (class_exists("\\GSC\\RSSPresenter")) {
-                    $map = RSSPresenter::getInstance()->process(); // get items map from RSSPresenter
+                    $map = RSSPresenter::getInstance()->process() ?? []; // get items map from RSSPresenter
                 } else {
                     $map = [];
                 }
                 $this->setData("rss_channel_description", $l["meta_description"] ?? "");
                 $this->setData("rss_channel_link", $l['$canonical_url'] ?? "");
                 $this->setData("rss_channel_title", $l["title"] ?? "");
-                return $this->setData("output", $this->setData("rss_items", $map)->renderHTML("rss.xml"));
+                return $this->setData("output", $this->setData("rss_items", (array) $map)->renderHTML("rss.xml"));
+                break;
+
+            case "GetCsArticleHTMLExport":
+            case "GetEnArticleHTMLExport":
+                $language = \strtolower($presenter[$view]["language"]) ?? "cs";
+                $x = 0;
+                if (isset($match["params"]["profile"])) {
+                    $profile = trim($match["params"]["profile"]);
+                    $x++;
+                }
+                if (isset($match["params"]["trailing"])) {
+                    $path = trim($match["params"]["trailing"]);
+                    $x++;
+                }
+                if ($x !== 2) { // ERROR
+                    return $this->writeJsonData(400, $extras);
+                }
+                $html = '';
+                if ($path == "!") {
+                    $path = $language;
+                } else {
+                    $path = $language . "/" . $path;
+                }
+                $hash = hash("sha256", $path);
+                $file = DATA . "/summernote_${profile}_${hash}.json";
+                if (\file_exists($file)) {
+                    $html = \json_decode(@\file_get_contents(DATA . "/summernote_${profile}_${hash}.json"), true);
+                    if (\is_array($html)) {
+                        $html = \join("\n", $html);
+                    } else {
+                        $html = '';
+                    }
+                }
+                return $this->setHeaderHTML()->setData("output", $this->renderHTML($html));
+                break;
+
+            case "GetQR":
+                $x = 0;
+                if (isset($match["params"]["size"])) {
+                    $size = trim($match["params"]["size"]);
+                    switch ($size) {
+                        case "m":
+                            $scale = 8;
+                            break;
+                        case "l":
+                            $scale = 10;
+                            break;
+                        case "x":
+                            $scale = 15;
+                            break;
+                        case "s":
+                        default:
+                            $scale = 5;
+                    }
+                    $x++;
+                }
+                if (isset($match["params"]["trailing"])) {
+                    $text = trim($match["params"]["trailing"]);
+                    $x++;
+                }
+                if ($x !== 2) { // ERROR
+                    return $this->writeJsonData(400, $extras);
+                }
+                $options = new QROptions([
+                    'version' => 7,
+                    'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+                    'eccLevel' => QRCode::ECC_L,
+                    'scale' => $scale,
+                    'imageBase64' => false,
+                    'imageTransparent' => false,
+                ]);
+                header('Content-type: image/png');
+                echo (new QRCode($options))->render($text ?? "", CACHE . "/" . hash("sha256", $text) . ".png");
+                exit;
                 break;
 
             case "GetServiceWorker":
@@ -132,10 +227,104 @@ class CorePresenter extends APresenter
                 });
                 return $this->setData("output", $this->setData("apis", $map)->setData("l", $this->getLocale("en"))->renderHTML("apis"));
                 break;
+
+            case "GetAndroidJs":
+                $file = WWW . "/js/android-app.js";
+                if (\file_exists($file)) {
+                    $content = @\file_get_contents($file);
+                    $time = \filemtime(WWW . "/js/android-app.js") ?? null;
+                    $version = \hash("sha256", $content);
+                } else {
+                    $content = null;
+                    $version = null;
+                    $time = null;
+                }
+                return $this->writeJsonData([
+                    "js" => $content,
+                    "timestamp" => $time,
+                    "version" => $version,
+                ], $extras);
+                break;
+
+            case "GetAndroidCss":
+                $file = WWW . "/css/android.css";
+                if (\file_exists($file)) {
+                    $content = @\file_get_contents($file);
+                    $time = \filemtime(WWW . "/css/android.css") ?? null;
+                    $version = \hash("sha256", $content);
+                } else {
+                    $content = null;
+                    $version = null;
+                    $time = null;
+                }
+                return $this->writeJsonData([
+                    "css" => $content,
+                    "timestamp" => $time,
+                    "version" => $version,
+                ], $extras);
+                break;
+
+            case "GetCoreVersion":
+                $d = [];
+                $d["LASAGNA"]["core"]["date"] = (string) $data["VERSION_DATE"];
+                $d["LASAGNA"]["core"]["revisions"] = (int) $data["REVISIONS"];
+                $d["LASAGNA"]["core"]["timestamp"] = (int) $data["VERSION_TIMESTAMP"];
+                $d["LASAGNA"]["core"]["version"] = (string) $data["VERSION"];
+                return $this->writeJsonData($d, $extras);
+                break;
+
+            case "ReadArticles":
+                $x = 0;
+                if (isset($match["params"]["profile"])) {
+                    $profile = trim($match["params"]["profile"]);
+                    $x++;
+                }
+                if (isset($match["params"]["hash"])) {
+                    $hash = trim($match["params"]["hash"]);
+                    $x++;
+                }
+                if ($x !== 2) { // ERROR
+                    return $this->writeJsonData(400, $extras);
+                }
+                $data = "";
+                $time = null;
+                $file = DATA . "/summernote_${profile}_${hash}.json";
+                if (\file_exists($file)) {
+                    $data = @\file_get_contents($file);
+                    $time = \filemtime(DATA . "/summernote_${profile}_${hash}.json");
+                }
+                $crc = hash("sha256", $data);
+                if (isset($_GET["crc"])) {
+                    if ($_GET["crc"] == $crc) { // not modified
+                        return $this->writeJsonData(304, $extras);
+                    }
+                }
+                return $this->writeJsonData([
+                    "crc" => $crc,
+                    "hash" => $hash,
+                    "html" => $data,
+                    "profile" => $profile,
+                    "timestamp" => $time,
+                ], $extras);
+                break;
+        }
+
+        $language = \strtolower($presenter[$view]["language"]) ?? "cs";
+        $locale = $this->getLocale($language);
+        $hash = \hash('sha256', (string) \json_encode($locale));
+
+        switch ($view) {
+            case "GetCsDataVersion":
+            case "GetEnDataVersion":
+                $d = [];
+                $d["LASAGNA"]["data"]["language"] = $language;
+                $d["LASAGNA"]["data"]["version"] = $hash;
+                return $this->writeJsonData($d, $extras);
+                break;
+
             default:
                 ErrorPresenter::getInstance()->process(404);
         }
         return $this;
     }
-
 }

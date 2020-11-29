@@ -71,7 +71,7 @@ function logger($message, $severity = Logger::INFO)
     try {
         $logging = new LoggingClient([
             "projectId" => GCP_PROJECTID,
-            "keyFilePath" => APP . GCP_KEYS,
+            "keyFilePath" => APP . DS . GCP_KEYS,
         ]);
         $stack = $logging->logger(PROJECT);
         $stack->write(DOMAIN . " " . $stack->entry($message), [
