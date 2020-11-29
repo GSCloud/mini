@@ -60,7 +60,7 @@ class CliPresenter extends APresenter
         $climate->out("\t <bold>doctor</bold> \t - check system requirements");
         $climate->out("\t <bold>local</bold> \t\t - local CI test");
         $climate->out("\t <bold>prod</bold> \t\t - production CI test");
-        $climate->out("\t <bold>unit</bold> \t\t - run Unit test");
+        $climate->out("\t <bold>unit</bold> \t\t - run Unit test\n");
         return $this;
     }
 
