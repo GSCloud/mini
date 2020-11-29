@@ -414,14 +414,14 @@ abstract class APresenter implements IPresenter
                 "sha256_nonce" => function () {
                     return (string) \substr(\hash("sha256", \random_bytes(8) . (string) \time()), 0, 8);
                 },
-                "convert_hyperlinks" => function ($source, \Mustache_LambdaHelper $lambdaHelper) {
+                "convert_hyperlinks" => function ($source, \Mustache_LambdaHelper$lambdaHelper) {
                     $text = $lambdaHelper->render($source);
                     $text = preg_replace(
                         "/(https)\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,20})(\/[a-zA-Z0-9\-_\/]*)?/",
                         '<a rel=noopener target=_blank href="$0">$2$3</a>', $text);
                     return (string) $text;
                 },
-                "shuffle_lines" => function ($source, \Mustache_LambdaHelper $lambdaHelper) {
+                "shuffle_lines" => function ($source, \Mustache_LambdaHelper$lambdaHelper) {
                     $text = $lambdaHelper->render($source);
                     $arr = explode("\n", $text);
                     shuffle($arr);
@@ -1632,7 +1632,14 @@ abstract class APresenter implements IPresenter
         $view = $this->getView();
         $data["lang"] = $language = \strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
-        $data["l"] = $l = $this->getLocale($language);
+        $l = $this->getLocale($language);
+        if (is_null($l)) {
+            $l = [];
+            $l["title"] = "MISSING LOCALES!";
+        }
+        if (!array_key_exists("l", $data)) {
+            $data["l"] = $l;
+        }
 
         // compute data hash
         $data["DATA_VERSION"] = \hash('sha256', (string) \json_encode($l));
