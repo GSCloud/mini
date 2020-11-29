@@ -285,6 +285,7 @@ switch ($presenter[$view]["template"]) {
             "'unsafe-inline'",
             "data:;",
             "form-action",
+            "https://*",
             "'self';",
         ]));
 }

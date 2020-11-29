@@ -980,7 +980,7 @@ abstract class APresenter implements IPresenter
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key"; // secure key
         $key = \trim($key, "/.\\");
         $keyfile = DATA . DS . $key;
-        if (\file_exists($keyfile)) {
+        if (\file_exists($keyfile) && is_readable($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
         } else {
             $this->addError("HALITE: Missing encryption key!");
@@ -1005,13 +1005,18 @@ abstract class APresenter implements IPresenter
         $key = $this->getCfg("secret_cookie_key") ?? "secure.key"; // secure key
         $key = \trim($key, "/.\\");
         $keyfile = DATA . DS . $key;
-        if (\file_exists($keyfile)) {
+        if (\file_exists($keyfile) && is_readable($keyfile)) {
             $enc = KeyFactory::loadEncryptionKey($keyfile);
         } else {
             $enc = KeyFactory::generateEncryptionKey();
-            KeyFactory::save($enc, $keyfile);
-            @\chmod($keyfile, self::COOKIE_KEY_FILEMODE);
-            $this->addMessage("HALITE: New keyfile created");
+            if (is_writable($keyfile)) {
+                KeyFactory::save($enc, $keyfile);
+                @\chmod($keyfile, self::COOKIE_KEY_FILEMODE);
+                $this->addMessage("HALITE: New keyfile created");
+            }
+            else {
+                $this->addError("HALITE: Cannot write encryption key!");
+            }
         }
         $cookie = new Cookie($enc);
         if (DOMAIN == "localhost") {
