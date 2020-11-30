@@ -2,17 +2,14 @@
 <html class="no-js" lang="en">
 <head>
 <meta charset="utf-8">
-<title>{{ l.title }} | REST API</title>
+<title>{{ l.title }} | REST API dashboard</title>
 
 <meta http-equiv="x-ua-compatible" content="IE=edge">
-<meta name="author" content="{{#l.author}}{{ l.author }}{{/l.author}}">
-<meta name="description" content="{{#l.description}}{{ l.description }}{{/l.description}}">
-<meta name="keywords" content="{{#l.keywords}}{{ l.keywords }}{{/l.keywords}}">
 <meta name="format-detection" content="address=no">
 <meta name="format-detection" content="date=no">
 <meta name="format-detection" content="email=no">
 <meta name="format-detection" content="telephone=no">
-<meta name="generator" content="Tesseract 1.9.{{ REVISIONS }}">
+<meta name="generator" content="Tesseract 2.0.{{ REVISIONS }}">
 <meta name="theme-color" content="{{#theme_color}}{{ theme_color }}{{/theme_color}}{{^theme_color}}#fff{{/theme_color}}">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3">
 
@@ -113,7 +110,7 @@ window.addEventListener('load', function() {
 </div>
 
 <div class="container">
-Use API key as URL parameter <strong>"?apikey=0123456789abcdef"</strong>.
+API calls with <b>USE KEY</b> declaration must use a valid API key as URL parameter: <strong>"?apikey=0123456789abcdef"</strong>.
 <br>
 <br>
 
@@ -136,11 +133,11 @@ Use API key as URL parameter <strong>"?apikey=0123456789abcdef"</strong>.
       <br>
 
       REST: <b>{{ method }}</b>&nbsp;&nbsp;
-      {{^private}}<b class="b_public">&nbsp;PUBLIC&nbsp;</b>&nbsp;&nbsp;{{/private}}
-      {{#private}}<b class="b_private">&nbsp;PRIVATE&nbsp;</b>&nbsp;&nbsp;{{/private}}
-      {{#key}}<b class="b_key">&nbsp;USE KEY&nbsp;</b>&nbsp;&nbsp;{{/key}}
-      {{#finished}}<b class="b_finished">&nbsp;FINISHED&nbsp;</b>&nbsp;&nbsp;{{/finished}}
-      {{#deprecated}}<b class="b_deprecated">&nbsp;DEPRECATED&nbsp;</b>&nbsp;&nbsp;{{/deprecated}}
+      {{^private}}<b title="API call available without login" class="b_public">&nbsp;PUBLIC&nbsp;</b>&nbsp;&nbsp;{{/private}}
+      {{#private}}<b title="API call available with Google login only" class="b_private">&nbsp;PRIVATE&nbsp;</b>&nbsp;&nbsp;{{/private}}
+      {{#key}}<b title="API call expects a valid API key parameter in URL" class="b_key">&nbsp;USE KEY&nbsp;</b>&nbsp;&nbsp;{{/key}}
+      {{#finished}}<b title="the coding work on this API call is finished" class="b_finished">&nbsp;FINISHED&nbsp;</b>&nbsp;&nbsp;{{/finished}}
+      {{#deprecated}}<b title="API call will be removed in the future" class="b_deprecated">&nbsp;DEPRECATED&nbsp;</b>&nbsp;&nbsp;{{/deprecated}}
 
       {{#count}}
       <br>
@@ -161,7 +158,9 @@ Use API key as URL parameter <strong>"?apikey=0123456789abcdef"</strong>.
   </ol>
 
 </div>
+
 {{>body_api}}
 {{>body_footer}}
+
 </body>
 </html>
