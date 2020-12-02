@@ -18,7 +18,7 @@ use Nette\Neon\Neon;
 // SANITY CHECK
 foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP"] as $x) {
     if (!\defined($x)) {
-        die("FATAL ERROR: sanity check failed!");
+        die("FATAL ERROR: Sanity check for '$x' failed!");
     }
 }
 
@@ -27,10 +27,10 @@ $x = $cfg["app"] ?? $cfg["canonical_url"] ?? $cfg["goauth_origin"] ?? "";
 defined("CACHEPREFIX") || define("CACHEPREFIX",
     "cache_" . hash("sha256", $x) . "_");
 
-/** @const Domain name, extracted from $_SERVER array */
+/** @const Domain name, extracted from $_SERVER */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Server name, extracted from $_SERVER array */
+/** @const Server name, extracted from $_SERVER */
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
 /** @const Project name, default "LASAGNA" */
@@ -39,16 +39,16 @@ defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "LASAGNA"))
 /** @const Application name, default "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
 
-/** @const Monolog filename, full path */
+/** @const Monolog log filename, full path */
 defined("MONOLOG") || define("MONOLOG", LOGS . DS . "MONOLOG_" . SERVER . "_" . PROJECT . ".log");
 
-/** @const Google Cloud Platform project ID */
+/** @const GCP Project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
 
 /** @const Google Cloud Platform JSON auth keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 
-// include GCP keys
+// set GCP_KEYS ENV variable
 if (GCP_KEYS && \file_exists(APP . DS . GCP_KEYS)) {
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . DS . GCP_KEYS);
 }
@@ -82,13 +82,13 @@ function logger($message, $severity = Logger::INFO)
 
 // CACHING PROFILES
 $cache_profiles = array_replace([
-    "csv" => "+100 minutes", // storing CSV
+    "csv" => "+100 minutes", // CSV storage
     "day" => "+24 hours",
     "default" => "+5 minutes",
     "hour" => "+60 minutes",
     "limiter" => "+1 seconds", // access limiter
     "minute" => "+60 seconds",
-    "page" => "+3 minutes", // public web page, user not logged
+    "page" => "+7 minutes", // public web page, user not logged
     "second" => "+1 seconds",
     "tenminutes" => "+10 minutes",
     "tenseconds" => "+10 seconds",
@@ -96,7 +96,7 @@ $cache_profiles = array_replace([
 
 foreach ($cache_profiles as $k => $v) {
     Cache::setConfig("${k}_file", [
-        "className" => "Cake\Cache\Engine\FileEngine", // fallback file engine
+        "className" => "Cake\Cache\Engine\FileEngine", // fallback File engine
         "duration" => $v,
         "lock" => true,
         "path" => CACHE,
@@ -106,7 +106,7 @@ foreach ($cache_profiles as $k => $v) {
         "className" => "Cake\Cache\Engine\RedisEngine",
         "database" => $cfg["redis"]["database"] ?? 0,
         "duration" => $v,
-        "fallback" => "${k}_file", // fallback to file engine
+        "fallback" => "${k}_file", // fallback File engine filename
         "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
         "password" => $cfg["redis"]["password"] ?? "",
         "path" => CACHE,
@@ -152,12 +152,12 @@ $routes = $cfg["routes"] ?? [ // configuration can override defaults
 foreach ($routes as $r) {
     $r = APP . DS . $r;
     if (($content = @file_get_contents($r)) === false) {
-        logger("Error in routing table: $r", Logger::EMERGENCY);
+        logger("ERROR in routing table: $r", Logger::EMERGENCY);
         if (ob_get_level()) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Router: <b>$r</b>";
+        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Table: <b>$r</b>";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
@@ -218,12 +218,14 @@ $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 $data["match"] = $match;
 $data["view"] = $view;
 
-// sethl
+// "sethl" - set home language
 if ($router[$view]["sethl"] ?? false) {
     $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? null));
     switch ($r) {
         case "cs":
+        case "de":
         case "en":
+        case "sk":
             break;
 
         default:
@@ -246,12 +248,13 @@ if ($router[$view]["redirect"] ?? false) {
     exit;
 }
 
+// CSP HEADERS
 switch ($presenter[$view]["template"]) {
-    case "epub": // skip CSP headers
+    case "epub": // skip CSP headers for EPUB reader
         break;
 
     default:
-        header(implode(" ", [ // CSP headers
+        header(implode(" ", [
             "Content-Security-Policy: ",
             "default-src",
             "'unsafe-inline'",
@@ -315,10 +318,10 @@ if (method_exists($app, "SendAnalytics")) {
     $app->setData($data)->SendAnalytics();
 }
 
-// DATA OUTPUT
+// OUTPUT
 echo $data["output"] ?? "";
 
-// DEBUG OUTPUT
+// DEBUG
 if (DEBUG) {
     // remove private information
     unset($data["cf"]);
