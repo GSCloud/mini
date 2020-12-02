@@ -1,0 +1,51 @@
+{{#android_app}}
+<meta name="google-play-app" content="{{ android_app }}">
+<link rel="alternate" href="android-app://{{ android_app }}">
+{{/android_app}}
+
+{{#google.google-site-verification}}
+<meta name="google-site-verification" content="{{ google.google-site-verification }}">
+{{/google.google-site-verification}}
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="{{#design.status_bar}}{{ design.status_bar }}{{/design.status_bar}}{{^design.status_bar}}black{{/design.status_bar}}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="{{ l.title }}">
+<meta name="author" content="{{ l.meta_author }}">
+<meta name="description" content="{{ l.meta_description }}">
+<meta name="format-detection" content="address=no">
+<meta name="format-detection" content="date=no">
+<meta name="format-detection" content="email=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="generator" content="{{ l.meta_generator }}">
+<meta name="keywords" content="{{ l.meta_keywords }}">
+<meta name="theme-color" content="{{ design.theme_color }}">
+<meta name="viewport" content="{{#l.meta_viewport}}{{ l.meta_viewport }}{{/l.meta_viewport}}{{^l.meta_viewport}}width=device-width,initial-scale=1,maximum-scale=3{{/l.meta_viewport}}">
+
+<!-- https://developers.facebook.com/docs/opengraph/#types -->
+<meta property="article:author" content="{{ l.article_author }}">
+<meta property="article:publisher" content="{{ l.article_publisher }}">
+{{#l.fb_admins}}<meta property="fb:admins" content="{{ l.fb_admins }}">{{/l.fb_admins}}
+{{#l.fb_app_id}}<meta property="fb:app_id" content="{{ l.fb_app_id }}">{{/l.fb_app_id}}
+{{#langcs}}
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:locale:alternate" content="en_US">
+{{/langcs}}
+{{#langen}}
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="cs_CZ">
+{{/langen}}
+<meta property="og:description" content="{{ l.og_description }}">
+<meta property="og:image" content="{{#l.og_image}}{{ l.og_image }}{{/l.og_image}}{{^l.og_image}}{{ cdn }}/img/logo.png{{/l.og_image}}">
+<meta property="og:site_name" content="{{ l.og_site_name }}">
+<meta property="og:title" content="{{ l.og_title }}">
+<meta property="og:type" content="{{#l.og_type}}{{ l.og_type }}{{/l.og_type}}{{^l.og_type}}website{{/l.og_type}}">
+<meta property="og:url" content="{{#l.og_url}}{{ l.og_url }}{{/l.og_url}}{{^l.og_url}}{{ canonical_url }}{{ request_path }}{{/l.og_url}}">
+
+<!-- https://dev.twitter.com/cards -->
+<meta name="twitter:card" content="{{#l.twitter_card}}{{ l.twitter_card }}{{/l.twitter_card}}{{^l.twitter_card}}summary{{/l.twitter_card}}">
+<meta name="twitter:creator" content="{{ l.twitter_creator }}">
+<meta name="twitter:description" content="{{ l.twitter_description }}">
+<meta name="twitter:image" content="{{#l.twitter_image}}{{ l.twitter_image }}{{/l.twitter_image}}{{^l.twitter_image}}{{ cdn }}/img/logo.png{{/l.twitter_image}}">
+<meta name="twitter:site" content="{{#l.twitter_site}}{{ l.twitter_site }}{{/l.twitter_site}}{{^l.twitter_site}}@FredBrooker{{/l.twitter_site}}">
+<meta name="twitter:title" content="{{ l.twitter_title }}">
+<meta name="twitter:url" content="{{#l.twitter_url}}{{ l.twitter_url }}{{/l.twitter_url}}{{^l.twitter_url}}{{ canonical_url }}{{ request_path }}{{/l.twitter_url}}">
