@@ -96,8 +96,10 @@ window.addEventListener('load', function() {
 });
 
 </script>
+
 {{>gscloud_functions}}
 {{>install_head_google_analytics}}
+
 </head>
 <body>
 <span id="offline" style="position:fixed;bottom:0;left:0;color:#fff;background-color:#f00;font-size:1em;padding:4px;z-index:99999" aria-hidden="true" tabindex="-1"><b>offline</b></span>
@@ -128,10 +130,6 @@ API calls with <b>USE KEY</b> declaration must use a valid API key as URL parame
       <span style="color:blue"><strong>{{ base }}{{ path }}</strong></span>
       {{/linkit}}
       
-      <br>
-      fn: <strong>{{ fn }}</strong> usage: <strong>{{ usage }}</strong>
-      <br>
-
       REST: <b>{{ method }}</b>&nbsp;&nbsp;
       {{^private}}<b title="API call available without login" class="b_public">&nbsp;PUBLIC&nbsp;</b>&nbsp;&nbsp;{{/private}}
       {{#private}}<b title="API call available with Google login only" class="b_private">&nbsp;PRIVATE&nbsp;</b>&nbsp;&nbsp;{{/private}}
@@ -142,9 +140,8 @@ API calls with <b>USE KEY</b> declaration must use a valid API key as URL parame
       {{#count}}
       <br>
       <br>
-      {{#exam}}<i>Example(s):</i>{{/exam}}
+      <i>Example(s):</i>
       {{/count}}
-      
       {{#exam}}
       <br>
       <a target="_blank" rel="nolink" href="{{ base }}{{ . }}">{{ base }}{{ . }}</a>
