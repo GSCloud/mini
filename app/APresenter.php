@@ -653,7 +653,6 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "ip" => "",
             "name" => "",
-            "time" => 0,
         ];
         $file = DATA . DS . self::IDENTITY_NONCE; // nonce file
         if (!\file_exists($file)) {
@@ -692,7 +691,6 @@ abstract class APresenter implements IPresenter
         // set other values
         $i["country"] = $_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX";
         $i["ip"] = $this->getIP();
-        $i["time"] = time();
         // shuffle keys
         $out = [];
         $keys = \array_keys($i);
@@ -724,7 +722,6 @@ abstract class APresenter implements IPresenter
                 "id" => 1,
                 "ip" => "127.0.0.1",
                 "name" => "CLI User",
-                "time" => time(),
             ];
         }
 
@@ -736,10 +733,12 @@ abstract class APresenter implements IPresenter
             return $this->identity;
         }
         $file = DATA . DS . self::IDENTITY_NONCE; // nonce file
-        if (!\file_exists($file)) {
-            $this->setIdentity(); // initialize nonce
+/*
+        if (!\file_exists($file)) { // initialize nonce
+            $this->setIdentity(); // set empty identity
             return $this->identity;
         }
+*/
         if (!$nonce = @\file_get_contents($file)) {
             $this->addError("500: Internal Server Error -> cannot read nonce file");
             $this->setLocation("/err/500");
@@ -753,7 +752,6 @@ abstract class APresenter implements IPresenter
             "id" => 0,
             "ip" => "",
             "name" => "",
-            "time" => 0,
         ];
         do {
             if (isset($_GET["identity"])) { // URL identity
@@ -786,7 +784,8 @@ abstract class APresenter implements IPresenter
                     break;
                 }
                 if ($q["nonce"] == $nonce) { // compare nonces
-                    $this->setIdentity($q); // set new identity
+                    //$this->setIdentity($q);
+                    $this->identity = $q; // our identity
                     break;
                 }
             }
@@ -1072,7 +1071,7 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
-        $this->setIdentity([]);
+        $this->setIdentity();
         $this->clearCookie($this->getCfg("app") ?? "app");
         \header('Clear-Site-Data: "cookies"');
         $this->setLocation();
@@ -1136,7 +1135,6 @@ abstract class APresenter implements IPresenter
             }
         }
         $this->setLocation("/err/401"); // not authorized
-        exit;
     }
 
     /**
