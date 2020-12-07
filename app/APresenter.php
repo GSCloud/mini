@@ -733,12 +733,10 @@ abstract class APresenter implements IPresenter
             return $this->identity;
         }
         $file = DATA . DS . self::IDENTITY_NONCE; // nonce file
-/*
         if (!\file_exists($file)) { // initialize nonce
             $this->setIdentity(); // set empty identity
             return $this->identity;
         }
-*/
         if (!$nonce = @\file_get_contents($file)) {
             $this->addError("500: Internal Server Error -> cannot read nonce file");
             $this->setLocation("/err/500");
@@ -754,7 +752,7 @@ abstract class APresenter implements IPresenter
             "name" => "",
         ];
         do {
-            if (isset($_GET["identity"])) { // URL identity
+            if (isset($_GET["identity"])) { // URL parameter identity
                 $tls = "";
                 if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
                     $tls = "s";
@@ -789,7 +787,7 @@ abstract class APresenter implements IPresenter
                     break;
                 }
             }
-            $this->setIdentity($i); // empty or mock identity
+            $this->setIdentity($i); // set empty / mock identity
             break;
         } while (true);
         return $this->identity;
@@ -1328,7 +1326,6 @@ abstract class APresenter implements IPresenter
         $email = $cf["email"] ?? null;
         $apikey = $cf["apikey"] ?? null;
         $zoneid = $cf["zoneid"] ?? null;
-
         try {
             if ($email && $apikey && $zoneid) {
                 $key = new \Cloudflare\API\Auth\APIKey($email, $apikey);
@@ -1345,6 +1342,7 @@ abstract class APresenter implements IPresenter
                         if ($zone->id == $myzone) {
                             $zones->cachePurgeEverything($zone->id);
                             $this->addMessage("CLOUDFLARE: zoneid ${myzone} cache purged");
+                            $this->addAuditMessage("CLOUDFLARE: zoneid ${myzone} cache purged");
                         }
                     }
                 }
