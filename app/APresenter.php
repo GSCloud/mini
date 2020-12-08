@@ -763,17 +763,17 @@ abstract class APresenter implements IPresenter
             }
             if (isset($_COOKIE[$this->getCfg("app") ?? "app"])) { // COOKIE identity
                 $x = 0;
-                $q = json_decode($this->getCookie($this->getCfg("app") ?? "app"), true);
+                $q = \json_decode($this->getCookie($this->getCfg("app") ?? "app"), true);
                 if (!\is_array($q)) {
                     $x++;
                 } else {
-                    if (!array_key_exists("email", $q)) {
+                    if (!\array_key_exists("email", $q)) {
                         $x++;
                     }
-                    if (!array_key_exists("id", $q)) {
+                    if (!\array_key_exists("id", $q)) {
                         $x++;
                     }
-                    if (!array_key_exists("nonce", $q)) {
+                    if (!\array_key_exists("nonce", $q)) {
                         $x++;
                     }
                 }
@@ -800,7 +800,7 @@ abstract class APresenter implements IPresenter
      */
     public function getCurrentUser()
     {
-        $u = array_replace(
+        $u = \array_replace(
             [
                 "avatar" => "",
                 "country" => "",
