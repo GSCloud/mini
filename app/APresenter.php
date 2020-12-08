@@ -754,7 +754,7 @@ abstract class APresenter implements IPresenter
         do {
             if (isset($_GET["identity"])) { // URL parameter identity
                 $tls = "";
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+                if (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] != "off") {
                     $tls = "s";
                 }
                 $this->setCookie($this->getCfg("app") ?? "app", $_GET["identity"]); // set cookie
@@ -1259,7 +1259,7 @@ abstract class APresenter implements IPresenter
                     $locale = \array_replace($locale, \array_combine($keys, $values));
                 }
 
-                // git revisions
+                // EXTRA locale variable = git revisions
                 $locale['$revisions'] = $this->getData("REVISIONS");
 
                 // find all $ in combined locales array
@@ -1642,7 +1642,7 @@ abstract class APresenter implements IPresenter
         }
 
         // compute data hash
-        $data["DATA_VERSION"] = \hash('sha256', (string) \json_encode($l));
+        $data["DATA_VERSION"] = \hash("sha256", (string) \json_encode($l));
 
         // extract request path slug
         if (($pos = \strpos($data["request_path"], $language)) !== false) {
