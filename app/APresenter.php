@@ -106,7 +106,7 @@ abstract class APresenter implements IPresenter
     const COOKIE_KEY_FILEMODE = 0600;
 
     /** @var integer Cookie time to live */
-    const COOKIE_TTL = 86400 * 15;
+    const COOKIE_TTL = 86400 * 31;
 
     /** @var string Google CSV URL prefix */
     const GS_CSV_PREFIX = "https://docs.google.com/spreadsheets/d/e/";

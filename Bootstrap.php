@@ -18,10 +18,11 @@ define("TESSERACT_START", microtime(true));
 ob_start();
 error_reporting(E_ALL);
 @ini_set("auto_detect_line_endings", true);
-@ini_set("default_socket_timeout", 30);
+@ini_set("default_socket_timeout", 60);
 @ini_set("display_errors", true);
 
 // CONSTANTS (in SPECIFIC ORDER !!!)
+
 /** @const DIRECTORY_SEPARATOR */
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 
@@ -74,15 +75,16 @@ define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || C
 require_once ROOT . DS . "vendor" . DS . "autoload.php";
 
 // CONFIGURATION
-if (!$cfg = @file_get_contents(CONFIG)) {
-    $cfg = "dbg: TRUE";
+if (file_exists(CONFIG) && is_readable(CONFIG)) {
+    $cfg = @Neon::decode(file_get_contents(CONFIG));
+} else {
+    die("FATAL ERROR: Missing main CONFIG!");
 }
-$cfg = @Neon::decode($cfg);
-if (file_exists(CONFIG_PRIVATE)) {
-    $cfg = array_replace_recursive($cfg, @Neon::decode(@file_get_contents(CONFIG_PRIVATE)));
+if (file_exists(CONFIG_PRIVATE) && is_readable(CONFIG_PRIVATE)) {
+    $cfg = array_replace_recursive($cfg, @Neon::decode(file_get_contents(CONFIG_PRIVATE)));
 }
 
-// TIME ZONE
+// DEFAULT TIME ZONE
 date_default_timezone_set((string) ($cfg["date_default_timezone"] ?? "Europe/Prague"));
 
 // DEBUGGER
@@ -109,7 +111,6 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
     Debugger::$showFireLogger = (bool) ($cfg["DEBUG_SHOW_FIRELOGGER"] ?? false);
     Debugger::$showLocation = (bool) ($cfg["DEBUG_SHOW_LOCATION"] ?? false);
     Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? true);
-
     // debug cookie name: tracy-debug
     if ($cfg["DEBUG_COOKIE"] ?? null) {
         $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
@@ -121,31 +122,8 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
         Debugger::enable(Debugger::DETECT, LOGS);
     }
 }
-Debugger::timer("RUN"); // measure performance - START
 
-// DATA POPULATION
-$base58 = new \Tuupola\Base58;
-$data = $cfg;
-$data["cfg"] = $cfg; // backup
-$data["GET"] = array_map("htmlspecialchars", $_GET);
-$data["POST"] = array_map("htmlspecialchars", $_POST);
-$data["VERSION"] = $version = trim(@file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n");
-$data["VERSION_DATE"] = date("j. n. Y", @filemtime(ROOT . DS . "VERSION") ?? time());
-$data["VERSION_TIMESTAMP"] = @filemtime(ROOT . DS . "VERSION") ?? time();
-$data["REVISIONS"] = (int) trim(@file_get_contents(ROOT . DS . "REVISIONS") ?? "0", "\r\n");
-$data["PHP_VERSION"] = PHP_VERSION_ID;
-$data["DATA_VERSION"] = null;
-$data["cdn"] = $data["CDN"] = DS . "cdn-assets" . DS . $version;
-$data["host"] = $data["HOST"] = $host = $_SERVER["HTTP_HOST"] ?? "";
-$data["base"] = $data["BASE"] = $host ? (($_SERVER["HTTPS"] ?? "off" == "on") ? "https://${host}/" : "http://${host}/") : "";
-$data["request_uri"] = $_SERVER["REQUEST_URI"] ?? "";
-$data["request_path"] = $rqp = trim(trim(strtok($_SERVER["REQUEST_URI"] ?? "", "?&"), "/"));
-$data["request_path_hash"] = ($rqp == "") ? "" : hash("sha256", $rqp);
-$data["LOCALHOST"] = (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI;
-$data["VERSION_SHORT"] = $base58->encode(base_convert(substr(hash("sha256", $version), 0, 4), 16, 10));
-$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(8) . (string) time()), 0, 4);
-$data["utm"] = $data["UTM"] = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
-$data["ALPHA"] = (in_array($host, (array) ($cfg["alpha_hosts"] ?? [])));
-$data["BETA"] = (in_array($host, (array) ($cfg["beta_hosts"] ?? [])));
+// measure performance - START
+Debugger::timer("RUN"); 
 
 require_once APP . DS . "App.php";
