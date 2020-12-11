@@ -7,20 +7,6 @@ String.prototype.trim||(String.prototype.trim=function(){return this.replace(/^[
 
 (function (w, d, undefined) {
 
-  // add scroll progress element
-  var pbar = "_" + Date.now();
-  d.getElementsByTagName("body")[0].insertAdjacentHTML(
-    "beforeend", '<div class="progress-container"><div class="progress-bar" id="' + pbar + '"></div></div>'
-  );
-
-  // scroll progress bar
-  w.onscroll = function () {
-    var winScroll = d.body.scrollTop || d.documentElement.scrollTop;
-    var height = d.documentElement.scrollHeight - d.documentElement.clientHeight;
-    var scrolled = (winScroll / height) * 100;
-    if (d.getElementById(pbar)) d.getElementById(pbar).style.width = scrolled + "%";
-  };
-
   // check network status
   function checkNetwork(e) {
     if ("onLine" in navigator) {
