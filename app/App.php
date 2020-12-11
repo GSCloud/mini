@@ -79,7 +79,7 @@ defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? nu
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 
 // set GCP_KEYS ENV variable
-if (GCP_KEYS && \file_exists(APP . DS . GCP_KEYS)) {
+if (GCP_KEYS && file_exists(APP . DS . GCP_KEYS)) {
     putenv("GOOGLE_APPLICATION_CREDENTIALS=" . APP . DS . GCP_KEYS);
 }
 
@@ -263,7 +263,7 @@ if ($router[$view]["sethl"] ?? false) {
             $r = null;
     }
     if ($r) {
-        \setcookie("hl", $r, time() + 86400 * 31, "/");
+        setcookie("hl", $r, time() + 86400 * 31, "/");
         $presenter[$view]["language"] = $r;
         $data["presenter"] = $presenter;
     }
@@ -328,7 +328,9 @@ switch ($presenter[$view]["template"]) {
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\${p}";
 \Tracy\Debugger::timer("PROCESS");
+// set and process model
 $app = $controller::getInstance()->setData($data)->process();
+// get model back
 $data = $app->getData();
 
 // ANALYTICS DATA

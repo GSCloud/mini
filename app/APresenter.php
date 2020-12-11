@@ -1072,7 +1072,7 @@ abstract class APresenter implements IPresenter
         $this->setIdentity();
         $this->clearCookie($this->getCfg("app") ?? "app");
         \header('Clear-Site-Data: "cookies"');
-        $this->setLocation();
+        $this->setLocation("/?logout");
         exit;
     }
 
@@ -1606,7 +1606,7 @@ abstract class APresenter implements IPresenter
     /**
      * Data Expander
      *
-     * @param array $data Model array
+     * @param array $data Model by reference
      * @return void
      */
     public function dataExpander(&$data)
@@ -1614,24 +1614,32 @@ abstract class APresenter implements IPresenter
         if (empty($data)) {
             return;
         }
+        $data["user"] = $user = $this->getCurrentUser(); // logged user
+        $data["admin"] = $group = $this->getUserGroup(); // logged user group
+
+        // caching?
         $use_cache = true;
         if (array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
             $use_cache = false;
         }
-        $data["user"] = $user = $this->getCurrentUser(); // logged user
-        $data["admin"] = $group = $this->getUserGroup(); // logged user group
+        if (array_key_exists("logout", $_GET)) { // do not cache pages with ?logout
+            $use_cache = false;
+        }
         if ($group) {
             $data["admin_group_${group}"] = true;
         }
-        if ($user["id"]) { // no cache for logged users
+        if ($user["id"]) { // do not cache anything for logged users
             $use_cache = false;
         }
+        $data["use_cache"] = $use_cache;
 
         // language
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $data["lang"] = $language = \strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
+
+        // locale
         $l = $this->getLocale($language);
         if (is_null($l)) {
             $l = [];
@@ -1650,7 +1658,6 @@ abstract class APresenter implements IPresenter
         } else {
             $data["request_path_slug"] = $data["request_path"] ?? "";
         }
-        $data["use_cache"] = $use_cache;
     }
 
 }
