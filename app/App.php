@@ -359,8 +359,7 @@ if (DEBUG) {
     // remove private information
     unset($data["cf"]);
     unset($data["goauth_secret"]);
-    unset($data["goauth_client_id"]);
-    unset($data["google_drive_backup"]);
-    bdump($data, '$data');
+    // dumps
     bdump($app->getIdentity(), "identity");
+    bdump($data, 'model');
 }

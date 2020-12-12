@@ -112,7 +112,6 @@ abstract class APresenter implements IPresenter
     const GS_CSV_PREFIX = "https://docs.google.com/spreadsheets/d/e/";
 
     /** @var string Google CSV URL postfix */
-    //const GS_CSV_POSTFIX = "/pub?output=csv";
     const GS_CSV_POSTFIX = "/pub?gid=0&single=true&output=csv";
 
     /** @var string Google Sheet URL prefix */
@@ -127,87 +126,87 @@ abstract class APresenter implements IPresenter
     /** @var string Identity nonce filename */
     const IDENTITY_NONCE = "identity_nonce.key";
 
-    // GOOGLE DRIVE TEMPLATES
-
-    /** @var string */
-    const GOOGLE_SHEET_EDIT =
-        "https://docs.google.com/spreadsheets/d/FILEID/edit#gid=0";
-
-    /** @var string */
-    const GOOGLE_SHEET_VIEW =
-        "https://docs.google.com/spreadsheets/d/FILEID/view#gid=0";
+    // GOOGLE TEMPLATES
 
     /** @var string */
     const GOOGLE_DOCUMENT_EXPORT_DOC =
-        "https://docs.google.com/document/d/FILEID/export?format=doc";
+        "https://docs.google.com/document/d/[FILEID]/export?format=doc";
 
     /** @var string */
     const GOOGLE_DOCUMENT_EXPORT_PDF =
-        "https://docs.google.com/document/d/FILEID/export?format=pdf";
+        "https://docs.google.com/document/d/[FILEID]/export?format=pdf";
+
+    /** @var string */
+    const GOOGLE_SHEET_EDIT =
+        "https://docs.google.com/spreadsheets/d/[FILEID]/edit#gid=0";
+
+    /** @var string */
+    const GOOGLE_SHEET_VIEW =
+        "https://docs.google.com/spreadsheets/d/[FILEID]/view#gid=0";
 
     /** @var string */
     const GOOGLE_SHEET_EXPORT_DOCX =
-        "https://docs.google.com/spreadsheets/d/FILEID/export?format=docx";
+        "https://docs.google.com/spreadsheets/d/[FILEID]/export?format=docx";
 
     /** @var string */
     const GOOGLE_SHEET_EXPORT_PDF =
-        "https://docs.google.com/spreadsheets/d/FILEID/export?format=pdf";
+        "https://docs.google.com/spreadsheets/d/[FILEID]/export?format=pdf";
 
     /** @var string */
     const GOOGLE_SHEET_EXPORT_XLSX =
-        "https://docs.google.com/spreadsheets/d/FILEID/export?format=xlsx";
+        "https://docs.google.com/spreadsheets/d/[FILEID]/export?format=xlsx";
 
     /** @var string */
-    const GOOGLE_SHEET_EXPORT_CSV =
-        "https://docs.google.com/spreadsheets/d/e/FILEID/pub?output=csv";
+    const GOOGLE_SHEET_PUBLIC_EXPORT_CSV =
+        "https://docs.google.com/spreadsheets/d/e/[FILEID]/pub?output=csv";
 
     /** @var string */
-    const GOOGLE_SHEET_EXPORT_HTML =
-        "https://docs.google.com/spreadsheets/d/e/FILEID/pubhtml";
+    const GOOGLE_SHEET_PUBLIC_EXPORT_HTML =
+        "https://docs.google.com/spreadsheets/d/e/[FILEID]/pubhtml";
 
     /** @var string */
-    const GOOGLE_SUITE_IMAGE_VIEW =
-        "https://drive.google.com/a/DOMAIN/thumbnail?id=IMAGEID";
+    const GOOGLE_WORKSPACE_IMAGE_THUMBNAIL =
+        "https://drive.google.com/a/[DOMAIN]/thumbnail?id=[IMAGEID]";
 
     /** @var string */
-    const GOOGLE_IMAGE_VIEW =
-        "https://drive.google.com/thumbnail?id=IMAGEID";
+    const GOOGLE_IMAGE_THUMBNAIL =
+        "https://drive.google.com/thumbnail?id=[IMAGEID]";
 
     /** @var string */
     const GOOGLE_FILE_EXPORT_DOWNLOAD =
-        "https://drive.google.com/uc?export=download&id=FILEID";
+        "https://drive.google.com/uc?export=download&id=[FILEID]";
 
     /** @var string */
     const GOOGLE_FILE_EXPORT_VIEW =
-        "https://drive.google.com/uc?export=view&id=FILEID";
+        "https://drive.google.com/uc?export=view&id=[FILEID]";
 
     // PRIVATE VARS
 
-    /** @var array $data Model array */
+    /** @var array Data Model */
     private $data = [];
 
-    /** @var array $messages Array of messages */
+    /** @var array common messages */
     private $messages = [];
 
-    /** @var array $errors Array of errors */
+    /** @var array common errors */
     private $errors = [];
 
-    /** @var array $criticals Array of critical errors */
+    /** @var array critical errors */
     private $criticals = [];
 
-    /** @var array $identity Identity associative array */
+    /** @var array user identity */
     private $identity = [];
 
-    /** @var boolean $force_csv_check Recheck locales? */
+    /** @var boolean whether to re-check locales? */
     private $force_csv_check = false;
 
-    /** @var array $csv_postload Array of CSV keys */
+    /** @var array CSV keys */
     private $csv_postload = [];
 
-    /** @var array $cookies Array of saved cookies */
+    /** @var array saved cookies */
     private $cookies = [];
 
-    /** @var array $instances Array of singleton instances */
+    /** @var array Singleton instances */
     private static $instances = [];
 
     /**
@@ -399,6 +398,7 @@ abstract class APresenter implements IPresenter
         if (is_null($template)) {
             return "";
         }
+        // $type: string = 0, template = 1
         $type = (file_exists(TEMPLATES . DS . "${template}.mustache")) ? 1 : 0;
         $renderer = new \Mustache_Engine(array(
             "template_class_prefix" => "__" . SERVER . "_" . PROJECT . "_",
@@ -1085,7 +1085,7 @@ abstract class APresenter implements IPresenter
     public function checkRateLimit($max = null)
     {
         if (CLI) {
-            return;
+            return $this;
         }
         $f = "user_rate_limit_{$this->getUID()}";
         $rate = (int) (Cache::read($f, "limiter") ?? 0);
@@ -1093,6 +1093,7 @@ abstract class APresenter implements IPresenter
         $max??=self::LIMITER_MAXIMUM;
         if (!LOCALHOST && $rate > (int) $max) { // over limits && NOT localhost
             $this->setLocation("/err/420");
+            exit;
         }
         return $this;
     }
@@ -1133,6 +1134,7 @@ abstract class APresenter implements IPresenter
             }
         }
         $this->setLocation("/err/401"); // not authorized
+        exit;
     }
 
     /**
@@ -1488,9 +1490,9 @@ abstract class APresenter implements IPresenter
      */
     public function writeJsonData($data, $headers = [], $switches = null)
     {
-        $out = [];
         $code = 200;
         $locale = [];
+        $out = [];
         $out["timestamp"] = \time();
         $out["version"] = (string) ($this->getCfg("version") ?? "v1");
         if (\is_array($this->getCfg("locales"))) { // locales
@@ -1595,8 +1597,11 @@ abstract class APresenter implements IPresenter
         $out["code"] = (int) $code;
         $out["message"] = $msg;
         $out["processing_time"] = \round((\microtime(true) - TESSERACT_START) * 1000, 2) . " ms";
+        // merge the headers in
         $out = \array_merge_recursive($out, $headers);
+        // set the data model
         $out["data"] = $data ?? null;
+        // extra switches
         if (\is_null($switches)) {
             return $this->setData("output", \json_encode($out, JSON_PRETTY_PRINT));
         }
@@ -1619,10 +1624,10 @@ abstract class APresenter implements IPresenter
 
         // caching?
         $use_cache = true;
-        if (array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
+        if (\array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
             $use_cache = false;
         }
-        if (array_key_exists("logout", $_GET)) { // do not cache pages with ?logout
+        if (\array_key_exists("logout", $_GET)) { // do not cache pages with ?logout
             $use_cache = false;
         }
         if ($group) {
@@ -1645,7 +1650,7 @@ abstract class APresenter implements IPresenter
             $l = [];
             $l["title"] = "MISSING LOCALES!";
         }
-        if (!array_key_exists("l", $data)) {
+        if (!\array_key_exists("l", $data)) {
             $data["l"] = $l;
         }
 
