@@ -10,7 +10,6 @@
 namespace GSC;
 
 use Cake\Cache\Cache;
-use Exception;
 use Google\Cloud\Logging\LoggingClient;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -659,11 +658,13 @@ abstract class APresenter implements IPresenter
             try {
                 $nonce = \hash("sha256", \random_bytes(256) . \time());
                 if (\file_put_contents($file, $nonce, LOCK_EX) === false) {
-                    throw new \Exception("File write failed!");
+                    $this->addError("500: Internal Server Error -> cannot write nonce file");
+                    $this->setLocation("/err/500");
+                    exit;
                 }
                 @\chmod($file, 0660);
                 $this->addMessage("ADMIN: nonce file created");
-            } catch (Exception $e) {
+            } catch (\Exception$e) {
                 $this->addError("500: Internal Server Error -> cannot create nonce file: " . $e->getMessage());
                 $this->setLocation("/err/500");
                 exit;
@@ -1058,7 +1059,7 @@ abstract class APresenter implements IPresenter
     {
         $code = (int) $code;
         if (empty($location)) {
-            $location = "/?nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 4);
+            $location = "/?nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 8);
         }
         \header("Location: $location", true, ($code > 300) ? $code : 303);
         exit;
@@ -1072,7 +1073,8 @@ abstract class APresenter implements IPresenter
         $this->setIdentity();
         $this->clearCookie($this->getCfg("app") ?? "app");
         \header('Clear-Site-Data: "cookies"');
-        $this->setLocation("/?logout");
+        $location = "/?logout&nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 8);
+        $this->setLocation($location);
         exit;
     }
 
@@ -1217,7 +1219,7 @@ abstract class APresenter implements IPresenter
         $file = \strtolower("${language}_locale");
         $locale = Cache::read($file, "default");
         if ($locale === false || empty($locale)) {
-            if (array_key_exists("locales", $cfg)) {
+            if (\array_key_exists("locales", $cfg)) {
                 $locale = [];
                 foreach ((array) $cfg["locales"] as $k => $v) {
 
@@ -1225,7 +1227,7 @@ abstract class APresenter implements IPresenter
                     $csv = false;
                     $subfile = \strtolower($k);
                     if ($csv === false && \file_exists((DATA . DS . "${subfile}.csv"))) {
-                        $csv = @file_get_contents(DATA . DS . "${subfile}.csv");
+                        $csv = @\file_get_contents(DATA . DS . "${subfile}.csv");
                         if ($csv === false || \strlen($csv) < self::CSV_MIN_SIZE) {
                             $csv = false;
                         }
@@ -1233,7 +1235,7 @@ abstract class APresenter implements IPresenter
 
                     // 2. read from CSV file backup
                     if ($csv === false && \file_exists(DATA . DS . "${subfile}.bak")) {
-                        $csv = @file_get_contents(DATA . DS . "${subfile}.bak");
+                        $csv = @\file_get_contents(DATA . DS . "${subfile}.bak");
                         if ($csv === false || \strlen($csv) < self::CSV_MIN_SIZE) {
                             $csv = false;
                             continue; // skip this CSV
@@ -1255,8 +1257,10 @@ abstract class APresenter implements IPresenter
                         foreach ($records->fetchColumn($language) as $x) {
                             $values[] = $x;
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception$e) {
                         $this->addCritical("ERR: $language locale $k CORRUPTED");
+                        $this->addAuditMessage("ERR: $language locale $k CORRUPTED");
+                        continue;
                     }
                     $locale = \array_replace($locale, \array_combine($keys, $values));
                 }
@@ -1385,9 +1389,8 @@ abstract class APresenter implements IPresenter
                             $remote = self::GS_CSV_PREFIX . $csvkey . self::GS_CSV_POSTFIX;
                         }
                     }
-                    // fetch the remote file
                     $this->addMessage("FILE: fetching ${remote}");
-                    $data = \file_get_contents($remote);
+                    $data = @\file_get_contents($remote);
                 }
                 if (\strpos($data, "!DOCTYPE html") > 0) {
                     return $this; // we got HTML document = failure
@@ -1429,7 +1432,6 @@ abstract class APresenter implements IPresenter
         $cfg = $this->getCfg();
         if (\array_key_exists($key, $cfg)) {
             foreach ((array) $cfg[$key] as $name => $csvkey) {
-                // fetch all CSV remotes and store locally
                 $this->csv_preloader($name, $csvkey, (bool) $force);
             }
         }
@@ -1460,7 +1462,6 @@ abstract class APresenter implements IPresenter
             }
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
                 Cache::write($file, $csv, "csv"); // store into cache
-                //dump($csv);exit;
                 return $csv; // OK
             }
             $csv = false;
@@ -1543,7 +1544,7 @@ abstract class APresenter implements IPresenter
             $m = null;
             switch ($code) {
                 case 304:
-                    $m = "Not modified";
+                    $m = "Not Modified";
                     break;
                 case 400:
                     $m = "Bad request";
@@ -1558,7 +1559,7 @@ abstract class APresenter implements IPresenter
                     $m = "Forbidden";
                     break;
                 case 404:
-                    $m = "Not found";
+                    $m = "Not Found";
                     break;
                 case 405:
                     $m = "Method Not Allowed";
@@ -1585,11 +1586,11 @@ abstract class APresenter implements IPresenter
                     $m = "Expectation Failed";
                     break;
                 default:
-                    $msg = "Unknown error 🦄";
+                    $msg = "Unknown Error 🦄";
             }
             if ($m) {
                 $msg = "$m.";
-                \header("$h $code $m");
+                \header("$h $code $m"); // set corresponding HTTP header
             }
         }
         // output

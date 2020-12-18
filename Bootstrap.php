@@ -11,94 +11,94 @@
 use Nette\Neon\Neon;
 use Tracy\Debugger;
 
-/** @const Global timer start */
+/** @const start global timer */
 define("TESSERACT_START", microtime(true));
 
-// START
 ob_start();
 error_reporting(E_ALL);
-@ini_set("auto_detect_line_endings", true);
-@ini_set("default_socket_timeout", 20);
-@ini_set("display_errors", true);
+@ini_set("auto_detect_line_endings", defined("AUTO_DETECT_LINE_ENDINGS") ? AUTO_DETECT_LINE_ENDINGS : true);
+@ini_set("default_socket_timeout", defined("DEFAULT_SOCKET_TIMEOUT") ? DEFAULT_SOCKET_TIMEOUT : 20);
+@ini_set("display_errors", defined("DISPLAY_ERRORS") ? DISPLAY_ERRORS : true);
 
-// CONSTANTS (in SPECIFIC ORDER !!!)
+// CONSTANTS in SPECIFIC ORDER!
+// (DO NOT ADD FINAL SEPARATOR FOR DIRECTORIES)
 
-/** @const DIRECTORY_SEPARATOR */
+/** @const DIRECTORY_SEPARATOR shortcut */
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 
-/** @const Bootstrap root folder */
+/** @const root folder */
 defined("ROOT") || define("ROOT", __DIR__);
 
-/** @const Application folder */
+/** @const application folder, defaults to "app" */
 defined("APP") || define("APP", ROOT . DS . "app");
 
-/** @const Cache and logs folder, defaults to "temp" */
+/** @const cache folder, defaults to "temp" */
 defined("CACHE") || define("CACHE", ROOT . DS . "temp");
 
-/** @const Application data folder, defaults to "data" */
+/** @const application data folder, defaults to "data" */
 defined("DATA") || define("DATA", ROOT . DS . "data");
 
-/** @const Website assets folder, defaults to "www" */
+/** @const website assets folder, defaults to "www" */
 defined("WWW") || define("WWW", ROOT . DS . "www");
 
-/** @const Configuration file, full path */
+/** @const configuration file, full path */
 defined("CONFIG") || define("CONFIG", APP . DS . "config.neon");
 
-/** @const Private configuration file, full path */
+/** @const private configuration file, full path */
 defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", APP . DS . "config_private.neon");
 
-/** @const Website templates folder */
+/** @const templates folder */
 defined("TEMPLATES") || define("TEMPLATES", WWW . DS . "templates");
 
-/** @const Website templates partials folder */
+/** @const templates partials folder */
 defined("PARTIALS") || define("PARTIALS", WWW . DS . "partials");
 
-/** @const Website downloads folder */
+/** @const download folder */
 defined("DOWNLOAD") || define("DOWNLOAD", WWW . DS . "download");
 
-/** @const Website uploads folder */
+/** @const upload folder */
 defined("UPLOAD") || define("UPLOAD", WWW . DS . "upload");
 
-/** @const Log files folder */
+/** @const log files folder */
 defined("LOGS") || define("LOGS", ROOT . DS . "logs");
 
-/** @const Temporary files folder */
+/** @const temporary files folder */
 defined("TEMP") || define("TEMP", ROOT . DS . "temp");
 
-/** @const True if running from command line interface */
+/** @const true if running from command line interface */
 define("CLI", (bool) (PHP_SAPI == "cli"));
 
-/** @const True if running server locally */
+/** @const true if running server locally */
 define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
 
-// COMPOSER
+// load COMPOSER
 require_once ROOT . DS . "vendor" . DS . "autoload.php";
 
-// CONFIGURATION
+// read CONFIGURATION
 if (file_exists(CONFIG) && is_readable(CONFIG)) {
-    $cfg = @Neon::decode(file_get_contents(CONFIG));
+    $cfg = @Neon::decode(@file_get_contents(CONFIG));
 } else {
-    die("FATAL ERROR: Missing main CONFIG!");
+    die("FATAL ERROR: Missing main CONFIGURATION!");
 }
 if (file_exists(CONFIG_PRIVATE) && is_readable(CONFIG_PRIVATE)) {
-    $cfg = array_replace_recursive($cfg, @Neon::decode(file_get_contents(CONFIG_PRIVATE)));
+    $cfg = array_replace_recursive($cfg, @Neon::decode(@file_get_contents(CONFIG_PRIVATE)));
 }
 
-// DEFAULT TIME ZONE
+// set DEFAULT TIME ZONE
 date_default_timezone_set((string) ($cfg["date_default_timezone"] ?? "Europe/Prague"));
 
-// DEBUGGER
-if (($_SERVER["SERVER_NAME"] ?? "") == "localhost") {
+// configure DEBUGGER
+if (($_SERVER["SERVER_NAME"] ?? "") == "localhost") { // for LOCALHOST only
     if (($cfg["dbg"] ?? null) === false) {
-        defined("DEBUG") || define("DEBUG", false); // DISABLED via configuration
+        defined("DEBUG") || define("DEBUG", false); // force DISABLED via configuration
     }
-    defined("DEBUG") || define("DEBUG", true); // ENABLED for localhost
+    defined("DEBUG") || define("DEBUG", true); // always ENABLED for localhost
 }
 if (CLI === true) {
     defined("DEBUG") || define("DEBUG", false); // DISABLED for CLI
 }
 if (isset($_SERVER["HTTP_USER_AGENT"]) && strpos($_SERVER["HTTP_USER_AGENT"], "curl") !== false) {
-    defined("DEBUG") || define("DEBUG", false); // DISABLE for curl
+    defined("DEBUG") || define("DEBUG", false); // DISABLED for curl
 }
 defined("DEBUG") || define("DEBUG", (bool) ($cfg["dbg"] ?? false)); // set via configuration or DISABLED
 
@@ -111,6 +111,7 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
     Debugger::$showFireLogger = (bool) ($cfg["DEBUG_SHOW_FIRELOGGER"] ?? false);
     Debugger::$showLocation = (bool) ($cfg["DEBUG_SHOW_LOCATION"] ?? false);
     Debugger::$strictMode = (bool) ($cfg["DEBUG_STRICT_MODE"] ?? true);
+
     // debug cookie name: tracy-debug
     if ($cfg["DEBUG_COOKIE"] ?? null) {
         $address = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
@@ -123,7 +124,8 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
     }
 }
 
-// measure performance - START
+// start measuring performance
 Debugger::timer("RUN"); 
 
+// load the App
 require_once APP . DS . "App.php";

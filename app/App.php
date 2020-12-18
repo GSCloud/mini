@@ -113,9 +113,10 @@ function logger($message, $severity = Logger::INFO)
 
 // CACHING PROFILES
 $cache_profiles = array_replace([
-    "csv" => "+100 minutes", // CSV storage
+    "csv" => "+120 minutes", // CSV cold storage
     "day" => "+24 hours",
     "default" => "+5 minutes",
+    "fiveminutes" => "+5 minutes",
     "hour" => "+60 minutes",
     "limiter" => "+1 seconds", // access limiter
     "minute" => "+60 seconds",
@@ -123,6 +124,8 @@ $cache_profiles = array_replace([
     "second" => "+1 seconds",
     "tenminutes" => "+10 minutes",
     "tenseconds" => "+10 seconds",
+    "thirtyminutes" => "+30 minutes",
+    "thirtyseconds" => "+30 seconds",
 ], (array) ($cfg["cache_profiles"] ?? []));
 
 foreach ($cache_profiles as $k => $v) {
@@ -188,7 +191,7 @@ foreach ($routes as $r) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2>Table: <b>$r</b>";
+        echo "<h1>Internal Server Error</h1><h2>Error in routing tables</h2><h3>$r</h3>";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
