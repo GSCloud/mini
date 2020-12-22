@@ -1084,7 +1084,7 @@ abstract class APresenter implements IPresenter
      * @param integer $max Hits per second (optional)
      * @return object Singleton instance
      */
-    public function checkRateLimit($max = null)
+    public function checkRateLimit($max = self::LIMITER_MAXIMUM)
     {
         if (CLI) {
             return $this;
@@ -1092,7 +1092,6 @@ abstract class APresenter implements IPresenter
         $f = "user_rate_limit_{$this->getUID()}";
         $rate = (int) (Cache::read($f, "limiter") ?? 0);
         Cache::write($f, ++$rate, "limiter");
-        $max??=self::LIMITER_MAXIMUM;
         if (!LOCALHOST && $rate > (int) $max) { // over limits && NOT localhost
             $this->setLocation("/err/420");
             exit;
