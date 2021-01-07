@@ -63,20 +63,26 @@ window.addEventListener('load', function() {
 });
 
 </script>
+
 {{>gscloud_functions}}
 {{>install_head_google_analytics}}
+
 </head>
 <body>
   <span id="offline" style="position:fixed;bottom:0;left:0;color:#fff;background-color:#f00;font-size:1em;padding:4px;z-index:99999" aria-hidden="true" tabindex="-1"><b>offline</b></span>
   <noscript><div class="noscript">{{ l.noscript }}</div></noscript>
   <style type="text/css">
+
     /* <!-- toggle # to debug --> */
     {{>body_css}}
     {{>#body_css_debug}}
+
   </style>
   <div class="container">
+
     {{>body_content}}
     {{>body_footer}}
+
   </div>
 </body>
 </html>

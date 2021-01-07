@@ -4,7 +4,6 @@
 <div class="container">
   <div class="float-right center">
     {{>login}}
-    <a id="fullscreen" class="button" href="javascript:void(0);" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
   </div>
   <div class="row">
     <div class="column">
@@ -19,7 +18,6 @@
   <div class="row">
     <div class="column column-20 center">
       {{>logout}}
-      <a id="fullscreen" class="button" href="javascript:void(0);" onclick="blur();"><i class="material-icons md-18">fullscreen</i> fullscreen</a>
     </div>
     <div class="column column-80">
       <p>{{ l.readme }}</p>
@@ -42,13 +40,6 @@
       if ((h.indexOf('?') == -1) && (h.indexOf('http') != -1)) {
         $(this).attr('href', h + nonce);
       }
-    });
-  });
-
-  GSC._fn.push(function () {
-    // action on fullscreen button
-    $("#fullscreen").click(function () {
-      GSC.FullScreen()
     });
   });
 
