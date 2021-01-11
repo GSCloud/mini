@@ -9,6 +9,9 @@
 
 namespace GSC;
 
+/**
+ * String filters interface
+ */
 interface IStringFilters
 {
     public static function convert_eol_to_br(&$content);
@@ -19,7 +22,7 @@ interface IStringFilters
 }
 
 /**
- * String Filters
+ * String filters - modify content passed by a reference
  */
 class StringFilters implements IStringFilters
 {
@@ -27,11 +30,15 @@ class StringFilters implements IStringFilters
     /**
      * Convert EOLs to <br>
      *
-     * @param string $content by reference
+     * @param string $content (by reference)
      * @return void
      */
     public static function convert_eol_to_br(&$content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $content = str_replace(array(
             "\n",
             "\r\n",
@@ -39,32 +46,42 @@ class StringFilters implements IStringFilters
     }
 
     /**
-     * Convert EOLs+hypehn or star to <br>+dot
+     * Convert EOL + hyphen/star to HTML
      *
-     * @param string $content by reference
+     * @param string $content (by reference)
      * @return void
      */
     public static function convert_eolhyphen_to_brdot(&$content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $content = str_replace(array(
-            "<br>* ",
-            "<br>- ",
             "\n* ",
             "\n- ",
+            "\r\n* ",
+            "\r\n- ",
         ), "<br>•&nbsp;", (string) $content);
+
+        // fix for the beginning of the string
         if ((substr($content, 0, 2) == "- ") || (substr($content, 0, 2) == "* ")) {
             $content = "•&nbsp;" . substr($content, 2);
         }
     }
 
     /**
-     * Trim various EOLs
+     * Trim various EOL combinations
      *
-     * @param string $content by reference
+     * @param string $content (by reference)
      * @return void
      */
     public static function trim_eol(&$content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $content = str_replace(array(
             "\r\n",
             "\n",
@@ -75,47 +92,68 @@ class StringFilters implements IStringFilters
     /**
      * Trim THML comments
      *
-     * @param string $content by reference
+     * @param string $content (by reference)
      * @return void
      */
     public static function trim_html_comment(&$content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $body = "<body";
         $c = explode($body, (string) $content, 2);
+        $regex = '/<!--(.|\s)*?-->/';
+
+        // fix only comments inside body
         if (count($c) == 2) {
-            $regex = '/<!--(.|\s)*?-->/';
             $c[1] = preg_replace($regex, "<!-- comment removed -->", $c[1]);
             $content = $c[0] . $body . $c[1];
         }
-    }
 
-    /**
-     * Correct text spacing for various languages
-     *
-     * @param string $content by reference
-     * @param string $language (optional "cs" or "en")
-     * @return void
-     */
-    public static function correct_text_spacing(&$content, $language = "cs")
-    {
-        switch ($language) {
-            case "en":
-                $content = self::correct_text_spacing_en($content);
-                break;
-
-            default:
-                $content = self::correct_text_spacing_cs($content);
+        // fix the whole string (there is no <body)
+        if (count($c) == 1) {
+            $content = preg_replace($regex, "<!-- comment removed -->", $content);
         }
     }
 
     /**
-     * Correct text spacing for English
+     * Correct text spacing
      *
-     * @param string $content
+     * @param string $content (by reference)
+     * @param string $language (optional: "cs", "en" - for now)
+     * @return void
+     */
+    public static function correct_text_spacing(&$content, $language = "en")
+    {
+        if (!is_string($content)) {
+            return;
+        }
+
+        $language = strtolower(trim((string) $language));
+        switch ($language) {
+            case "sk":
+            case "cs":
+                $content = self::_correct_text_spacing_cs($content);
+                break;
+
+            default:
+                $content = self::_correct_text_spacing_en($content);
+        }
+    }
+
+    /**
+     * Correct text spacing for English language
+     *
+     * @param string $content textual data
      * @return string
      */
-    public static function correct_text_spacing_en($content)
+    public static function _correct_text_spacing_en($content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $replace = array(
             "  " => " ",
             " % " => "&nbsp;% ",
@@ -180,13 +218,17 @@ class StringFilters implements IStringFilters
     }
 
     /**
-     * Correct text spacing for Czech
+     * Correct text spacing for Czech language
      *
-     * @param string $content
+     * @param string $content textual data
      * @return string
      */
-    public static function correct_text_spacing_cs($content)
+    public static function _correct_text_spacing_cs($content)
     {
+        if (!is_string($content)) {
+            return;
+        }
+
         $replace = array(
             "  " => " ",
             " % " => "&nbsp;%",
