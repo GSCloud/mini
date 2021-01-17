@@ -1346,8 +1346,8 @@ abstract class APresenter implements IPresenter
                     foreach ($myzones as $myzone) {
                         if ($zone->id == $myzone) {
                             $zones->cachePurgeEverything($zone->id);
-                            $this->addMessage("CLOUDFLARE: zoneid ${myzone} cache purged");
-                            $this->addAuditMessage("CLOUDFLARE: zoneid ${myzone} cache purged");
+                            $this->addMessage("CF: zone ${myzone} purged");
+                            $this->addAuditMessage("CF: zone ${myzone} purged");
                         }
                     }
                 }
