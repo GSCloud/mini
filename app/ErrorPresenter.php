@@ -24,6 +24,9 @@ class ErrorPresenter extends APresenter
         420 => "Enhance Your Calm",
         429 => "Too Many Requests",
         500 => "Internal Server Error",
+        502 => "Bad Gateway",
+        503 => "Service Unavailable",
+        504 => "Gateway Timeout",
     ];
 
     /**
@@ -46,11 +49,15 @@ class ErrorPresenter extends APresenter
             }
         }
         if (!isset(self::CODESET[$code])) {
-            $code = 400;
+            $code = 404;
         }
         $error = self::CODESET[$code];
         header("HTTP/1.1 ${code} ${error}");
-        $template = "<body><center><h1><br>🤔 WebApp Error $code 💣</h1><h2>" . self::CODESET[$code] . "<br><br><br></h2><h1><a style='color:red;text-decoration:none' href='/'>RELOAD ↻</a></h1><img alt='' src='/img/logo.png'></body>";
+        $template = '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body><center><h1>'
+            . "<br>🤔 WebApp Error &ndash; #$code 💣</h1><h2>"
+            . self::CODESET[$code]
+            . '<br></h2><h1><a rel=nofollow style="color:red;text-decoration:none" href="/">RELOAD ↻</a></h1>'
+            . '<img alt="dead robot" src=/img/error.png></body></html>';
         return $this->setData("output", $this->renderHTML($template));
     }
 }

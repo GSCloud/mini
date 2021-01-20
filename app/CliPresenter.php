@@ -50,7 +50,7 @@ class CliPresenter extends APresenter
     public function help()
     {
         $climate = new CLImate;
-        $climate->out("Usage: php -f Bootstrap.php <command> [<parameters>...] \n");
+        $climate->out("\nUsage: php -f Bootstrap.php <command> [<parameters>...] \n");
         $climate->out("\t <bold>app</bold> '<code>' \t - run inline code");
         $climate->out("\t <bold>clearall</bold> \t - clear all temporary files");
         $climate->out("\t <bold>clearcache</bold> \t - clear cache");

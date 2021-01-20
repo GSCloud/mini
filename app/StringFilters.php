@@ -133,6 +133,9 @@ class StringFilters implements IStringFilters
         $language = strtolower(trim((string) $language));
         switch ($language) {
             case "sk":
+                $content = self::_correct_text_spacing_sk($content);
+                break;
+
             case "cs":
                 $content = self::_correct_text_spacing_cs($content);
                 break;
@@ -321,4 +324,103 @@ class StringFilters implements IStringFilters
         );
         return str_replace(array_keys($replace), $replace, $content);
     }
+
+    /**
+     * Correct text spacing for Slovak language
+     *
+     * @param string $content textual data
+     * @return string
+     */
+    public static function _correct_text_spacing_sk($content)
+    {
+        if (!is_string($content)) {
+            return;
+        }
+
+        $replace = array(
+            "  " => " ",
+            " % " => "&nbsp;%",
+            " - " => " – ",
+            " ... " => "&nbsp;… ",
+            " ..." => "&nbsp;…",
+            " :-(" => "&nbsp;😟",
+            " :-)" => "&nbsp;🙂",
+            " :-O" => "&nbsp;😮",
+            " :-P" => "&nbsp;😋",
+            " :-[" => "&nbsp;😕",
+            " :-|" => "&nbsp;😐",
+            " CZK" => "&nbsp;CZK",
+            " Czk" => "&nbsp;CZK",
+            " DIČ: " => " DIČ:&nbsp;",
+            " EUR" => "&nbsp;EUR",
+            " Eur " => "&nbsp;EUR ",
+            " ID: " => " ID:&nbsp;",
+            " Inc." => "&nbsp;Inc.",
+            " IČ: " => " IČ:&nbsp;",
+            " Kč" => "&nbsp;Kč",
+            " Ltd." => "&nbsp;Ltd.",
+            " USD" => "&nbsp;USD",
+            " Usd" => "&nbsp;USD",
+            " a " => " a&nbsp;",
+            " cca. " => " cca.&nbsp;",
+            " h" => "&nbsp;h",
+            " h " => "&nbsp;h&nbsp;",
+            " h, " => "&nbsp;h, ",
+            " h. " => "&nbsp;h. ",
+            " hod. " => "&nbsp;hod. ",
+            " hod.)" => "&nbsp;hod.)",
+            " i " => " i&nbsp;",
+            " id: " => " id:&nbsp;",
+            " k " => " k&nbsp;",
+            " kg " => "&nbsp;kg ",
+            " kg)" => "&nbsp;kg)",
+            " ks " => "&nbsp;ks ",
+            " ks)" => "&nbsp;ks)",
+            " ks, " => "&nbsp;ks, ",
+            " ks." => "&nbsp;ks.",
+            " l " => "&nbsp;l ",
+            " l, " => "&nbsp;l, ",
+            " l. " => "&nbsp;l. ",
+            " m " => "&nbsp;m ",
+            " m, " => "&nbsp;m, ",
+            " m. " => "&nbsp;m. ",
+            " m2 " => "&nbsp;m² ",
+            " m3 " => "&nbsp;m³ ",
+            " mj. " => " mj.&nbsp;",
+            " m² " => "&nbsp;m² ",
+            " m³ " => "&nbsp;m³ ",
+            " o " => " o&nbsp;",
+            " p. " => " p.&nbsp;",
+            " s " => " s&nbsp;",
+            " s, " => "&nbsp;s, ",
+            " s. " => "&nbsp;s. ",
+            " s.r.o." => "&nbsp;s.r.o.",
+            " sec. " => "&nbsp;sec. ",
+            " sl. " => " sl.&nbsp;",
+            " spol. " => "&nbsp;spol.&nbsp;",
+            " str. " => " str.&nbsp;",
+            " sv. " => " sv.&nbsp;",
+            " tj. " => "tj.&nbsp;",
+            " tzn. " => " tzn.&nbsp;",
+            " tzv. " => " tzv.&nbsp;",
+            " u " => " u&nbsp;",
+            " v " => " v&nbsp;",
+            " viz " => " viz&nbsp;",
+            " z " => " z&nbsp;",
+            " z. s." => "&nbsp;z.&nbsp;s.",
+            " zvl. " => " zvl.&nbsp;",
+            " °C " => "&nbsp;°C ",
+            " °F " => "&nbsp;°F ",
+            " č. " => " č.&nbsp;",
+            " č. j. " => " č.&nbsp;j.&nbsp;",
+            " čj. " => " čj.&nbsp;",
+            " čp. " => " čp.&nbsp;",
+            " čís. " => " čís.&nbsp;",
+            " ‰ " => "&nbsp;‰",
+            "<<" => "«",
+            ">>" => "»",
+        );
+        return str_replace(array_keys($replace), $replace, $content);
+    }
+
 }
