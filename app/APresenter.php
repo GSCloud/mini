@@ -1389,7 +1389,13 @@ abstract class APresenter implements IPresenter
                         }
                     }
                     $this->addMessage("FILE: fetching ${remote}");
-                    $data = @\file_get_contents($remote);
+                    try {
+                        $data = @\file_get_contents($remote);
+                    } catch(\Exception $e) {
+                        $this->addError("ERROR: fetching ${remote}");
+                        $this->addAuditMessage("ERROR: fetching ${remote}");
+                        $data = "";
+                    }
                 }
                 if (\strpos($data, "!DOCTYPE html") > 0) {
                     return $this; // we got HTML document = failure
@@ -1448,12 +1454,12 @@ abstract class APresenter implements IPresenter
         $name = \trim((string) $name);
         $file = \strtolower($name);
         if (empty($file)) {
-            $this->addCritical("EMPTY readAppData() filename parameter!");
+            $this->addCritical("EMPTY readAppData() parameter!");
             return null;
         }
         if (!$csv = Cache::read($file, "csv")) { // read CSV from cache
             $csv = false;
-            if (file_exists(DATA . DS . "${file}.csv")) {
+            if (\file_exists(DATA . DS . "${file}.csv")) {
                 $csv = \file_get_contents(DATA . DS . "${file}.csv");
             }
             if (\strpos($csv, "!DOCTYPE html") > 0) {
@@ -1465,7 +1471,7 @@ abstract class APresenter implements IPresenter
             }
             $csv = false;
             if (\file_exists(DATA . DS . "${file}.bak")) {
-                $csv = @\file_get_contents(DATA . DS . "${file}.bak"); // read CSV backup
+                $csv = \file_get_contents(DATA . DS . "${file}.bak"); // read CSV backup
             }
             if (\strpos($csv, "!DOCTYPE html") > 0) {
                 return null; // we got HTML document = failure

@@ -15,6 +15,16 @@ use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 use Nette\Neon\Neon;
 
+// user-defined error handler
+function exception_error_handler($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) {
+        // This error code is not included in error_reporting
+        return;
+    }
+    throw new \Exception("ERROR: $message FILE: $file LINE: $line");
+}
+set_error_handler("\\GSC\\exception_error_handler");
+
 // SANITY CHECK
 foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP"] as $x) {
     if (!defined($x)) {
