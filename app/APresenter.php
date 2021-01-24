@@ -53,7 +53,7 @@ interface IPresenter
 
     /** checks */
     public function checkLocales($force);
-    public function checkPermission($role);
+    public function checkPermission($roleslist);
     public function checkRateLimit($maximum);
 
     /** setters */
@@ -1115,23 +1115,26 @@ abstract class APresenter implements IPresenter
     /**
      * Check if current user has access rights
      *
-     * @param mixed $role role (optional)
+     * @param mixed $rolelist roles (optional)
      * @return object Singleton instance
      */
-    public function checkPermission($role = "admin")
+    public function checkPermission($rolelist = "admin")
     {
-        if (empty($role)) {
+        if (empty($rolelist)) {
             return $this;
         }
-        $role = \strtolower(\trim((string) $role));
-        $email = $this->getIdentity()["email"] ?? "";
-        $groups = $this->getCfg("admin_groups") ?? [];
-        if (\strlen($role) && \strlen($email)) {
-            if (\in_array($email, $groups[$role] ?? [], true)) { // email allowed
-                return $this;
-            }
-            if (\in_array("*", $groups[$role] ?? [], true)) { // any Google users allowed
-                return $this;
+        $roles = \explode(",", \trim((string) $rolelist));
+        foreach ($roles as $role) {
+            $role = \strtolower(\trim($role));
+            $email = $this->getIdentity()["email"] ?? "";
+            $groups = $this->getCfg("admin_groups") ?? [];
+            if (\strlen($role) && \strlen($email)) {
+                if (\in_array($email, $groups[$role] ?? [], true)) { // email allowed
+                    return $this;
+                }
+                if (\in_array("*", $groups[$role] ?? [], true)) { // any Google users allowed
+                    return $this;
+                }
             }
         }
         $this->setLocation("/err/401"); // not authorized
