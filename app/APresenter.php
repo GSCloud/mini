@@ -17,7 +17,6 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\BrowserConsoleHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use Monolog\Processor\GitProcessor;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\WebProcessor;
 use ParagonIE\Halite\Cookie;
@@ -301,7 +300,6 @@ abstract class APresenter implements IPresenter
         $consolehandler = new BrowserConsoleHandler(Logger::INFO);
         $monolog->pushHandler($consolehandler);
         $monolog->pushHandler($streamhandler);
-        $monolog->pushProcessor(new GitProcessor);
         $monolog->pushProcessor(new MemoryUsageProcessor);
         $monolog->pushProcessor(new WebProcessor);
 
@@ -311,20 +309,19 @@ abstract class APresenter implements IPresenter
 
         list($usec, $sec) = explode(" ", microtime());
         defined("TESSERACT_STOP") || define("TESSERACT_STOP", ((float) $usec + (float) $sec));
-        $add = "| processing: " . round(((float) TESSERACT_STOP - (float) TESSERACT_START) * 1000, 2) . " msec."
-            . "| request_uri: " . ($_SERVER["REQUEST_URI"] ?? "N/A");
-
+        $add = "; processing: " . round(((float) TESSERACT_STOP - (float) TESSERACT_START) * 1000, 2) . " ms"
+            . "; request_uri: " . ($_SERVER["REQUEST_URI"] ?? "N/A");
+        $google_logger = null;
         try {
             if (count($criticals) + count($errors) + count($messages)) {
-                // log errors to GCP for valid project, keys and NOT localhost
                 if (GCP_PROJECTID && GCP_KEYS && !LOCALHOST) {
-                    $logging = new LoggingClient([
-                        "projectId" => GCP_PROJECTID,
-                        "keyFilePath" => APP . DS . GCP_KEYS,
-                    ]);
-                    $google_logger = $logging->logger(PROJECT);
-                } else {
-                    $google_logger = null;
+                    if (file_exists(APP . DS . GCP_KEYS)) {
+                        $logging = new LoggingClient([
+                            "projectId" => GCP_PROJECTID,
+                            "keyFilePath" => APP . DS . GCP_KEYS,
+                        ]);
+                        $google_logger = $logging->logger(PROJECT);
+                    }
                 }
             }
             if (count($criticals)) {
@@ -1394,7 +1391,7 @@ abstract class APresenter implements IPresenter
                     $this->addMessage("FILE: fetching ${remote}");
                     try {
                         $data = @\file_get_contents($remote);
-                    } catch(\Exception $e) {
+                    } catch (\Exception$e) {
                         $this->addError("ERROR: fetching ${remote}");
                         $this->addAuditMessage("ERROR: fetching ${remote}");
                         $data = "";
