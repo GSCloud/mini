@@ -87,7 +87,7 @@ if (file_exists(CONFIG_PRIVATE) && is_readable(CONFIG_PRIVATE)) {
 // set DEFAULT TIME ZONE
 date_default_timezone_set((string) ($cfg["date_default_timezone"] ?? "Europe/Prague"));
 
-// configure DEBUGGER
+// set DEBUGGER
 if (($_SERVER["SERVER_NAME"] ?? "") == "localhost") { // for LOCALHOST only
     if (($cfg["dbg"] ?? null) === false) {
         defined("DEBUG") || define("DEBUG", false); // force DISABLED via configuration
@@ -120,7 +120,8 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
             "${debug_cookie}@${address}", LOGS, (string) ($cfg["DEBUG_EMAIL"] ?? "")
         );
     } else {
-        Debugger::enable(Debugger::DETECT, LOGS);
+        // turn it ON
+        Debugger::enable(Debugger::DEVELOPMENT, LOGS);
     }
 }
 
