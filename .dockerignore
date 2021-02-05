@@ -1,0 +1,4 @@
+ci/*
+data/*.key
+logs/*
+temp/*

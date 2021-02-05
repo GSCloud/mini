@@ -1,1 +1,2 @@
-Filip Oščádal <oscadal@gscloud.cz> project owner
+Filip Oščádal <oscadal@gscloud.cz> programmer, project owner
+GS Cloud Ltd. [https://gscloud.cz]
