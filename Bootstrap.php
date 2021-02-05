@@ -121,7 +121,7 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
         );
     } else {
         // turn it ON
-        Debugger::enable(Debugger::DEVELOPMENT, LOGS);
+        Debugger::enable((bool) ($cfg["DEBUG_DEVELOPMENT_MODE"] ?? true) ? Debugger::DEVELOPMENT : Debugger::DETECT, LOGS);
     }
 }
 
