@@ -16,7 +16,8 @@ use Monolog\Logger;
 use Nette\Neon\Neon;
 
 // user-defined error handler
-function exception_error_handler($severity, $message, $file, $line) {
+function exception_error_handler($severity, $message, $file, $line)
+{
     if (!(error_reporting() & $severity)) {
         // This error code is not included in error_reporting
         return;
@@ -139,27 +140,39 @@ $cache_profiles = array_replace([
 ], (array) ($cfg["cache_profiles"] ?? []));
 
 foreach ($cache_profiles as $k => $v) {
-    Cache::setConfig("${k}_file", [
-        "className" => "Cake\Cache\Engine\FileEngine", // fallback File engine
-        "duration" => $v,
-        "lock" => true,
-        "path" => CACHE,
-        "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
-    ]);
-    Cache::setConfig($k, [
-        "className" => "Cake\Cache\Engine\RedisEngine",
-        "database" => $cfg["redis"]["database"] ?? 0,
-        "duration" => $v,
-        "fallback" => "${k}_file", // fallback File engine filename
-        "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
-        "password" => $cfg["redis"]["password"] ?? "",
-        "path" => CACHE,
-        "persistent" => false,
-        "port" => $cfg["redis"]["port"] ?? 6379,
-        "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
-        "timeout" => $cfg["redis"]["timeout"] ?? 1,
-        "unix_socket" => $cfg["redis"]["unix_socket"] ?? "",
-    ]);
+    if ($cfg["redis"]["port"] ?? null) {
+        // use REDIS
+        Cache::setConfig("${k}_file", [
+            "className" => "Cake\Cache\Engine\FileEngine", // fallback File engine
+            "duration" => $v,
+            "lock" => true,
+            "path" => CACHE,
+            "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
+        ]);
+        Cache::setConfig($k, [
+            "className" => "Cake\Cache\Engine\RedisEngine",
+            "database" => $cfg["redis"]["database"] ?? 0,
+            "duration" => $v,
+            "fallback" => "${k}_file", // use fallback File engine filename
+            "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
+            "password" => $cfg["redis"]["password"] ?? "",
+            "path" => CACHE,
+            "persistent" => false,
+            "port" => $cfg["redis"]["port"] ?? 6379,
+            "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
+            "timeout" => $cfg["redis"]["timeout"] ?? 1,
+            "unix_socket" => $cfg["redis"]["unix_socket"] ?? "",
+        ]);
+    } else {
+        // do not use REDIS
+        Cache::setConfig($k, [
+            "className" => "Cake\Cache\Engine\FileEngine", // File engine
+            "duration" => $v,
+            "lock" => true,
+            "path" => CACHE,
+            "prefix" => CACHEPREFIX . SERVER . PROJECT . APPNAME . "_",
+        ]);
+    }
 }
 
 // MULTI-SITE PROFILES

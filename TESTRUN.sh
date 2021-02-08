@@ -18,5 +18,5 @@ export $(grep -v '^#' .env | xargs -d '\n')
 
 google-chrome http://localhost:9001 &
 
-#docker run --rm --name tesseract -p 9001:80 -v "$(pwd)"/www/:/var/www/html/ -v "$(pwd)"/app/:/var/www/app/ $TAG
-docker run --rm --name tesseract -p 9001:80 $TAG
+#docker run --rm --name lite -p 9001:80 -v "$(pwd)"/www/:/var/www/html/ -v "$(pwd)"/app/:/var/www/app/ $TAG
+docker run --rm --name lite -p 9001:80 $TAG
