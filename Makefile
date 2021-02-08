@@ -46,7 +46,7 @@ build:
 
 push:
 	@echo "\n🔨 \e[1;32m Pushing image to DockerHub\e[0m"
-	@docker push gscloudcz/tesseract-mini:latest
+	@docker push gscloudcz/tesseract-lasagna:latest
 
 run:
 	@echo "\n🔨 \e[1;32m Testing Docker image\e[0m"
