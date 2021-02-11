@@ -1,0 +1,119 @@
+### DOCKER TESSERACT LASAGNA
+
+#dbg: TRUE
+dbg: FALSE
+minify: TRUE
+
+# DISABLING SWITCHES for Facebook, Twitter and Google Analytics integrations
+#fb_disable: TRUE
+#tw_disable: TRUE
+#ga_disable: TRUE
+
+# ANDROID UPDATE - data from local domain?
+#loadlocal: TRUE
+#android_updateurl_local: "http://xxx/"
+#android_updateurl_remote: "https://xxx.gscloud.cz/"
+
+# CORE
+app: lasagna
+canonical_url: "https://dockerlasagna.gscloud.cz/"
+date_default_timezone: "Europe/Prague"
+project: DOCKERLASAGNA
+secret_cookie_key: secure.key
+version: v1
+
+# GCP
+#gcp_project_id: "gscloudcz-163314"
+
+# Google OAuth 2.0
+goauth_origin: "https://dockerlasagna.gscloud.cz"
+goauth_redirect: "https://dockerlasagna.gscloud.cz/login"
+local_goauth_origin: "http://localhost:9000"
+local_goauth_redirect: "http://localhost:9000/login"
+
+# Google misc.
+google: [
+#  analytics: "https://analytics.google.com/analytics/web/#/report-home/xxx"
+#  map_query: "Prague,Czechia"
+#  ua: "UA-89950317-12"
+#  google-site-verification: "R_wyDJPQ-ktbz560jBaKUlcitDq1cHKwf-jwviFdB5g"
+]
+
+# Android app id
+#android_app: "cz.mxd.xxx"
+
+alpha_hosts: [
+]
+
+beta_hosts: [
+]
+
+cache_profiles: [
+]
+
+redis: [
+  #database: 0
+  #host: "127.0.0.1"
+  #password: ""
+  #persistent: true
+  #unix_socket: ""
+
+  # disable REDIS
+  #port: 6377
+  port: 0
+
+  timeout: 1
+]
+
+multisite_profiles: [
+  default: [
+    dockerlasagna.gscloud.cz
+  ]
+]
+
+css_sources: [
+  "/css/gulp/1.fontawesome.min.css",
+  "/css/gulp/2.v4-shims.min.css",
+  "/css/gulp/3.brands.min.css",
+  "/css/gulp/4.solid.min.css",
+  "/css/gulp/5.cookieconsent.min.css",
+  "/css/gulp/6.style.css",
+]
+
+script_sources: [
+  "/js/gulp/1.materialize.min.js",
+  "/js/gulp/2.cookieconsent.min.js",
+  "/js/gulp/3.lazysizes.min.js",
+  "/js/gulp/4.eu.cookieconsent.setup.js",
+  "/js/gulp/5.main.js",
+]
+
+locales: [
+  default: "2PACX-1vRrx4arHlU3KLpy3Vlw_sX9iEZz2t_gZz5SV4NFa8ufcFqbVo1Cxgsp4J81-Z02cPNPJ9Jc7b_Qy_ay"
+  admin: "2PACX-1vRDwThuqEPGHzRWCJNs3KRy1OO8gh_t0qMRH2e5N2Ok_dSf29tqxnAImE4pnc8B4qE_2ZJKgHIiyIIk"
+  lasagna: "2PACX-1vSO_-SIQp7bgv3IWUdFaycOktA-D9AZDML8i2Lw-gqbkI8kZ1yDkM0DTWYbMla6A8DFSp-q87pqwZtJ"
+]
+
+lasagna_sheets: [
+  default: "1z2a5X7HVR9To7FvxMfRm_6ZxHeTVljUO8BjjMkI3phI"
+  admin: "1iwJNAuvHQtNOgxQfQK5TYtROzCwFOBFGeo7Vj-7_48Q"
+  lasagna: "1cnFGiu0l3kXhMwyjRWUt61lPVbZDyYhxjnFpS94XIaI"
+]
+
+design: [
+  css_font: [
+    "https://fonts.googleapis.com/css?family=Aladin&display=swap"
+  ]
+  footer_color: "black"
+  nav_color: "orange"
+  theme_color: "orange"
+]
+
+ui: [
+  cookie_button_background: "#fff"
+  cookie_button_border: "#fff"
+  cookie_button_text: "#000"
+  cookie_popup_background: "red"
+  cookie_position: "bottom"
+  cookie_static: "false"
+]
