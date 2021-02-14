@@ -16,18 +16,8 @@ use League\CLImate\CLImate;
  */
 class Doctor
 {
-    /** @var int $err error counter */
-    private static $err = 0;
-
-    /**
-     * Increment error counter
-     *
-     * @return void
-     */
-    private static function bad()
-    {
-        self::$err++;
-    }
+    /** @var int $errors error counter */
+    private int $errors = 0;
 
     /**
      * Doctor constructor
@@ -37,81 +27,109 @@ class Doctor
     {
         $climate = new CLImate;
 
-        function check_exist($f)
-        {
-            if (empty($f)) {
-                throw new \Exception("Empty check_exist() parameter!");
-            }
-            if (!file_exists($f) || !is_readable($f)) {
-                Doctor::bad();
-                return false;
-            }
-            return true;
-        }
+        $climate->out("\n<blue><bold>File System - FOLDERS");
 
-        function check_write($f)
-        {
-            if (empty($f)) {
-                throw new \Exception("Empty check_write() parameter!");
-            }
-            if (!is_writable($f)) {
-                Doctor::bad();
-                return false;
-            }
-            return true;
-        }
+        $this->validate("<bold>APP</bold> as " . APP, $this->isreadable(APP));
+        $this->validate("<bold>CACHE</bold> as " . CACHE, $this->isreadable(CACHE));
+        $this->validate("<bold>DATA</bold> as " . DATA, $this->iswritable(DATA));
+        $this->validate("<bold>PARTIALS</bold> as " . PARTIALS, $this->isreadable(PARTIALS));
+        $this->validate("<bold>TEMP</bold> as " . TEMP, $this->iswritable(TEMP));
+        $this->validate("<bold>TEMPLATES</bold> as " . TEMPLATES, $this->isreadable(TEMPLATES));
+        $this->validate("<bold>WWW</bold> as " . WWW, $this->isreadable(WWW));
 
-        function validate($message, $result)
-        {
-            if (is_null($message)) {
-                throw new \Exception("Empty validate() \$message!");
-            }
-            if (is_null($result)) {
-                throw new \Exception("Empty validate() \$result!");
-            }
-            $climate = new CLImate;
-            (bool) $result ? $climate->out("<green><bold>[√]</bold></green> ${message}") : $climate->out("<red><bold>[!]</bold></red> ${message}");
-        }
+        $climate->out("\n<blue><bold>File System - FILES");
 
-        $climate->out("\n<blue><bold>File System");
-        validate("directory\t<bold>APP</bold> as " . APP, check_exist(APP));
-        validate("directory\t<bold>CACHE</bold> as " . CACHE, check_exist(CACHE));
-        validate("directory\t<bold>DATA</bold> as " . DATA, check_exist(DATA));
-        validate("directory\t<bold>PARTIALS</bold> as " . PARTIALS, check_exist(PARTIALS));
-        validate("directory\t<bold>TEMP</bold> as " . TEMP, check_exist(TEMP));
-        validate("directory\t<bold>TEMPLATES</bold> as " . TEMPLATES, check_exist(TEMPLATES));
-        validate("directory\t<bold>WWW</bold> as " . WWW, check_exist(WWW));
+        $this->validate("<bold>CONFIG</bold> as " . CONFIG, $this->isreadable(CONFIG));
+        $this->validate("<bold>REVISIONS</bold> in ROOT", $this->isreadable(ROOT . DS . "REVISIONS"));
+        $this->validate("<bold>VERSION</bold> in ROOT", $this->isreadable(ROOT . DS . "VERSION"));
+        // check for .env (not in Docker image)
+        if (file_exists(ROOT . DS . ".env")) {
+            $this->validate("<bold>_site_cfg.sh</bold> in ROOT (used for syncing)", $this->isreadable(ROOT . DS . "_site_cfg.sh"));
+        }
+        $this->validate("<bold>router.neon</bold> in APP", $this->isreadable(APP . DS . "router.neon"));
+        $this->validate("<bold>router_admin.neon</bold> in APP", $this->isreadable(APP . DS . "router_admin.neon"));
+        $this->validate("<bold>router_defaults.neon</bold> in APP", $this->isreadable(APP . DS . "router_defaults.neon"));
+
+        $climate->out("\n<blue><bold>File System - WRITABLE FOLDERS");
+
+        $this->validate("<bold>CACHE</bold>", $this->iswritable(CACHE));
+        $this->validate("<bold>DATA</bold>", $this->iswritable(DATA));
+        $this->validate("<bold>LOGS</bold>", $this->iswritable(LOGS));
+        $this->validate("<bold>TEMP</bold>", $this->iswritable(TEMP));
+        $this->validate("<bold>ci</bold>", $this->iswritable(ROOT . DS . "ci"));
+
+        $climate->out("\n<blue><bold>PHP Core");
+
+        $this->validate("lib <bold>curl", $this->isloaded("curl"));
+        $this->validate("lib <bold>gd", $this->isloaded("gd"));
+        //$this->validate("lib <bold>imagick", $this->isloaded("imagick"));
+        $this->validate("lib <bold>json", $this->isloaded("json"));
+        $this->validate("lib <bold>mbstring", $this->isloaded("mbstring"));
+        $this->validate("lib <bold>redis",$this->isloaded ("redis"));
+        $this->validate("lib <bold>sodium", $this->isloaded("sodium"));
         echo "\n";
 
-        validate("file\t<bold>CONFIG</bold> as " . CONFIG, check_exist(CONFIG));
-        validate("file\t<bold>CONFIG_PRIVATE</bold> as " . CONFIG_PRIVATE, check_exist(CONFIG_PRIVATE));
-        validate("file\t<bold>REVISIONS</bold> in ROOT", check_exist(ROOT . DS . "REVISIONS"));
-        validate("file\t<bold>VERSION</bold> in ROOT", check_exist(ROOT . DS . "VERSION"));
-        validate("file\t<bold>_site_cfg.sh</bold> in ROOT", check_exist(ROOT . DS . "_site_cfg.sh"));
-        validate("file\t<bold>router.neon</bold> in APP", check_exist(APP . DS . "router.neon"));
-        validate("file\t<bold>router_admin.neon</bold> in APP", check_exist(APP . DS . "router_admin.neon"));
-        validate("file\t<bold>router_defaults.neon</bold> in APP", check_exist(APP . DS . "router_defaults.neon"));
-        echo "\n";
-
-        $climate->out("\n<blue><bold>Writables");
-        validate("writable\t<bold>CACHE</bold>", check_write(CACHE));
-        validate("writable\t<bold>DATA</bold>", check_write(DATA));
-        validate("writable\t<bold>LOGS</bold>", check_write(LOGS));
-        validate("writable\t<bold>TEMP</bold>", check_write(TEMP));
-        validate("writable\t<bold>ci</bold> in ROOT", check_write(ROOT . DS . "ci"));
-
-        $climate->out("\n<blue><bold>PHP");
-        validate("Zend version <bold>7.4+", (PHP_VERSION_ID >= 70400));
-        validate("lib <bold>curl", (in_array("curl", get_loaded_extensions())));
-        validate("lib <bold>json", (in_array("json", get_loaded_extensions())));
-        validate("lib <bold>mbstring", (in_array("mbstring", get_loaded_extensions())));
-        validate("lib <bold>sodium", (in_array("sodium", get_loaded_extensions())));
-        validate("lib <bold>redis", (in_array("redis", get_loaded_extensions())));
-        echo "\n";
-
-        if (self::$err) {
-            $climate->out("Errors: <bold><red>" . self::$err . "\007\n");
+        if ($this->errors) {
+            $climate->out("Errors: <bold><red>" . $this->errors . "\007\n");
         }
-        exit(self::$err);
+        exit($this->errors);
+    }
+
+    /**
+     * Check whether file is readable
+     *
+     * @param string $f filename
+     * @return bool result
+     */
+    private function isreadable($f)
+    {
+        if (!file_exists($f) || !is_readable($f)) {
+            $this->errors++;
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check whether file is writable
+     *
+     * @param string $f filename
+     * @return bool result
+     */
+    private function iswritable($f)
+    {
+        if (!is_writable($f)) {
+            $this->errors++;
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check whether extension is loaded
+     *
+     * @param string $f name
+     * @return bool result
+     */
+    private function isloaded($f)
+    {
+        if (!in_array($f, get_loaded_extensions())) {
+            $this->errors++;
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validate
+     *
+     * @param string $message
+     * @param bool $result
+     * @return void
+     */
+    function validate($message, $result)
+    {
+        $climate = new CLImate;
+        (bool) $result ? $climate->out("<green><bold>[√]</bold></green> ${message}") : $climate->out("<red><bold>[!]</bold></red> ${message}");
     }
 }
