@@ -16,10 +16,10 @@ RUN mkdir -p /var/www/ci /var/www/data /var/www/logs /var/www/temp \
 
 COPY php.ini /usr/local/etc/php/
 COPY app/*.php app/router* /var/www/app/
-COPY app/config_docker.neon /var/www/app/config.neon
-COPY vendor /var/www/vendor
+COPY Bootstrap.php README.md REVISIONS VERSION /var/www/
+COPY docker/ /var/www/
 COPY www /var/www/html
-COPY _includes.sh Bootstrap.php cli.sh docker_updater.sh README.md REVISIONS VERSION /var/www/
+COPY vendor /var/www/vendor
 
 WORKDIR /var/www/
 EXPOSE 80

@@ -35,7 +35,7 @@ class CiTester
             case "local":
             case "testlocal":
                 $case = "local";
-                $target = $cfg["local_goauth_origin"] ?? "";
+                $target = $cfg["test_origin"] ?? $cfg["local_goauth_origin"] ?? "";
                 break;
 
             case "prod":
