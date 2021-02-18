@@ -1086,10 +1086,13 @@ abstract class APresenter implements IPresenter
         if (CLI) {
             return $this;
         }
+        if (LOCALHOST) {
+            return $this;
+        }
         $f = "user_rate_limit_{$this->getUID()}";
         $rate = (int) (Cache::read($f, "limiter") ?? 0);
         Cache::write($f, ++$rate, "limiter");
-        if (!LOCALHOST && $rate > (int) $max) { // over limits && NOT localhost
+        if ($rate > (int) $max) { // over limits
             $this->setLocation("/err/420");
             exit;
         }

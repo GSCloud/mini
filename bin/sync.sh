@@ -1,6 +1,9 @@
 #!/bin/bash
 #@author Filip Oščádal <oscadal@gscloud.cz>
 
+ABSPATH=$(readlink -f $0)
+ABSDIR=$(dirname $ABSPATH)
+
 dir="$(dirname "$0")"
 . $dir"/_includes.sh"
 
@@ -13,21 +16,23 @@ if [ -z "$GLOBALSYNC" ]; then
   fi
   sleep 3
 fi
-. $dir"/_site_cfg.sh"
+. "_site_cfg.sh"
 
 if [ -z "${DEST}" ]; then fail "Error in _site_cfg.sh !"; fi
 if [ -z "${HOST}" ]; then fail "Error in _site_cfg.sh !"; fi
 if [ -z "${USER}" ]; then fail "Error in _site_cfg.sh !"; fi
 
 mkdir -p app ci data temp www/cdn-assets www/download www/upload
-chmod 0777 www/download www/upload
-find www/ -type f -exec chmod 0644 {} \;
+chmod 0777 www/download www/upload >/dev/null 2>&1
+find www/ -type f -exec chmod 0644 {} \; >/dev/null 2>&1
 find . -type f -iname "*.sh" -exec chmod +x {} \;
 
-VERSION=`git rev-parse HEAD`
+VERSION=$(git rev-parse HEAD)
 echo $VERSION > VERSION
-REVISIONS=`git rev-list --all --count`
+
+REVISIONS=$(git rev-list --all --count)
 echo $REVISIONS > REVISIONS
+
 ln -s ../. www/cdn-assets/$VERSION >/dev/null 2>&1
 info "Version: $VERSION Revisions: $REVISIONS"
 
@@ -35,7 +40,6 @@ rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   *.json \
   *.php \
   LICENSE \
-  README.md \
   REVISIONS \
   VERSION \
   _includes.sh \

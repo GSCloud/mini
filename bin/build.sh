@@ -3,7 +3,6 @@
 
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
-cd $ABSDIR
 
 dir="$(dirname "$0")"
 . $dir"/_includes.sh"
@@ -15,8 +14,7 @@ if [ ! -n $(id -Gn "$(whoami)" | grep -c "docker") ]
 fi
 if [ ! -r ".env" ]; then fail "Missing .env file!"; fi
 export $(grep -v '^#' .env | xargs -d '\n')
+if [ -z "$TAG" ]; then fail "Missing TAG definition!"; fi
 
-google-chrome http://localhost:9001 &
-
-#docker run --rm --name lite -p 9001:80 -v "$(pwd)"/www/:/var/www/html/ -v "$(pwd)"/app/:/var/www/app/ $TAG
-docker run --rm --name lite -p 9001:80 $TAG
+docker build --pull -t $TAG .
+#docker run --rm --name tesseract $TAG ./cli.sh doctor

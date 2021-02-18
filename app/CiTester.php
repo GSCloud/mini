@@ -105,14 +105,14 @@ class CiTester
             $ch[$i] = curl_init();
             curl_setopt($ch[$i], CURLOPT_URL, $x["url"] . "?api=${key}");
             curl_setopt($ch[$i], CURLINFO_HEADER_OUT, true);
-            curl_setopt($ch[$i], CURLOPT_BUFFERSIZE, 2048);
+            curl_setopt($ch[$i], CURLOPT_BUFFERSIZE, 4096);
             curl_setopt($ch[$i], CURLOPT_FAILONERROR, true);
             curl_setopt($ch[$i], CURLOPT_HEADER, true);
             curl_setopt($ch[$i], CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($ch[$i], CURLOPT_MAXREDIRS, 5);
             curl_setopt($ch[$i], CURLOPT_NOBODY, false);
             curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch[$i], CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch[$i], CURLOPT_TIMEOUT, 20);
             curl_multi_add_handle($multi, $ch[$i]);
             $i++;
         }
@@ -172,6 +172,8 @@ class CiTester
                     $bad++;
                     $json = false;
                     $jsformat = "JSON_ERROR";
+                    $climate->out('!!! JSON ERRROR !!!');
+                    $climate->out($content);
                 } else {
                     $jsformat = "JSON";
                     if ($arr["code"] == 200) {
@@ -179,6 +181,7 @@ class CiTester
                     } else {
                         $jscode = "BAD_CODE:" . $arr["code"];
                         $bad++;
+                        $climate->out('!!! JSON CODE ERRROR !!!');
                     }
                 }
             }
@@ -188,6 +191,7 @@ class CiTester
             if ($code != $x["assert_httpcode"]) {
                 $bad++;
                 $http_code = false;
+                $climate->out('!!! HTTP CODE ERRROR !!!');
             }
             if ($bad == 0) { // OK
                 $climate->out(
