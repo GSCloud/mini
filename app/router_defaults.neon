@@ -50,6 +50,15 @@ API:
   api_info: "This page 🐱"
   presenter: core
 
+PingBack:
+  path: /pingback
+  api: true
+  api_description: "Ping back for remote monitoring service"
+  api_info: "Returns (JSON): ok."
+  assert_json: true
+  method: GET|POST
+  presenter: core
+
 GetError:
   path: '/err/[i:code]'
   api: true

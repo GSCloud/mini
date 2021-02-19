@@ -9,9 +9,6 @@
 
 namespace GSC;
 
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
-
 /**
  * Core Presenter
  */
@@ -44,6 +41,11 @@ class CorePresenter extends APresenter
         ];
 
         switch ($view) {
+            case "PingBack":
+                $this->checkRateLimit();
+                return $this->writeJsonData([200 => "OK"], $extras);
+                break;
+
             case "GetTXTSitemap":
                 $this->setHeaderText();
                 $map = [];

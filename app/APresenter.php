@@ -548,6 +548,21 @@ abstract class APresenter implements IPresenter
                 FILE_APPEND | LOCK_EX
             );
         }
+
+        // Telegram support
+        $chid = $this->getData("telegram.bot_ch_id") ?? null;
+        $apikey = $this->getData("telegram.bot_apikey") ?? null;
+        if ($this->getCurrentUser()["name"] !== "") {
+            $curl_obj = curl_init();
+            $message = htmlspecialchars("🤖 " . APPNAME . " (" . DOMAIN . ")" . ": " . $message . " / " . $this->getCurrentUser()["name"]);
+            if ($chid && $apikey) {
+                $query = "?chat_id=" . $chid . "&text=${message}";
+                curl_setopt($curl_obj, CURLOPT_URL, "https://api.telegram.org/bot" . $apikey . "/sendMessage" . $query);
+                curl_setopt($curl_obj, CURLOPT_RETURNTRANSFER, true);
+                curl_exec($curl_obj);
+                curl_close($curl_obj);
+            }
+        }
         return $this;
     }
 
@@ -1350,7 +1365,6 @@ abstract class APresenter implements IPresenter
                         if ($zone->id == $myzone) {
                             $zones->cachePurgeEverything($zone->id);
                             $this->addMessage("CF: zone ${myzone} purged");
-                            $this->addAuditMessage("CF: zone ${myzone} purged");
                         }
                     }
                 }
