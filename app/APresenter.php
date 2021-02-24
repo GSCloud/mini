@@ -86,7 +86,7 @@ interface IPresenter
 
     /** singleton */
     public static function getInstance();
-    public static function getTestInstance(); // for Unit testing
+    public static function getTestInstance(); // for testing
 }
 
 abstract class APresenter implements IPresenter
@@ -180,28 +180,28 @@ abstract class APresenter implements IPresenter
 
     // PRIVATE VARS
 
-    /** @var array Data Model */
+    /** @var array Model */
     private $data = [];
 
-    /** @var array common messages */
+    /** @var array Messages */
     private $messages = [];
 
-    /** @var array common errors */
+    /** @var array Errors */
     private $errors = [];
 
-    /** @var array critical errors */
+    /** @var array Critical errors */
     private $criticals = [];
 
-    /** @var array user identity */
+    /** @var array User identity */
     private $identity = [];
 
-    /** @var boolean whether to re-check locales? */
+    /** @var boolean Whether to re-check locales? */
     private $force_csv_check = false;
 
     /** @var array CSV keys */
     private $csv_postload = [];
 
-    /** @var array saved cookies */
+    /** @var array Saved cookies */
     private $cookies = [];
 
     /** @var array Singleton instances */
@@ -331,7 +331,6 @@ abstract class APresenter implements IPresenter
                         "severity" => Logger::CRITICAL,
                     ]));
                 }
-
             }
             if (count($errors)) {
                 $monolog->error(DOMAIN . " ERROR: " . json_encode($errors) . $add);
@@ -371,7 +370,7 @@ abstract class APresenter implements IPresenter
     }
 
     /**
-     * Get instance for unit testing
+     * Get instance for testing
      *
      * @static
      * @final

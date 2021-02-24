@@ -376,9 +376,8 @@ $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCES
 
 // FINAL HEADERS
 header("X-Country: $country");
-header("X-RunTime: $time1 ms");
 header("X-Processing: $time2 ms");
-header("X-RateLimiting: {$app->getRateLimit()}");
+header("X-RunTime: $time1 ms");
 
 // ANALYTICS
 if (method_exists($app, "SendAnalytics")) {

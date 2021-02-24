@@ -53,11 +53,19 @@ class ErrorPresenter extends APresenter
         }
         $error = self::CODESET[$code];
         header("HTTP/1.1 ${code} ${error}");
+
+        // set error image
+        $img = "error.png";
+        if (\file_exists(WWW . "/img/${code}.png")) {
+            $img = "${code}.png";
+        }
+        if (\file_exists(WWW . "/img/${code}.jpg")) {
+            $img = "${code}.jpg";
+        }
         $template = '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body><center><h1>'
-            . "<br>🤔 WebApp Error &ndash; #$code 💣</h1><h2>"
-            . self::CODESET[$code]
+            . "<br>🤔 Web App Error #${code} 💣</h1><h2>" . self::CODESET[$code]
             . '<br></h2><h1><a rel=nofollow style="color:red;text-decoration:none" href="/">RELOAD ↻</a></h1>'
-            . '<img alt="dead robot" src=/img/error.png></body></html>';
+            . '<img height="100%" alt="' . $error . '" src=/img/' . $img . '></body></html>';
         return $this->setData("output", $this->renderHTML($template));
     }
 }

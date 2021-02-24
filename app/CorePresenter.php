@@ -43,7 +43,23 @@ class CorePresenter extends APresenter
         switch ($view) {
             case "PingBack":
                 $this->checkRateLimit();
-                return $this->writeJsonData([200 => "OK"], $extras);
+                $x = file_get_contents("/proc/meminfo") ?? "";
+                $meminfo = explode("\n", $x);
+                $meminfo = array_map("trim", $meminfo);
+                $meminfo = array_filter($meminfo, "strlen");
+                foreach ($meminfo as $k => $v) {
+                    if (!strpos($v, ':')) {
+                        continue;
+                    }
+                    $x = explode(':', $v);
+                    unset($meminfo[$k]);
+                    $meminfo[$x[0]] = trim($x[1]);
+                }
+                $data = [
+                    "system_load" => function_exists("sys_getloadavg") ? \sys_getloadavg() : null,
+                    "memory_info" => $meminfo ?? null,
+                ];
+                return $this->writeJsonData($data, $extras);
                 break;
 
             case "GetTXTSitemap":

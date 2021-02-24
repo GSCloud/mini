@@ -8,11 +8,11 @@ info:
 	@echo "🆘 \e[0;1mmake test\e[0m - local integration test\n"
 
 doctor:
-	@/bin/bash ./cli.sh doctor
+	@bash ./cli.sh doctor
 
 prodtest:
-	@/bin/bash ./cli.sh prod
+	@bash ./cli.sh prod
 
 test:
 	service apache2 start
-	@/bin/bash ./cli.sh local
+	@bash ./cli.sh local
