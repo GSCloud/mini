@@ -1072,6 +1072,7 @@ abstract class APresenter implements IPresenter
         if (empty($location)) {
             $location = "/?nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 8);
         }
+        $this->setCookie("ref", "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
         \header("Location: $location", true, ($code > 300) ? $code : 303);
         exit;
     }
