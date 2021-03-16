@@ -1,3 +1,5 @@
+#@author Filip Oščádal <git@gscloud.cz>
+
 ARG CODE_VERSION=8.0-apache
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LC_ALL=en_US.UTF-8
@@ -8,7 +10,6 @@ ENV TERM=xterm LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 RUN apt-get update -qq && apt-get upgrade -yqq && apt-get install -yqq --no-install-recommends curl openssl redis
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
 RUN install-php-extensions gd redis
 RUN a2enmod rewrite expires headers && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 RUN mkdir -p /var/www/ci /var/www/data /var/www/logs /var/www/temp \
