@@ -42,10 +42,6 @@ class Doctor
         $this->validate("<bold>CONFIG</bold> as " . CONFIG, $this->isreadable(CONFIG));
         $this->validate("<bold>REVISIONS</bold> in ROOT", $this->isreadable(ROOT . DS . "REVISIONS"));
         $this->validate("<bold>VERSION</bold> in ROOT", $this->isreadable(ROOT . DS . "VERSION"));
-        // check for .env (not in Docker image)
-        if (file_exists(ROOT . DS . ".env")) {
-            $this->validate("<bold>_site_cfg.sh</bold> in ROOT (used for syncing)", $this->isreadable(ROOT . DS . "_site_cfg.sh"));
-        }
         $this->validate("<bold>router.neon</bold> in APP", $this->isreadable(APP . DS . "router.neon"));
         $this->validate("<bold>router_admin.neon</bold> in APP", $this->isreadable(APP . DS . "router_admin.neon"));
         $this->validate("<bold>router_defaults.neon</bold> in APP", $this->isreadable(APP . DS . "router_defaults.neon"));

@@ -3,7 +3,7 @@
  * GSC Tesseract
  *
  * @category Framework
- * @author   Fred Brooker <oscadal@gscloud.cz>
+ * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://lasagna.gscloud.cz
  */
@@ -20,25 +20,24 @@ error_reporting(E_ALL);
 @ini_set("default_socket_timeout", defined("DEFAULT_SOCKET_TIMEOUT") ? DEFAULT_SOCKET_TIMEOUT : 20);
 @ini_set("display_errors", defined("DISPLAY_ERRORS") ? DISPLAY_ERRORS : true);
 
-// CONSTANTS in SPECIFIC ORDER!
-// (DO NOT ADD FINAL SEPARATOR FOR DIRECTORIES)
+// CONSTANTS ARE IN SPECIFIC ORDER *** DO NOT ADD DIRECTORY SEPARATOR FOR FOLDERS!
 
-/** @const DIRECTORY_SEPARATOR shortcut */
+/** @const DIRECTORY_SEPARATOR */
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 
 /** @const root folder */
 defined("ROOT") || define("ROOT", __DIR__);
 
-/** @const application folder, defaults to "app" */
+/** @const application folder */
 defined("APP") || define("APP", ROOT . DS . "app");
 
-/** @const cache folder, defaults to "temp" */
+/** @const cache folder */
 defined("CACHE") || define("CACHE", ROOT . DS . "temp");
 
-/** @const application data folder, defaults to "data" */
+/** @const application data folder */
 defined("DATA") || define("DATA", ROOT . DS . "data");
 
-/** @const website assets folder, defaults to "www" */
+/** @const website assets folder */
 defined("WWW") || define("WWW", ROOT . DS . "www");
 
 /** @const configuration file, full path */
