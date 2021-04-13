@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author Filip Oščádal <oscadal@gscloud.cz>
+#@author Filip Oščádal <git@gscloud.cz>
 
 dir="$(dirname "$0")"
 . $dir"/_includes.sh"
@@ -33,3 +33,5 @@ yes_or_no && {
   npm install gulp-uglify
   npm install gulp-util
 }
+
+exit 0

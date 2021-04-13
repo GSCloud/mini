@@ -1,2 +1,3 @@
-Filip Oščádal <oscadal@gscloud.cz> programmer, project owner
-GS Cloud Ltd. [https://gscloud.cz]
+Fred Brooker / Filip Oščádal <git@gscloud.cz> programmer, project owner
+
+GS Cloud Ltd. [https://gscloud.cz] 💖

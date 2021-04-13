@@ -17,7 +17,7 @@ RUN mkdir -p /var/www/ci /var/www/data /var/www/logs /var/www/temp \
     && ln -s /var/www/html /var/www/www
 
 COPY php.ini /usr/local/etc/php/
-COPY app/*.php app/router* /var/www/app/
+COPY app/*.php app/router* app/csp.neon /var/www/app/
 COPY Bootstrap.php README.md REVISIONS VERSION /var/www/
 COPY docker/ /var/www/
 COPY www /var/www/html

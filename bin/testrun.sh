@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author Filip Oščádal <oscadal@gscloud.cz>
+#@author Filip Oščádal <git@gscloud.cz>
 
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
@@ -20,3 +20,5 @@ google-chrome http://localhost:9000 &
 
 #docker run --rm --name tesseract -p 9000:80 -v "$(pwd)"/www/:/var/www/html/ -v "$(pwd)"/app/:/var/www/app/ $TAG
 docker run --rm --name tesseract -p 9000:80 $TAG
+
+exit 0

@@ -43,6 +43,9 @@ defined("WWW") || define("WWW", ROOT . DS . "www");
 /** @const configuration file, full path */
 defined("CONFIG") || define("CONFIG", APP . DS . "config.neon");
 
+/** @const CSP HEADERS configuration file, full path */
+defined("CSP") || define("CSP", APP . DS . "csp.neon");
+
 /** @const private configuration file, full path */
 defined("CONFIG_PRIVATE") || define("CONFIG_PRIVATE", APP . DS . "config_private.neon");
 

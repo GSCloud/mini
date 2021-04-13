@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author Filip Oščádal <oscadal@gscloud.cz>
+#@author Filip Oščádal <git@gscloud.cz>
 
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
@@ -52,3 +52,5 @@ rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
 ssh root@$HOST $DEST/remote_fixer.sh ${BETA}
+
+exit 0

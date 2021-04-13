@@ -3,7 +3,7 @@
  * GSC Tesseract
  *
  * @category Framework
- * @author   Fred Brooker <oscadal@gscloud.cz>
+ * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://lasagna.gscloud.cz
  */
@@ -319,43 +319,11 @@ switch ($presenter[$view]["template"]) {
         break;
 
     default:
-        header(implode(" ", [
-            "Content-Security-Policy: ",
-            "default-src",
-            "'unsafe-inline'",
-            "'self'",
-            "https://*;",
-            "connect-src",
-            "'self'",
-            "https://*;",
-            "font-src",
-            "'self'",
-            "'unsafe-inline'",
-            "*.gstatic.com;",
-            "script-src",
-            "*.facebook.net",
-            "*.google-analytics.com",
-            "*.googleapis.com",
-            "*.googletagmanager.com",
-            "*.ytimg.com",
-            "cdn.onesignal.com",
-            "cdn.syndication.twimg.com",
-            "cdnjs.cloudflare.com",
-            "onesignal.com",
-            "platform.twitter.com",
-            "static.cloudflareinsights.com",
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval';",
-            "img-src",
-            "*",
-            "'self'",
-            "'unsafe-inline'",
-            "data:;",
-            "form-action",
-            "https://*",
-            "'self';",
-        ]));
+        // read CSP HEADERS configuration
+        if (file_exists(CSP) && is_readable(CSP)) {
+            $csp = @Neon::decode(@file_get_contents(CSP));
+            header(implode(" ", (array) $csp["csp"]));
+        }
 }
 
 // SINGLETON CLASS

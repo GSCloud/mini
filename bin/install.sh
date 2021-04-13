@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author Filip Oščádal <oscadal@gscloud.cz>
+#@author Filip Oščádal <git@gscloud.cz>
 
 ABSPATH=$(readlink -f $0)
 ABSDIR=$(dirname $ABSPATH)
@@ -25,5 +25,6 @@ if [ ! -d "vendor" ]; then
   make update
 fi
 
-info Done.
 echo -en "\nRun \e[1m\e[4mmake doctor\e[0m to check your configuration.\n\n"
+
+exit 0
