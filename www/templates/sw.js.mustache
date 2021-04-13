@@ -3,11 +3,11 @@
 var version = "{{ version }}_{{ VERSION_SHORT }}";
 var core = [
   {{#sitemap}}"/{{ . }}",{{/sitemap}}
-  "{{ cdn }}/img/favicon-16.png",
-  "{{ cdn }}/img/favicon-128.png",
-  "{{ cdn }}/img/favicon-180.png",
-  "{{ cdn }}/img/favicon-192.png",
-  "{{ cdn }}/img/logo.png",
+  "{{ cdn }}/img/favicon-16.webp",
+  "{{ cdn }}/img/favicon-128.webp",
+  "{{ cdn }}/img/favicon-180.webp",
+  "{{ cdn }}/img/favicon-192.webp",
+  "{{ cdn }}/img/logo.webp",
 ];
 
 self.addEventListener("install", function (event) {
