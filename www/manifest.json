@@ -2,13 +2,13 @@
   "short_name": "MINI",
   "name": "Tesseract MINI",
   "icons": [{
-      "src": "/img/favicon-192.png",
-      "type": "image/png",
+      "src": "/img/favicon-192.webp",
+      "type": "image/webp",
       "sizes": "192x192"
     },
     {
-      "src": "/img/favicon-512.png",
-      "type": "image/png",
+      "src": "/img/favicon-512.webp",
+      "type": "image/webp",
       "sizes": "512x512"
     }
   ],
