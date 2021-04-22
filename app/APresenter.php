@@ -119,7 +119,7 @@ abstract class APresenter implements IPresenter
     const GS_SHEET_POSTFIX = "/edit#gid=0";
 
     /** @var integer Access limiter max.  hits */
-    const LIMITER_MAXIMUM = 50;
+    const LIMITER_MAXIMUM = 500;
 
     /** @var string Identity nonce filename */
     const IDENTITY_NONCE = "identity_nonce.key";
@@ -1514,13 +1514,18 @@ abstract class APresenter implements IPresenter
     public function writeJsonData($data, $headers = [], $switches = null)
     {
         $code = 200;
+        $out = [
+            "timestamp" => \time(),
+            "version" => (string) ($this->getCfg("version") ?? "v1"),
+        ];
+
+        /*
         $locale = [];
-        $out = [];
-        $out["timestamp"] = \time();
-        $out["version"] = (string) ($this->getCfg("version") ?? "v1");
         if (\is_array($this->getCfg("locales"))) { // locales
             $locale = $this->getLocale("en");
         }
+        */
+
         switch (\json_last_error()) { // last decoding error
             case JSON_ERROR_NONE:
                 $code = 200;
@@ -1553,7 +1558,7 @@ abstract class APresenter implements IPresenter
         }
         if (is_null($data)) {
             $code = 500;
-            $msg = "Data is null! Internal server error. 🦄";
+            $msg = "Null data! Internal server error 🦄";
             \header("HTTP/1.1 500 Internal Server Error");
         }
         if (is_string($data)) {
@@ -1620,11 +1625,14 @@ abstract class APresenter implements IPresenter
         $out["code"] = (int) $code;
         $out["message"] = $msg;
         $out["processing_time"] = \round((\microtime(true) - TESSERACT_START) * 1000, 2) . " ms";
-        // merge the headers in
+
+        // merge headers
         $out = \array_merge_recursive($out, $headers);
-        // set the data model
+
+        // set data model
         $out["data"] = $data ?? null;
-        // extra switches
+
+        // process extra switches
         if (\is_null($switches)) {
             return $this->setData("output", \json_encode($out, JSON_PRETTY_PRINT));
         }
