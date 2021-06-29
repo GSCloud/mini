@@ -350,7 +350,9 @@ abstract class APresenter implements IPresenter
                 }
 
             }
-        } finally {}
+        } finally {
+            exit();
+        }
     }
 
     /**
@@ -1369,7 +1371,7 @@ abstract class APresenter implements IPresenter
                     }
                 }
             }
-        } catch (Execption $e) {
+        } catch (\Exception $e) {
             $this->addError("CLOUDFLARE: " . (string) $e->getMessage());
         }
         return $this;
