@@ -21,7 +21,7 @@
     "paragonie/halite": "^4.6",
     "paragonie/random_compat": ">=2 <9.99",
     "php": "^7.4",
-    "phpseclib/phpseclib": "^2.0.29",
+    "phpseclib/phpseclib": "^3.0.7",
     "psr/simple-cache": "^1.0.1",
     "symfony/lock": "^4.4",
     "symfony/polyfill-mbstring": "^1.20",
