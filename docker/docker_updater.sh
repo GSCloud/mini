@@ -1,3 +1,3 @@
 #!/bin/bash
 
-curl http://localhost/admin/CoreUpdateRemote
+curl -s http://localhost:80/admin/CoreUpdateRemote

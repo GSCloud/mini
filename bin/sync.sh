@@ -14,7 +14,7 @@ if [ -z "$GLOBALSYNC" ]; then
 fi
 
 if [ ! -r ".env" ]; then fail "Missing .env file!"; fi
-export $(grep -v '^#' .env | xargs -d '\n')
+source .env
 
 if [ "$BETA" == "a" ]; then
   export DEST=$DESTA
@@ -60,6 +60,6 @@ rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   www \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
-ssh root@$HOST $DEST/remote_fixer.sh ${BETA}
+ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA}
 
 exit 0
