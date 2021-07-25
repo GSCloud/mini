@@ -12,10 +12,14 @@ find . -type d \( -path ./node_modules -o -path ./vendor \) -prune -false -o -in
 
 # ADOC -> PDF
 find . -type d \( -path ./node_modules -o -path ./vendor \) -prune -false -o -iname "*.adoc" -exec echo "Converting {} to PDF" \; \
-    -exec docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $(pwd):/documents/ asciidoctor/docker-asciidoctor asciidoctor-pdf -a allow-uri-read -d book "{}" \;
+    -exec docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $(pwd):/documents/ asciidoctor/docker-asciidoctor:1.7.0 asciidoctor-pdf "{}" \;
+
+# remove temp files
+rm temp/* >/dev/null 2>&1 
 
 # phpdocumentor
-docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $(pwd):/data phpdoc/phpdoc run -d . -t ./doc --ignore "vendor/*,temp/*"
+docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v $(pwd):/data phpdoc/phpdoc \
+    run -d . -t ./doc --ignore "vendor/"
 
 # make link to documentation
 if [ -d "doc" ]; then
