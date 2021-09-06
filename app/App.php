@@ -123,19 +123,19 @@ function logger($message, $severity = Logger::INFO)
 
 // CACHING PROFILES
 $cache_profiles = array_replace([
-    "csv" => "+120 minutes", // CSV cold storage
-    "day" => "+24 hours",
-    "default" => "+5 minutes",
-    "fiveminutes" => "+5 minutes",
-    "hour" => "+60 minutes",
-    "limiter" => "+5 seconds", // access limiter
-    "minute" => "+60 seconds",
-    "page" => "+7 minutes", // public web page, user not logged
+    "default" => "+2 minutes",
     "second" => "+1 seconds",
-    "tenminutes" => "+10 minutes",
     "tenseconds" => "+10 seconds",
-    "thirtyminutes" => "+30 minutes",
     "thirtyseconds" => "+30 seconds",
+    "minute" => "+60 seconds",
+    "fiveminutes" => "+5 minutes",
+    "tenminutes" => "+10 minutes",
+    "thirtyminutes" => "+30 minutes",
+    "hour" => "+60 minutes",
+    "day" => "+24 hours",
+    "csv" => "+360 minutes", // CSV cold storage
+    "limiter" => "+5 seconds", // access limiter
+    "page" => "+10 seconds", // public web page, user not logged
 ], (array) ($cfg["cache_profiles"] ?? []));
 
 foreach ($cache_profiles as $k => $v) {

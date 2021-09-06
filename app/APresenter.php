@@ -119,7 +119,7 @@ abstract class APresenter implements IPresenter
     const GS_SHEET_POSTFIX = "/edit#gid=0";
 
     /** @var integer Access limiter max.  hits */
-    const LIMITER_MAXIMUM = 500;
+    const LIMITER_MAXIMUM = 100;
 
     /** @var string Identity nonce filename */
     const IDENTITY_NONCE = "identity_nonce.key";
