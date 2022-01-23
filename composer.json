@@ -9,7 +9,7 @@
     "ethanhann/redis-raw": "^0.3.1",
     "google/cloud": "^0.86",
     "guzzlehttp/guzzle": "^6.5",
-    "league/climate": "^3.5",
+    "league/climate": "3.7.0",
     "league/csv": "^9.6",
     "league/oauth2-client": "^2.6",
     "league/oauth2-google": "^3.0",
