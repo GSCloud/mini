@@ -29,12 +29,11 @@ class MiniPresenter extends APresenter
         $view = $this->getView();
         $this->checkRateLimit()->setHeaderHtml()->dataExpander($data); // data = Model
 
-        // advanced caching
-        $use_cache = (DEBUG === true) ? false : $data["use_cache"] ?? false;
-        $cache_key = strtolower(join("_", [$data["host"], $data["request_path"]])) . "_htmlpage";
+        // process advanced caching
+        $use_cache = (bool) (DEBUG ? false : $data["use_cache"] ?? false);
+        $cache_key = hash("sha256", join("_", [$data["host"], $data["request_path"], "htmlpage"]));
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
-            header("X-Cached: true");
-            return $this->setData("output", $output);
+            return $this->setData("output", $output .= "\n<script>console.log('*** page content cached');</script>");
         }
 
         // HTML content

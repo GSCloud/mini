@@ -4,7 +4,7 @@
   "require": {
     "adbario/php-dot-notation": "^2.2",
     "altorouter/altorouter": "^1.2",
-    "cakephp/cache": "^3.9",
+    "cakephp/cache": "^4.3",
     "cheprasov/php-redis-client": "^1.9",
     "ethanhann/redis-raw": "^0.3.1",
     "google/cloud": "^0.86",
