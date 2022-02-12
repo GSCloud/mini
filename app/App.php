@@ -37,10 +37,10 @@ foreach (["cfg"] as $x) {
     }
 }
 
-// DATA POPULATION
+// POPULATE DATA ARRAY
 $base58 = new \Tuupola\Base58;
 $data = $cfg;
-$data["cfg"] = $cfg; // backup
+$data["cfg"] = $cfg; // cfg backup
 $data["GET"] = array_map("htmlspecialchars", $_GET);
 $data["POST"] = array_map("htmlspecialchars", $_POST);
 $data["VERSION"] = $version = trim(@file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n");
@@ -94,7 +94,7 @@ if (GCP_KEYS && file_exists(APP . DS . GCP_KEYS)) {
 }
 
 /**
- * Stackdriver logger
+ * Google Stackdriver
  *
  * @param string $message
  * @param mixed $severity (optional)
@@ -200,7 +200,7 @@ if (!in_array($auth_domain, $multisite_profiles["default"])) {
     $multisite_profiles["default"][] = $auth_domain;
 }
 
-// DATA POPULATION
+// POPULATE DATA ARRAY
 $data["cache_profiles"] = $cache_profiles;
 $data["multisite_profiles"] = $multisite_profiles;
 $data["multisite_names"] = $multisite_names;
@@ -214,6 +214,7 @@ $routes = $cfg["routes"] ?? [ // configuration can override defaults
     "router.neon",
 ];
 
+// LOAD ROUTING TABLES
 foreach ($routes as $r) {
     $r = APP . DS . $r;
     if (($content = @file_get_contents($r)) === false) {
@@ -222,7 +223,7 @@ foreach ($routes as $r) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing tables</h2><h3>$r</h3>";
+        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2><h3>$r</h3>";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
@@ -253,12 +254,12 @@ foreach ($presenter as $k => $v) {
         }
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
-    if (substr($v["path"], -1) != "/") { // map slash endings
+    if (substr($v["path"], -1) != "/") { // map also slash endings!
         $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x");
     }
 }
 
-// DATA POPULATION
+// POPULATE DATA ARRAY
 $data["presenter"] = $presenter;
 $data["router"] = $router;
 
@@ -275,15 +276,15 @@ if (CLI) {
     exit;
 }
 
-// ROUTING
+// PROCESS ROUTING
 $match = $alto->match();
 $view = $match ? $match["target"] : ($router["defaults"]["view"] ?? "home");
 
-// DATA POPULATION
+// POPULATE DATA ARRAY
 $data["match"] = $match;
 $data["view"] = $view;
 
-// "sethl" - set home language
+// "sethl" property = set HOME LANGUAGE
 if ($router[$view]["sethl"] ?? false) {
     $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? null));
     switch ($r) {
@@ -297,13 +298,13 @@ if ($router[$view]["sethl"] ?? false) {
             $r = null;
     }
     if ($r) {
-        setcookie("hl", $r, time() + 86400 * 31, "/");
+        setcookie("hl", $r, time() + 86400 * 31, "/"); // no need to sanitize this cookie
         $presenter[$view]["language"] = $r;
         $data["presenter"] = $presenter;
     }
 }
 
-// REDIRECTS
+// PROCESS REDIRECTS
 if ($router[$view]["redirect"] ?? false) {
     $r = $router[$view]["redirect"];
     if (ob_get_level()) {
@@ -318,44 +319,41 @@ switch ($presenter[$view]["template"]) {
     case "epub": // skip CSP headers for EPUB reader
         break;
 
-    default:
-        // read CSP HEADERS configuration
+    default: // read CSP HEADERS configuration        
         if (file_exists(CSP) && is_readable(CSP)) {
             $csp = @Neon::decode(@file_get_contents(CSP));
             header(implode(" ", (array) $csp["csp"]));
         }
 }
 
-// SINGLETON CLASS
+// CREATE CORE SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\${p}";
 \Tracy\Debugger::timer("PROCESS");
-// set and process model
-$app = $controller::getInstance()->setData($data)->process();
-// get model back
-$data = $app->getData();
+$app = $controller::getInstance()->setData($data)->process(); // set and process model
+$data = $app->getData(); // get model back
 
-// ANALYTICS DATA
+// PREPARE ANALYTICS DATA
 $events = null;
 $data = $app->getData();
 $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
 $data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUN") * 1000, 2);
 $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESS") * 1000, 2);
 
-// FINAL HEADERS
+// SET FINAL HEADERS
 header("X-Country: $country");
 header("X-Processing: $time2 ms");
 header("X-RunTime: $time1 ms");
 
-// ANALYTICS
+// PROCESS ANALYTICS
 if (method_exists($app, "SendAnalytics")) {
     $app->setData($data)->SendAnalytics();
 }
 
-// OUTPUT
+// EXPORT OUTPUT
 echo $data["output"] ?? "";
 
-// DEBUG
+// PROCESS DEBUGGING
 if (DEBUG) {
     // remove private information
     unset($data["cf"]);
