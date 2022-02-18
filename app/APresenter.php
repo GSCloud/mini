@@ -24,16 +24,18 @@ use ParagonIE\Halite\KeyFactory;
 
 interface IPresenter
 {
-    /** messages */
+    /** message adders */
     public function addCritical($message);
     public function addError($message);
     public function addMessage($message);
     public function addAuditMessage($message);
+
+    /** message getters */
     public function getCriticals();
     public function getErrors();
     public function getMessages();
 
-    /** getters */
+    /** general getters */
     public function getCfg($key);
     public function getCookie($name);
     public function getCurrentUser();
@@ -50,12 +52,12 @@ interface IPresenter
     public function getUserGroup();
     public function getView();
 
-    /** checks */
+    /** general checks */
     public function checkLocales($force);
     public function checkPermission($roleslist);
     public function checkRateLimit($maximum);
 
-    /** setters */
+    /** general setters */
     public function setCookie($name, $data);
     public function setData($data, $value);
     public function setForceCsvCheck();
@@ -70,7 +72,7 @@ interface IPresenter
     public function setIdentity($identity);
     public function setLocation($locationm, $code);
 
-    /** tools */
+    /** various tools */
     public function clearCookie($name);
     public function cloudflarePurgeCache($cf);
     public function dataExpander(&$data);
@@ -81,10 +83,10 @@ interface IPresenter
     public function renderHTML($template);
     public function writeJsonData($data, $headers = [], $switches = null);
 
-    /** abstract */
+    /** abstract method used in controllers */
     public function process();
 
-    /** singleton */
+    /** singleton instances */
     public static function getInstance();
     public static function getTestInstance(); // for testing
 }
@@ -555,18 +557,18 @@ abstract class APresenter implements IPresenter
             );
         }
 
-        // Telegram support
+        // Telegram bot support
         $chid = $this->getData("telegram.bot_ch_id") ?? null;
         $apikey = $this->getData("telegram.bot_apikey") ?? null;
         if ($this->getCurrentUser()["name"] !== "") {
-            $curl_obj = curl_init();
-            $message = htmlspecialchars("🤖 " . APPNAME . " (" . DOMAIN . ")" . ": " . $message . " / " . $this->getCurrentUser()["name"]);
-            if ($chid && $apikey) {
+            $curl = curl_init();
+            $message = htmlspecialchars("🤖 " . APPNAME . " (" . DOMAIN . ")" . ": " . $message . " [" . $this->getCurrentUser()["name"] . "]");
+            if ($curl && $message && $chid && $apikey) {
                 $query = "?chat_id=" . $chid . "&text=${message}";
-                curl_setopt($curl_obj, CURLOPT_URL, "https://api.telegram.org/bot" . $apikey . "/sendMessage" . $query);
-                curl_setopt($curl_obj, CURLOPT_RETURNTRANSFER, true);
-                curl_exec($curl_obj);
-                curl_close($curl_obj);
+                curl_setopt($curl, CURLOPT_URL, "https://api.telegram.org/bot" . $apikey . "/sendMessage" . $query);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_exec($curl);
+                curl_close($curl);
             }
         }
         return $this;
@@ -596,6 +598,7 @@ abstract class APresenter implements IPresenter
     {
         if (!\is_null($message) || !empty($message)) {
             $this->errors[] = (string) $message;
+            $this->addAuditMessage($message);
         }
         return $this;
     }
@@ -1029,6 +1032,7 @@ abstract class APresenter implements IPresenter
                 KeyFactory::save($enc, $keyfile);
                 @\chmod($keyfile, self::COOKIE_KEY_FILEMODE);
                 $this->addMessage("HALITE: New keyfile created");
+                $this->addAuditMessage("HALITE: New keyfile created");
             } else {
                 $this->addError("HALITE: Cannot write encryption key!");
             }
@@ -1177,6 +1181,7 @@ abstract class APresenter implements IPresenter
         }
         $mygroup = null;
         $email = \trim((string) $email);
+
         // search all groups for email or asterisk
         foreach ($this->getCfg("admin_groups") ?? [] as $group => $users) {
             if (in_array($email, $users, true)) {
@@ -1417,7 +1422,6 @@ abstract class APresenter implements IPresenter
                         $data = @\file_get_contents($remote);
                     } catch (\Exception$e) {
                         $this->addError("ERROR: fetching ${remote}");
-                        $this->addAuditMessage("ERROR: fetching ${remote}");
                         $data = "";
                     }
                 }
@@ -1426,18 +1430,21 @@ abstract class APresenter implements IPresenter
                 }
                 if (\strlen($data) >= self::CSV_MIN_SIZE) {
                     Cache::write($file, $data, "csv");
+
                     // delete old backup
                     if (\file_exists(DATA . DS . "${file}.bak")) {
                         if (@\unlink(DATA . DS . "${file}.bak") === false) {
                             $this->addError("FILE: delete ${file}.bak failed!");
                         }
                     }
+
                     // move CSV to backup
                     if (\file_exists(DATA . DS . "${file}.csv")) {
                         if (@\rename(DATA . DS . "${file}.csv", DATA . DS . "${file}.bak") === false) {
                             $this->addError("FILE: backup ${file}.csv failed!");
                         }
                     }
+
                     // write new CSV
                     if (\file_put_contents(DATA . DS . "${file}.csv", $data, LOCK_EX) === false) {
                         $this->addError("FILE: save ${file}.csv failed!");
@@ -1479,7 +1486,7 @@ abstract class APresenter implements IPresenter
         $file = \strtolower($name);
         if (empty($file)) {
             $this->addCritical("EMPTY readAppData() parameter!");
-            return null;
+            return null; // failure
         }
         if (!$csv = Cache::read($file, "csv")) { // read CSV from cache
             $csv = false;
@@ -1491,7 +1498,7 @@ abstract class APresenter implements IPresenter
             }
             if ($csv !== false || \strlen($csv) >= self::CSV_MIN_SIZE) {
                 Cache::write($file, $csv, "csv"); // store into cache
-                return $csv; // OK
+                return $csv; // CSV is OK
             }
             $csv = false;
             if (\file_exists(DATA . DS . "${file}.bak")) {
@@ -1525,14 +1532,6 @@ abstract class APresenter implements IPresenter
             "timestamp" => \time(),
             "version" => (string) ($this->getCfg("version") ?? "v1"),
         ];
-
-        /*
-        $locale = [];
-        if (\is_array($this->getCfg("locales"))) { // locales
-            $locale = $this->getLocale("en");
-        }
-        */
-
         switch (\json_last_error()) { // last decoding error
             case JSON_ERROR_NONE:
                 $code = 200;
@@ -1565,7 +1564,7 @@ abstract class APresenter implements IPresenter
         }
         if (is_null($data)) {
             $code = 500;
-            $msg = "Null data! Internal server error 🦄";
+            $msg = "Data is NULL! Internal server error 🦄";
             \header("HTTP/1.1 500 Internal Server Error");
         }
         if (is_string($data)) {
@@ -1660,7 +1659,7 @@ abstract class APresenter implements IPresenter
         $data["user"] = $user = $this->getCurrentUser(); // logged user
         $data["admin"] = $group = $this->getUserGroup(); // logged user group
 
-        // caching?
+        // solve caching
         $use_cache = true;
         if (\array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
             $use_cache = false;
