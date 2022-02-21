@@ -94,7 +94,7 @@ window.addEventListener('load', function() {
 {{>install_head_google_analytics}}
 </head>
 <body>
-<span id="offline" style="position:fixed;bottom:0;right:0;background-color:transparent;font-size:2em;padding:1em;z-index:99999" aria-hidden="true" tabindex="-1"><b>📵</b></span>
+<span id="offline" style="position:fixed;bottom:0;right:0;background-color:transparent;font-size:2em;padding:0;z-index:99999" aria-hidden="true" tabindex="-1"><b>📵</b></span>
 <div class="container">
   <div class="row">
     <div class="column">
@@ -108,15 +108,12 @@ API calls with <b>USE KEY</b> declaration must use a valid API key as URL parame
 <br>
 <br>
   <ol>
-
   {{#apis}}
   <li class="{{^private}}t_public{{/private}} {{#private}}t_private{{/private}} {{#key}}t_key{{/key}} {{#finished}}t_finished{{/finished}} {{#deprecated}}t_deprecated{{/deprecated}}"> <b>{{ desc }}</b>
     <p>
-      
       {{#linkit}}
       <a target="_blank" rel="nolink" href="{{ base }}{{ path }}" style="color:brown"><b>{{ base }}{{ path }}</b></a>
       {{/linkit}}
-
       {{^linkit}}
       <span style="color:blue"><strong>{{ base }}{{ path }}</strong></span>
       {{/linkit}}
@@ -142,7 +139,6 @@ API calls with <b>USE KEY</b> declaration must use a valid API key as URL parame
     </p>
   </li>
   {{/apis}}
-
   </ol>
 </div>
 {{>body_api}}
