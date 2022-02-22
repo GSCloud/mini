@@ -15,6 +15,11 @@ use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 use Nette\Neon\Neon;
 
+// SANITY CHECK - CONSTANTS
+foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP", "ENABLE_CSV_CACHE"] as $x) {
+    defined($x) || die("FATAL ERROR: sanity check for constant '$x' failed!");
+}
+
 // USER-DEFINED ERROR HANDLER
 function exception_error_handler($severity, $message, $file, $line)
 {
@@ -25,21 +30,9 @@ function exception_error_handler($severity, $message, $file, $line)
 }
 set_error_handler("\\GSC\\exception_error_handler");
 
-// SANITY CHECK
-foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP"] as $x) {
-    if (!defined($x)) {
-        die("FATAL ERROR: Sanity check for '$x' failed!");
-    }
-}
-foreach (["cfg"] as $x) {
-    if (!isset($x)) {
-        die("FATAL ERROR: Sanity check for '$x' failed!");
-    }
-}
-
 // POPULATE DATA ARRAY
 $base58 = new \Tuupola\Base58;
-$data = $cfg;
+$cfg = $data = $cfg ?? [];
 $data["cfg"] = $cfg; // cfg backup
 $data["GET"] = array_map("htmlspecialchars", $_GET);
 $data["POST"] = array_map("htmlspecialchars", $_POST);
@@ -316,15 +309,29 @@ if ($router[$view]["redirect"] ?? false) {
 
 // CSP HEADERS
 switch ($presenter[$view]["template"]) {
-    case "epub": // skip CSP headers for EPUB reader
+    case "epub": // skip CSP for EPUB reader
         break;
 
-    default: // read CSP HEADERS configuration        
+    default: // set CSP HEADER
         if (file_exists(CSP) && is_readable(CSP)) {
             $csp = @Neon::decode(@file_get_contents(CSP));
             header(implode(" ", (array) $csp["csp"]));
         }
 }
+
+# POPULATE GLOBAL CSV CACHE
+$arr = [];
+if (ENABLE_CSV_CACHE && \is_array($locales = $data["locales"] ?? null)) {
+    foreach (array_replace($locales, $data["app_data"] ?? []) as $name => $csvkey) {
+        $arr[hash("sha256", $name)] = [
+            "name" => $name,
+            "sheet" => $csvkey,
+            "data" => null,
+        ];
+    }
+}
+$data["csvcache"] = $arr;
+unset($arr);
 
 // CREATE CORE SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
@@ -340,12 +347,12 @@ $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
 $data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUN") * 1000, 2);
 $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESS") * 1000, 2);
 
-// SET FINAL HEADERS
+// SET X-HEADERS
 header("X-Country: $country");
 header("X-Processing: $time2 ms");
 header("X-RunTime: $time1 ms");
 
-// PROCESS ANALYTICS
+// SEND ANALYTICS
 if (method_exists($app, "SendAnalytics")) {
     $app->setData($data)->SendAnalytics();
 }

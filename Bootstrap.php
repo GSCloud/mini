@@ -20,7 +20,7 @@ error_reporting(E_ALL);
 @ini_set("default_socket_timeout", defined("DEFAULT_SOCKET_TIMEOUT") ? DEFAULT_SOCKET_TIMEOUT : 10);
 @ini_set("display_errors", defined("DISPLAY_ERRORS") ? DISPLAY_ERRORS : true);
 
-// CONSTANTS ARE IN SPECIFIC ORDER *** DO NOT ADD DIRECTORY SEPARATOR FOR FOLDERS!
+// CONSTANTS IN SPECIFIC ORDER *** DO NOT ADD DIRECTORY SEPARATOR TO FOLDER DEFINITIONS!
 
 /** @const DIRECTORY_SEPARATOR */
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
@@ -67,11 +67,14 @@ defined("LOGS") || define("LOGS", ROOT . DS . "logs");
 /** @const temporary files folder */
 defined("TEMP") || define("TEMP", ROOT . DS . "temp");
 
-/** @const true if running from command line interface */
-define("CLI", (bool) (PHP_SAPI == "cli"));
+/** @const TRUE if running from command line interface */
+defined("CLI") || define("CLI", (bool) (PHP_SAPI == "cli"));
 
-/** @const true if running server locally */
-define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
+/** @const TRUE if running server locally */
+defined("LOCALHOST") || define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
+
+/** @const TRUE = use CSV curl multi cache */
+defined("ENABLE_CSV_CACHE") || define("ENABLE_CSV_CACHE", true);
 
 // load COMPOSER
 require_once ROOT . DS . "vendor" . DS . "autoload.php";
