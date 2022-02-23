@@ -18,6 +18,7 @@ source .env
 [ -z "$TAG" ] && fail "Missing TAG definition!"
 
 command -v google-chrome >/dev/null 2>&1 && google-chrome http://localhost:$PORT &
+
 docker run --rm --name $NAME -p $PORT:80 -v $(pwd)/app/config_private.neon:/var/www/app/config_private.neon $TAG
 
 exit 0
