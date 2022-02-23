@@ -1,7 +1,8 @@
 ### TESSERACT MINI
 
-# uncomment to force debug !!!
+# uncomment to force debugging !!!
 #dbg: TRUE
+dbg: FALSE
 
 # CORE
 app: mini
