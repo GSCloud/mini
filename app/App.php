@@ -87,7 +87,7 @@ if (GCP_KEYS && file_exists(APP . DS . GCP_KEYS)) {
 }
 
 /**
- * Google Stackdriver
+ * Google Stackdriver logger
  *
  * @param string $message
  * @param mixed $severity (optional)
@@ -131,6 +131,7 @@ $cache_profiles = array_replace([
     "page" => "+10 seconds", // public web page, user not logged
 ], (array) ($cfg["cache_profiles"] ?? []));
 
+// init caching profiles
 foreach ($cache_profiles as $k => $v) {
     if ($cfg["redis"]["port"] ?? null) {
         // use REDIS
@@ -201,9 +202,13 @@ $data["multisite_profiles_json"] = json_encode($multisite_profiles);
 
 // ROUTING CONFIGURATION
 $router = [];
-$routes = $cfg["routes"] ?? [ // configuration can override defaults
+$routes = $cfg["routes"] ?? [ // can be overriden in config.neon
+    // default routing configuration
     "router_defaults.neon",
+    "router_core.neon",
+    "router_extras.neon",
     "router_admin.neon",
+    "router_api.neon",
     "router.neon",
 ];
 
@@ -369,3 +374,5 @@ if (DEBUG) {
     bdump($app->getIdentity(), "identity");
     bdump($data, 'model');
 }
+
+exit;

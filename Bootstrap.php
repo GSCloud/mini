@@ -73,7 +73,7 @@ defined("CLI") || define("CLI", (bool) (PHP_SAPI == "cli"));
 /** @const TRUE if running server locally */
 defined("LOCALHOST") || define("LOCALHOST", (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI);
 
-/** @const TRUE = use CSV curl multi cache */
+/** @const TRUE = use extra curl_multi cache for CSV */
 defined("ENABLE_CSV_CACHE") || define("ENABLE_CSV_CACHE", true);
 
 // load COMPOSER
@@ -133,5 +133,5 @@ if (DEBUG === true) { // https://api.nette.org/3.0/Tracy/Debugger.html
 // start measuring performance
 Debugger::timer("RUN"); 
 
-// load the App
+// load the app
 require_once APP . DS . "App.php";
