@@ -227,13 +227,36 @@ foreach ($routes as $r) {
     $router = array_replace_recursive($router, @Neon::decode($content));
 }
 
-// ROUTER DEFAULTS
+// SET ROUTING DEFAULTS AND PROPERTIES
 $presenter = [];
 $defaults = $router["defaults"] ?? [];
-foreach ($router as $k => $v) {
+foreach ($router ?? [] as $k => $v) {
     if ($k == "defaults") {
         continue;
     }
+    // ALIASED ROUTE
+    if (isset($v["alias"]) && $v["alias"]) {
+        foreach ($defaults as $i => $j) {
+            $router[$k][$i] = $router[$v["alias"]][$i] ?? $defaults[$i]; // data from the aliased origin
+            if ($i == "path") {
+                $router[$k][$i] = $v[$i]; // path property from the source
+            }
+        }
+        $presenter[$k] = $router[$k];
+        continue;
+    }
+    // CLONED ROUTE
+    if (isset($v["clone"]) && $v["clone"]) {
+        foreach ($defaults as $i => $j) {
+            $router[$k][$i] = $router[$v["clone"]][$i] ?? $defaults[$i]; // data from the cloned origin
+            if (isset($v[$i])) {
+                $router[$k][$i] = $v[$i]; // existing properties from the source
+            }
+        }
+        $presenter[$k] = $router[$k];
+        continue;
+    }
+    // NORMAL ROUTE
     foreach ($defaults as $i => $j) {
         $router[$k][$i] = $v[$i] ?? $defaults[$i];
     }

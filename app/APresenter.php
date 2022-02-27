@@ -1649,12 +1649,12 @@ abstract class APresenter implements IPresenter
      * Data Expander
      *
      * @param array $data Model by reference
-     * @return void
+     * @return object Singleton instance
      */
     public function dataExpander(&$data)
     {
         if (empty($data)) {
-            return;
+            return $this;
         }
         $data["user"] = $user = $this->getCurrentUser(); // logged user
         $data["admin"] = $group = $this->getUserGroup(); // logged user group
@@ -1675,13 +1675,13 @@ abstract class APresenter implements IPresenter
         }
         $data["use_cache"] = $use_cache;
 
-        // language
+        // set language
         $presenter = $this->getPresenter();
         $view = $this->getView();
         $data["lang"] = $language = \strtolower($presenter[$view]["language"]) ?? "cs";
         $data["lang{$language}"] = true;
 
-        // locale
+        // get locale
         $l = $this->getLocale($language);
         if (is_null($l)) {
             $l = [];
@@ -1700,6 +1700,7 @@ abstract class APresenter implements IPresenter
         } else {
             $data["request_path_slug"] = $data["request_path"] ?? "";
         }
+        return $this;
     }
 
 }
