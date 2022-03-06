@@ -1,7 +1,8 @@
 ### TESSERACT MINI
 
-# uncomment to force debug !!!
+# uncomment to force debugging !!!
 dbg: TRUE
+#dbg: FALSE
 
 # CORE
 app: mini
@@ -14,7 +15,7 @@ canonical_url: "https://mini.gscloud.cz/"
 #canonical_url: "https://bmini.gscloud.cz/"
 
 # GCP ID
-#gcp_project_id: "gscloudcz-163314"
+gcp_project_id: "gscloudcz-163314"
 
 # Google OAUTH 2.0
 goauth_origin: "https://mini.gscloud.cz"
@@ -24,8 +25,8 @@ goauth_redirect: "https://mini.gscloud.cz/login"
 #goauth_redirect: "https://bmini.gscloud.cz/login"
 
 # local Google OAUTH 2.0
-local_goauth_origin: "http://localhost:9000"
-local_goauth_redirect: "http://localhost:9000/login"
+local_goauth_origin: "http://localhost:8020"
+local_goauth_redirect: "http://localhost:8020/login"
 
 # Google properties
 google: [
@@ -53,13 +54,15 @@ multisite_profiles: [
 cache_profiles: [
 ]
 
-# router configs
-routers: [
-]
-
 # localization
 lang: en
 l:
   title: "Tesseract MINI"
   author: "Fred Brooker @ GS Cloud Ltd."
   noscript: "Please enable JavaScript!"
+
+routes: [
+    "router_defaults.neon",
+    "router_admin.neon",
+    "router.neon",
+]

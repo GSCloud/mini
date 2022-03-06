@@ -54,11 +54,6 @@ class ErrorPresenter extends APresenter
         $error = self::CODESET[$code];
         header("HTTP/1.1 ${code} ${error}");
 
-        // add audit message for non-empty referer
-        if ($ref = $this->getCookie("ref") ?? null) {
-            $this->addAuditMessage("ERR ${code} - ref. ${ref}");
-        }
-
         // set error image
         $img = "error.png";
         if (\file_exists(WWW . "/img/${code}.png")) {
@@ -66,9 +61,9 @@ class ErrorPresenter extends APresenter
         } elseif (\file_exists(WWW . "/img/${code}.jpg")) {
             $img = "${code}.jpg";
         }
-        $template = '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body><center><h1>'
-            . "<br>🤔 Web App Error #${code} 💣</h1><h2>" . self::CODESET[$code]
-            . '<br></h2><h1><a rel=nofollow style="color:red;text-decoration:none" href="/">RELOAD ↻</a></h1>'
+        $template = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body><center><h1>'
+            . "<br>🤔 Error ${code}</h1><h2>" . self::CODESET[$code]
+            . '<br></h2><h4><a rel=nofollow style="color:red;text-decoration:none" href="/">Click to reload ↻</a></h4>'
             . '<img height="100%" alt="' . $error . '" src=/img/' . $img . '></body></html>';
         return $this->setData("output", $this->renderHTML($template));
     }

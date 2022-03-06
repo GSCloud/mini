@@ -1,8 +1,8 @@
 ### TESSERACT MINI
 
 # uncomment to force debugging !!!
-#dbg: TRUE
-dbg: FALSE
+dbg: TRUE
+#dbg: FALSE
 
 # CORE
 app: mini
@@ -52,10 +52,6 @@ multisite_profiles: [
 
 # cache profiles
 cache_profiles: [
-]
-
-# router configs
-routers: [
 ]
 
 # localization

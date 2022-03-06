@@ -48,25 +48,25 @@ $data["base"] = $data["BASE"] = $host ? (($_SERVER["HTTPS"] ?? "off" == "on") ? 
 $data["request_uri"] = $_SERVER["REQUEST_URI"] ?? "";
 $data["request_path"] = $rqp = trim(trim(strtok($_SERVER["REQUEST_URI"] ?? "", "?&"), "/"));
 $data["request_path_hash"] = ($rqp == "") ? "" : hash("sha256", $rqp);
-$data["LOCALHOST"] = (bool) (($_SERVER["SERVER_NAME"] ?? "") == "localhost") || CLI;
+$data["LOCALHOST"] = (bool) LOCALHOST;
 $data["VERSION_SHORT"] = $base58->encode(base_convert(substr(hash("sha256", $version), 0, 4), 16, 10));
-$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(8) . (string) time()), 0, 4);
+$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(16) . (string) time()), 0, 16);
 $data["utm"] = $data["UTM"] = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
 $data["ALPHA"] = (in_array($host, (array) ($cfg["alpha_hosts"] ?? [])));
 $data["BETA"] = (in_array($host, (array) ($cfg["beta_hosts"] ?? [])));
 
-/** @const Cache prefix */
+/** @const cache name prefix */
 $x = $cfg["app"] ?? $cfg["canonical_url"] ?? $cfg["goauth_origin"] ?? "";
 defined("CACHEPREFIX") || define("CACHEPREFIX",
     "cache_" . hash("sha256", $x) . "_");
 
-/** @const Domain name, extracted from $_SERVER */
+/** @const domain name, extracted from $_SERVER */
 defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Server name, extracted from $_SERVER */
+/** @const server name, extracted from $_SERVER */
 defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
 
-/** @const Project name, default "LASAGNA" */
+/** @const project name, default "LASAGNA" */
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "LASAGNA"));
 
 /** @const Application name, default "app" */
@@ -75,7 +75,7 @@ defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
 /** @const Monolog log filename, full path */
 defined("MONOLOG") || define("MONOLOG", LOGS . DS . "MONOLOG_" . SERVER . "_" . PROJECT . ".log");
 
-/** @const GCP Project ID */
+/** @const Google Cloud Platform project ID */
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
 
 /** @const Google Cloud Platform JSON auth keys */
@@ -275,8 +275,8 @@ foreach ($presenter as $k => $v) {
         }
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
-    if (substr($v["path"], -1) != "/") { // map also slash endings!
-        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x");
+    if (substr($v["path"], -1) != "/") { // skip the root route
+        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x"); // map also slash endings
     }
 }
 
@@ -361,6 +361,15 @@ if (ENABLE_CSV_CACHE && \is_array($locales = $data["locales"] ?? null)) {
 $data["csvcache"] = $arr;
 unset($arr);
 
+// GEO BLOCKING
+$blocked = (array) ($data["geoblock"] ?? [""]);
+#$blocked = (array) ($data["geoblock"] ?? ["RU", "BY", "KZ", "MD"]); // use XX to block unknown GEO locations
+$data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
+if (!LOCALHOST && in_array($country, $blocked)) {
+    header("HTTP/1.1 403 Not Found");
+    exit;
+}
+
 // CREATE CORE SINGLETON CLASS
 $data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
 $controller = "\\GSC\\${p}";
@@ -371,7 +380,6 @@ $data = $app->getData(); // get model back
 // PREPARE ANALYTICS DATA
 $events = null;
 $data = $app->getData();
-$data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
 $data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUN") * 1000, 2);
 $data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESS") * 1000, 2);
 

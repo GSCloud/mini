@@ -3,8 +3,9 @@
  * GSC Tesseract LASAGNA
  *
  * @category Framework
- * @author   Fred Brooker <oscadal@gscloud.cz>
+ * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -94,10 +95,10 @@ interface IPresenter
 abstract class APresenter implements IPresenter
 {
     /** @var integer Octal file mode for logs */
-    const LOG_FILEMODE = 0666;
+    const LOG_FILEMODE = 0664;
 
     /** @var integer Octal file mode for CSV */
-    const CSV_FILEMODE = 0666;
+    const CSV_FILEMODE = 0664;
 
     /** @var integer CSV min. file size */
     const CSV_MIN_SIZE = 42;
@@ -283,7 +284,7 @@ abstract class APresenter implements IPresenter
     }
 
     /**
-     * Class destructor
+     * Class destructor - the home of many final tasks
      */
     public function __destruct()
     {
@@ -291,11 +292,15 @@ abstract class APresenter implements IPresenter
             ob_end_flush();
         }
         ob_start();
+
+        // preload CSV definitions
         foreach ($this->csv_postload as $key) {
             $this->preloadAppData((string) $key, true);
         }
+        // load actual CSV data
         $this->checkLocales((bool) $this->force_csv_check);
 
+        // setup Monolog logger
         $monolog = new Logger("Tesseract log");
         $streamhandler = new StreamHandler(MONOLOG, Logger::INFO, true, self::LOG_FILEMODE);
         $streamhandler->setFormatter(new LineFormatter);
@@ -411,7 +416,7 @@ abstract class APresenter implements IPresenter
                     return (string) time();
                 },
                 "sha256_nonce" => function () {
-                    return (string) \substr(\hash("sha256", \random_bytes(8) . (string) \time()), 0, 8);
+                    return $this->getNonce();
                 },
                 "convert_hyperlinks" => function ($source, \Mustache_LambdaHelper$lambdaHelper) {
                     $text = $lambdaHelper->render($source);
@@ -677,26 +682,26 @@ abstract class APresenter implements IPresenter
         $file = DATA . DS . self::IDENTITY_NONCE; // nonce file
         if (!\file_exists($file)) {
             try {
-                $nonce = \hash("sha256", \random_bytes(256) . \time());
+                $nonce = \hash("sha256", \random_bytes(1024) . \time());
                 if (\file_put_contents($file, $nonce, LOCK_EX) === false) {
-                    $this->addError("500: Internal Server Error -> cannot write nonce file");
+                    $this->addError("ERROR 500: cannot write nonce file");
                     $this->setLocation("/err/500");
                     exit;
                 }
                 @\chmod($file, 0660);
                 $this->addMessage("ADMIN: nonce file created");
-            } catch (\Exception$e) {
-                $this->addError("500: Internal Server Error -> cannot create nonce file: " . $e->getMessage());
+            } catch (\Exception $e) {
+                $this->addError("ERROR 500: cannot create nonce file: " . $e->getMessage());
                 $this->setLocation("/err/500");
                 exit;
             }
         }
         if (!$nonce = @\file_get_contents($file)) {
-            $this->addError("500: Internal Server Error -> cannot read nonce file");
+            $this->addError("ERROR 500: cannot read nonce file");
             $this->setLocation("/err/500");
             exit;
         }
-        $i["nonce"] = \substr(\trim($nonce), 0, 8); // nonce
+        $i["nonce"] = \substr(\trim($nonce), 0, 16); // trim nonce to 16 chars only
         // check all keys
         if (\array_key_exists("avatar", $identity)) {
             $i["avatar"] = (string) $identity["avatar"];
@@ -754,17 +759,17 @@ abstract class APresenter implements IPresenter
         if ($id && $email && $name) {
             return $this->identity;
         }
-        $file = DATA . DS . self::IDENTITY_NONCE; // nonce file
-        if (!\file_exists($file)) { // initialize nonce
+        $file = DATA . DS . self::IDENTITY_NONCE;
+        if (!\file_exists($file)) {
             $this->setIdentity(); // set empty identity
             return $this->identity;
         }
         if (!$nonce = @\file_get_contents($file)) {
-            $this->addError("500: Internal Server Error -> cannot read nonce file");
+            $this->addError("ERROR 500: cannot read nonce file");
             $this->setLocation("/err/500");
             exit;
         }
-        $nonce = \substr(\trim($nonce), 0, 8); // nonce
+        $nonce = \substr(\trim($nonce), 0, 16); // trim nonce to 16 chars only
         $i = [ // empty identity
             "avatar" => "",
             "country" => "",
@@ -804,8 +809,7 @@ abstract class APresenter implements IPresenter
                     break;
                 }
                 if ($q["nonce"] == $nonce) { // compare nonces
-                    //$this->setIdentity($q);
-                    $this->identity = $q; // our identity
+                    $this->identity = $q; // set identity
                     break;
                 }
             }
@@ -1081,9 +1085,14 @@ abstract class APresenter implements IPresenter
     {
         $code = (int) $code;
         if (empty($location)) {
-            $location = "/?nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 8);
+            $location = "/?nonce=" . $this->getNonce();
         }
-        $this->setCookie("ref", "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+
+        // audit certain messages
+        if (!LOCALHOST && !CLI && $code > 303) {
+            $ref = "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+            $this->addAuditMessage("ERROR: ${code}; ref. ${ref}");
+        }
         \header("Location: $location", true, ($code > 300) ? $code : 303);
         exit;
     }
@@ -1096,8 +1105,7 @@ abstract class APresenter implements IPresenter
         $this->setIdentity();
         $this->clearCookie($this->getCfg("app") ?? "app");
         \header('Clear-Site-Data: "cookies"');
-        $location = "/?logout&nonce=" . \substr(\hash("sha256", \random_bytes(4) . (string) \time()), 0, 8);
-        $this->setLocation($location);
+        $this->setLocation("/?logout&nonce=" . $this->getNonce());
         exit;
     }
 
@@ -1286,9 +1294,9 @@ abstract class APresenter implements IPresenter
                         foreach ($records->fetchColumn($language) as $x) {
                             $values[] = $x;
                         }
-                    } catch (\Exception$e) {
-                        $this->addCritical("ERR: $language locale $k CORRUPTED");
-                        $this->addAuditMessage("ERR: $language locale $k CORRUPTED");
+                    } catch (\Exception $e) {
+                        $this->addCritical("ERROR: $language locale $k CORRUPTED!");
+                        $this->addAuditMessage("ERROR: $language locale $k CORRUPTED!");
                         continue;
                     }
                     $locale = \array_replace($locale, \array_combine($keys, $values));
@@ -1317,8 +1325,8 @@ abstract class APresenter implements IPresenter
         if ($locale === false || empty($locale)) {
             if ($this->force_csv_check) {
                 \header("HTTP/1.1 500 FATAL ERROR");
-                $this->addCritical("ERR: LOCALES CORRUPTED");
-                echo "<body><h1>HTTP Error 500</h1><h2>LOCALES CORRUPTED</h2></body>";
+                $this->addCritical("ERROR: LOCALES CORRUPTED!");
+                echo "<body><h1>HTTP Error 500</h1><h2>LOCALES CORRUPTED!</h2></body>";
                 exit;
             } else {
                 // second try!
@@ -1391,8 +1399,8 @@ abstract class APresenter implements IPresenter
      * Load CSV data into cache
      *
      * @param string $name CSV nickname (foobar)
-     * @param string $csvkey Google CSV token (partial or full)
-     * @param boolean $force force load? (optional)
+     * @param string $csvkey Google CSV token (partial or full URI to CSV export endpoint)
+     * @param boolean $force force the resource refresh? (optional)
      * @return object Singleton instance
      */
     private function csv_preloader($name, $csvkey, $force = false)
@@ -1420,7 +1428,7 @@ abstract class APresenter implements IPresenter
                     $this->addMessage("FILE: fetching ${remote}");
                     try {
                         $data = @\file_get_contents($remote);
-                    } catch (\Exception$e) {
+                    } catch (\Exception $e) {
                         $this->addError("ERROR: fetching ${remote}");
                         $data = "";
                     }
@@ -1564,7 +1572,7 @@ abstract class APresenter implements IPresenter
         }
         if (is_null($data)) {
             $code = 500;
-            $msg = "Data is NULL! Internal server error 🦄";
+            $msg = "Data is NULL! Internal Server Error 🦄";
             \header("HTTP/1.1 500 Internal Server Error");
         }
         if (is_string($data)) {
@@ -1661,10 +1669,10 @@ abstract class APresenter implements IPresenter
 
         // solve caching
         $use_cache = true;
-        if (\array_key_exists("nonce", $_GET)) { // do not cache pages with ?nonce
+        if (\array_key_exists("nonce", $_GET)) { // do not cache pages with nonce
             $use_cache = false;
         }
-        if (\array_key_exists("logout", $_GET)) { // do not cache pages with ?logout
+        if (\array_key_exists("logout", $_GET)) { // do not cache pages with logout
             $use_cache = false;
         }
         if ($group) {
@@ -1701,6 +1709,16 @@ abstract class APresenter implements IPresenter
             $data["request_path_slug"] = $data["request_path"] ?? "";
         }
         return $this;
+    }
+
+    /**
+     * Nonce generator
+     *
+     * @return string nonce (number used once)
+     */
+    private function getNonce()
+    {
+        return (string) \substr(\hash("sha256", \random_bytes(16) . (string) \time()), 0, 16);
     }
 
 }
