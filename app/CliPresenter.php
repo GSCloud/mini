@@ -20,15 +20,54 @@ class CliPresenter extends APresenter
     /**
      * Main controller
      *
+     * @param argc int count of arguments
      * @return object Singleton instance
      */
-    public function process()
+    public function process($argc = null)
     {
         $climate = new CLImate;
-        $climate->out("\n<bold><green>Tesseract CLI</green></bold>\tapp: "
-            . $this->getData("VERSION_SHORT")
-            . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")");
+        if ($argc != 3) {
+            $climate->out("\n<bold><green>Tesseract CLI</green></bold>\tapp: "
+                . $this->getData("VERSION_SHORT")
+                . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n");
+        }
         return $this;
+    }
+
+    /**
+     * Show custom presenter output
+     */
+    public function show($p = "home")
+    {
+        if (empty($p)) { // no presenter
+            exit;
+        }
+        $data = $this->getData();
+        $router = $this->getRouter();
+        $presenter = $this->getPresenter();
+        $data["view"] = $view = $router[$p]["view"] ?? "home";
+        $data["controller"] = $c = ucfirst(strtolower($presenter[$view]["presenter"]) ?? "home") . "Presenter";
+        $controller = "\\GSC\\${c}";
+        echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
+    }
+
+    /**
+     * Show core presenter output
+     */
+    public function core($v = "PingBack", $m = null)
+    {
+        if (empty($v)) { // no view
+            exit;
+        }
+        $data = $this->getData();
+        $router = $this->getRouter();
+        $presenter = $this->getPresenter();
+        $data["base"] = $m["base"] ?? "https://example.com/";
+        $data["controller"] = $c = "CorePresenter";
+        $data["match"] = $m["match"] ?? null;
+        $data["view"] = $v;
+        $controller = "\\GSC\\${c}";
+        echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
     }
 
     /**
@@ -36,9 +75,12 @@ class CliPresenter extends APresenter
      *
      * @return object Singleton instance
      */
-    public function showConst()
+    private function showConst()
     {
-        dump(get_defined_constants(true)["user"]);
+        $arr = array_filter(get_defined_constants(true)["user"], function ($key) {
+            return !(stripos($key, "sodium") === 0); // filter out Sodium constants
+        }, ARRAY_FILTER_USE_KEY);
+        dump($arr);
         return $this;
     }
 
@@ -50,32 +92,33 @@ class CliPresenter extends APresenter
     public function help()
     {
         $climate = new CLImate;
-        $climate->out("\nUsage: php -f Bootstrap.php <command> [<parameters>...] \n");
-        $climate->out("\t <bold>app</bold> '<code>' \t - run inline code");
-        $climate->out("\t <bold>clearall</bold> \t - clear all temporary files");
-        $climate->out("\t <bold>clearcache</bold> \t - clear cache");
-        $climate->out("\t <bold>clearci</bold> \t - clear CI logs");
-        $climate->out("\t <bold>clearlogs</bold> \t - clear logs");
-        $climate->out("\t <bold>cleartemp</bold> \t - clear temp");
-        $climate->out("\t <bold>doctor</bold> \t - check system requirements");
-        $climate->out("\t <bold>local</bold> \t\t - local CI test");
-        $climate->out("\t <bold>prod</bold> \t\t - production CI test");
-        $climate->out("\t <bold>unit</bold> \t\t - run Unit test\n");
+        $climate->out("Usage: \t <bold>php -f Bootstrap.php <command> [<parameter> ...]</bold>\n");
+        $climate->out("\t <bold>app</bold> '<code>'\t - run inline code");
+        $climate->out("\t <bold>clear</bold>\t\t - alias for <bold>clearall</bold>");
+        $climate->out("\t <bold>clearall</bold>\t - clear all temporary files");
+        $climate->out("\t <bold>clearcache</bold>\t - clear cache");
+        $climate->out("\t <bold>clearci</bold>\t - clear CI logs");
+        $climate->out("\t <bold>clearlogs</bold>\t - clear logs");
+        $climate->out("\t <bold>cleartemp</bold>\t - clear temporary files");
+        $climate->out("\t <bold>doctor</bold>\t\t - check system requirements");
+        $climate->out("\t <bold>local</bold>\t\t - local CI test");
+        $climate->out("\t <bold>prod</bold>\t\t - production CI test");
+        $climate->out("\t <bold>unit</bold>\t\t - run Unit test (TBD)\n");
         return $this;
     }
 
     /**
      * Evaluate input string
      *
-     * @param object $app this :)
+     * @param object $app this
      * @param int $argc ARGC
      * @param array $argv ARGV
      * @return object Singleton instance
      */
-    public function evaler($app, $argc, $argv)
+    private function evaler($app, $argc, $argv)
     {
         $climate = new CLImate;
-        if ($argc != 3) {
+        if ($argc != 3) { // show examples
             $climate->out("Examples:");
             $climate->out("\t" . '<bold>app</bold> \'$app->showConst()\'');
             $climate->out("\t" . '<bold>app</bold> \'dump($app->getCurrentUser())\'');
@@ -101,11 +144,13 @@ class CliPresenter extends APresenter
     {
         $climate = new CLImate;
         switch ($module) {
+            case "clear":
             case "clearall":
                 $this->selectModule("clearcache");
                 $this->selectModule("clearci");
                 $this->selectModule("clearlogs");
                 $this->selectModule("cleartemp");
+                $climate->out('');
                 break;
 
             case "local":
@@ -125,7 +170,7 @@ class CliPresenter extends APresenter
                 array_map("unlink", glob(CACHE . DS . "*.tmp"));
                 array_map("unlink", glob(CACHE . DS . CACHEPREFIX . "*"));
                 clearstatcache();
-                $climate->out("<bold>Cache files 🧹</bold>");
+                $climate->out("<bold>Cache 🧹</bold>");
                 break;
 
             case "clearci":
@@ -146,7 +191,7 @@ class CliPresenter extends APresenter
                 $files = glob(TEMP . DS . "*");
                 $c = count($files);
                 array_map("unlink", $files);
-                $climate->out("Temp. <bold>$c file(s) 🧹</bold>");
+                $climate->out("Temporary <bold>$c file(s) 🧹</bold>");
                 break;
 
             case "unit":

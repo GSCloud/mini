@@ -288,8 +288,8 @@ abstract class APresenter implements IPresenter
      */
     public function __destruct()
     {
-        if (ob_get_level()) {
-            ob_end_flush();
+        if (ob_get_level()) { // clear outbut buffering
+            @ob_end_flush();
         }
         ob_start();
 
@@ -418,14 +418,14 @@ abstract class APresenter implements IPresenter
                 "sha256_nonce" => function () {
                     return $this->getNonce();
                 },
-                "convert_hyperlinks" => function ($source, \Mustache_LambdaHelper$lambdaHelper) {
+                "convert_hyperlinks" => function ($source, \Mustache_LambdaHelper $lambdaHelper) {
                     $text = $lambdaHelper->render($source);
                     $text = preg_replace(
                         "/(https)\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,20})(\/[a-zA-Z0-9\-_\/]*)?/",
                         '<a rel=noopener target=_blank href="$0">$2$3</a>', $text);
                     return (string) $text;
                 },
-                "shuffle_lines" => function ($source, \Mustache_LambdaHelper$lambdaHelper) {
+                "shuffle_lines" => function ($source, \Mustache_LambdaHelper $lambdaHelper) {
                     $text = $lambdaHelper->render($source);
                     $arr = explode("\n", $text);
                     shuffle($arr);
@@ -462,6 +462,7 @@ abstract class APresenter implements IPresenter
             "CONST.DOMAIN" => DOMAIN,
             "CONST.DOWNLOAD" => DOWNLOAD,
             "CONST.DS" => DS,
+            "CONST.ENABLE_CSV_CACHE" => ENABLE_CSV_CACHE,
             "CONST.LOGS" => LOGS,
             "CONST.MONOLOG" => MONOLOG,
             "CONST.PARTIALS" => PARTIALS,
@@ -639,21 +640,21 @@ abstract class APresenter implements IPresenter
      */
     public function getUIDstring()
     {
-        return strtr(implode("_",
+        return preg_replace('/__/', "_", strtr(implode("_",
             [
-                CLI ? "CLI_USER" : "",
+                CLI ? "CLI" : "",
                 CLI ? "" : $_SERVER["HTTP_ACCEPT_ENCODING"] ?? "N/A",
                 CLI ? "" : $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? "N/A",
                 CLI ? "" : $_SERVER["HTTP_USER_AGENT"] ?? "N/A",
                 $this->getIP(),
             ]),
-            " ", "_");
+            " ", "_"));
     }
 
     /**
      * Get universal ID hash
      *
-     * @return string Universal ID SHA-256 hash
+     * @return string SHA-256 hash
      */
     public function getUID()
     {
@@ -727,10 +728,11 @@ abstract class APresenter implements IPresenter
         }
         // set new identity
         $this->identity = $out;
+        $app = $this->getCfg("app") ?? "app";
         if ($out["id"]) {
-            $this->setCookie($this->getCfg("app") ?? "app", json_encode($out)); // encrypted cookie
+            $this->setCookie($app, json_encode($out)); // encrypted cookie
         } else {
-            $this->clearCookie($this->getCfg("app") ?? "app"); // clear cookie
+            $this->clearCookie($app); // delete cookie
         }
         return $this;
     }
@@ -745,10 +747,10 @@ abstract class APresenter implements IPresenter
         if (CLI) {
             return [
                 "country" => "XX",
-                "email" => "user@example.com",
+                "email" => "john.doe@example.com",
                 "id" => 1,
                 "ip" => "127.0.0.1",
-                "name" => "CLI User",
+                "name" => "John Doe",
             ];
         }
 
@@ -1069,9 +1071,11 @@ abstract class APresenter implements IPresenter
         if (empty($name)) {
             return $this;
         }
-        unset($_COOKIE[$name]);
-        unset($this->cookies[$name]);
-        \setcookie($name, "", time() - 3600, "/");
+        if (($this->cookies[$name] ?? null) || ($_COOKIE[$name] ?? null)) {
+            unset($_COOKIE[$name]);
+            unset($this->cookies[$name]);
+            \setcookie($name, "", time() - 3600, "/");
+        }
         return $this;
     }
 
@@ -1102,6 +1106,9 @@ abstract class APresenter implements IPresenter
      */
     public function logout()
     {
+        if (CLI) {
+            exit;
+        }
         $this->setIdentity();
         $this->clearCookie($this->getCfg("app") ?? "app");
         \header('Clear-Site-Data: "cookies"');
@@ -1141,7 +1148,10 @@ abstract class APresenter implements IPresenter
     public function getRateLimit()
     {
         if (CLI) {
-            return false;
+            return null;
+        }
+        if (LOCALHOST) {
+            return null;
         }
         return Cache::read("user_rate_limit_{$this->getUID()}", "limiter");
     }
@@ -1154,6 +1164,9 @@ abstract class APresenter implements IPresenter
      */
     public function checkPermission($rolelist = "admin")
     {
+        if (CLI) {
+            return $this;
+        }
         if (empty($rolelist)) {
             return $this;
         }
@@ -1439,10 +1452,10 @@ abstract class APresenter implements IPresenter
                 if (\strlen($data) >= self::CSV_MIN_SIZE) {
                     Cache::write($file, $data, "csv");
 
-                    // delete old backup
+                    // remove old backup
                     if (\file_exists(DATA . DS . "${file}.bak")) {
                         if (@\unlink(DATA . DS . "${file}.bak") === false) {
-                            $this->addError("FILE: delete ${file}.bak failed!");
+                            $this->addError("FILE: remove ${file}.bak failed!");
                         }
                     }
 
@@ -1686,8 +1699,13 @@ abstract class APresenter implements IPresenter
         // set language
         $presenter = $this->getPresenter();
         $view = $this->getView();
-        $data["lang"] = $language = \strtolower($presenter[$view]["language"]) ?? "cs";
-        $data["lang{$language}"] = true;
+        if ($presenter && $view) {
+            $data["lang"] = $language = \strtolower($presenter[$view]["language"]) ?? "cs";
+            $data["lang{$language}"] = true;
+        } else {
+            // something is terribly wrong!
+            return $this;
+        }
 
         // get locale
         $l = $this->getLocale($language);

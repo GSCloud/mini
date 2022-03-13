@@ -37,27 +37,34 @@ chmod 0777 www/download www/upload >/dev/null 2>&1
 find www/ -type f -exec chmod 0644 {} \; >/dev/null 2>&1
 find . -type f -iname "*.sh" -exec chmod +x {} \;
 
+# versioning
 VERSION=$(git rev-parse HEAD)
 echo $VERSION > VERSION
-
 REVISIONS=$(git rev-list --all --count)
 echo $REVISIONS > REVISIONS
-
 ln -s ../. www/cdn-assets/$VERSION >/dev/null 2>&1
 info "Version: $VERSION Revisions: $REVISIONS"
 
+# transfering
 rsync -ahz --progress --delete-after --delay-updates --exclude "www/upload" \
   .env \
   *.json \
+  *.pdf \
   *.php \
-  LICENSE \
-  REVISIONS \
-  VERSION \
+  *.txt \
   app \
+  bin \
   cli.sh \
+  composer.lock \
+  doc \
   remote_fixer.sh \
   vendor \
   www \
+  Makefile \
+  README.* \
+  LICENSE \
+  REVISIONS \
+  VERSION \
   ${USER}@${HOST}:${DEST}'/' | grep -E -v '/$'
 
 ssh ${USER}@${HOST} ${DEST}/remote_fixer.sh ${BETA}

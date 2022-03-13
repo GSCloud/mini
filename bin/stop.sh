@@ -17,8 +17,8 @@ source .env
 [ -z "$PORT" ] && fail "Missing PORT definition!"
 [ -z "$TAG" ] && fail "Missing TAG definition!"
 
-command -v google-chrome >/dev/null 2>&1 && google-chrome http://localhost:$PORT &
+[ "$(docker container inspect -f '{{.State.Status}}' ${NAME} 2>&1)" == "running" ] || fail "Container '${NAME}' is not running!"
 
-docker run -d --rm --name $NAME -p $PORT:80 -v $(pwd)/app/config_private.neon:/var/www/app/config_private.neon $TAG
+docker stop $NAME
 
 exit 0
