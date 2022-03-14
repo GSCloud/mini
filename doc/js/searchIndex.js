@@ -78,7 +78,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\logger\u0028\u0029",
             "name": "logger",
-            "summary": "Stackdriver\u0020logger",
+            "summary": "Google\u0020Stackdriver\u0020logger",
             "url": "namespaces/gsc.html#function_logger"
         },                {
             "fqsen": "\\GSC\\APresenter",
@@ -128,7 +128,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\APresenter\u003A\u003A__destruct\u0028\u0029",
             "name": "__destruct",
-            "summary": "Class\u0020destructor",
+            "summary": "Class\u0020destructor\u0020\u002D\u0020the\u0020home\u0020of\u0020many\u0020final\u0020tasks",
             "url": "classes/GSC-APresenter.html#method___destruct"
         },                {
             "fqsen": "\\GSC\\APresenter\u003A\u003AgetInstance\u0028\u0029",
@@ -381,6 +381,11 @@ Search.appendIndex(
             "summary": "Data\u0020Expander",
             "url": "classes/GSC-APresenter.html#method_dataExpander"
         },                {
+            "fqsen": "\\GSC\\APresenter\u003A\u003AgetNonce\u0028\u0029",
+            "name": "getNonce",
+            "summary": "Nonce\u0020generator",
+            "url": "classes/GSC-APresenter.html#method_getNonce"
+        },                {
             "fqsen": "\\GSC\\APresenter\u003A\u003ALOG_FILEMODE",
             "name": "LOG_FILEMODE",
             "summary": "",
@@ -553,7 +558,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AaddCritical\u0028\u0029",
             "name": "addCritical",
-            "summary": "messages",
+            "summary": "message\u0020adders",
             "url": "classes/GSC-IPresenter.html#method_addCritical"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AaddError\u0028\u0029",
@@ -573,7 +578,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetCriticals\u0028\u0029",
             "name": "getCriticals",
-            "summary": "",
+            "summary": "message\u0020getters",
             "url": "classes/GSC-IPresenter.html#method_getCriticals"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetErrors\u0028\u0029",
@@ -588,7 +593,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetCfg\u0028\u0029",
             "name": "getCfg",
-            "summary": "getters",
+            "summary": "general\u0020getters",
             "url": "classes/GSC-IPresenter.html#method_getCfg"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetCookie\u0028\u0029",
@@ -663,7 +668,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AcheckLocales\u0028\u0029",
             "name": "checkLocales",
-            "summary": "checks",
+            "summary": "general\u0020checks",
             "url": "classes/GSC-IPresenter.html#method_checkLocales"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AcheckPermission\u0028\u0029",
@@ -678,7 +683,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AsetCookie\u0028\u0029",
             "name": "setCookie",
-            "summary": "setters",
+            "summary": "general\u0020setters",
             "url": "classes/GSC-IPresenter.html#method_setCookie"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AsetData\u0028\u0029",
@@ -743,7 +748,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AclearCookie\u0028\u0029",
             "name": "clearCookie",
-            "summary": "tools",
+            "summary": "various\u0020tools",
             "url": "classes/GSC-IPresenter.html#method_clearCookie"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AcloudflarePurgeCache\u0028\u0029",
@@ -788,12 +793,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003Aprocess\u0028\u0029",
             "name": "process",
-            "summary": "abstract",
+            "summary": "abstract\u0020method\u0020used\u0020in\u0020controllers",
             "url": "classes/GSC-IPresenter.html#method_process"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetInstance\u0028\u0029",
             "name": "getInstance",
-            "summary": "singleton",
+            "summary": "singleton\u0020instances",
             "url": "classes/GSC-IPresenter.html#method_getInstance"
         },                {
             "fqsen": "\\GSC\\IPresenter\u003A\u003AgetTestInstance\u0028\u0029",
@@ -820,6 +825,16 @@ Search.appendIndex(
             "name": "process",
             "summary": "Main\u0020controller",
             "url": "classes/GSC-CliPresenter.html#method_process"
+        },                {
+            "fqsen": "\\GSC\\CliPresenter\u003A\u003Ashow\u0028\u0029",
+            "name": "show",
+            "summary": "Show\u0020custom\u0020presenter\u0020output",
+            "url": "classes/GSC-CliPresenter.html#method_show"
+        },                {
+            "fqsen": "\\GSC\\CliPresenter\u003A\u003Acore\u0028\u0029",
+            "name": "core",
+            "summary": "Show\u0020core\u0020presenter\u0020output",
+            "url": "classes/GSC-CliPresenter.html#method_core"
         },                {
             "fqsen": "\\GSC\\CliPresenter\u003A\u003AshowConst\u0028\u0029",
             "name": "showConst",
@@ -1026,25 +1041,165 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/GSC-UnitTester.html#method___construct"
         },                {
-            "fqsen": "\\TESSERACT_START",
-            "name": "TESSERACT_START",
-            "summary": "",
-            "url": "namespaces/default.html#constant_TESSERACT_START"
-        },                {
-            "fqsen": "\\CLI",
-            "name": "CLI",
-            "summary": "",
-            "url": "namespaces/default.html#constant_CLI"
-        },                {
-            "fqsen": "\\LOCALHOST",
-            "name": "LOCALHOST",
-            "summary": "",
-            "url": "namespaces/default.html#constant_LOCALHOST"
-        },                {
             "fqsen": "\\ROOT",
             "name": "ROOT",
             "summary": "",
             "url": "namespaces/default.html#constant_ROOT"
+        },                {
+            "fqsen": "\\Adbar\\Dot",
+            "name": "Dot",
+            "summary": "Dot",
+            "url": "classes/Adbar-Dot.html"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "Create\u0020a\u0020new\u0020Dot\u0020instance",
+            "url": "classes/Adbar-Dot.html#method___construct"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aadd\u0028\u0029",
+            "name": "add",
+            "summary": "Set\u0020a\u0020given\u0020key\u0020\/\u0020value\u0020pair\u0020or\u0020pairs\nif\u0020the\u0020key\u0020doesn\u0027t\u0020exist\u0020already",
+            "url": "classes/Adbar-Dot.html#method_add"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aall\u0028\u0029",
+            "name": "all",
+            "summary": "Return\u0020all\u0020the\u0020stored\u0020items",
+            "url": "classes/Adbar-Dot.html#method_all"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aclear\u0028\u0029",
+            "name": "clear",
+            "summary": "Delete\u0020the\u0020contents\u0020of\u0020a\u0020given\u0020key\u0020or\u0020keys",
+            "url": "classes/Adbar-Dot.html#method_clear"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Adelete\u0028\u0029",
+            "name": "delete",
+            "summary": "Delete\u0020the\u0020given\u0020key\u0020or\u0020keys",
+            "url": "classes/Adbar-Dot.html#method_delete"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aexists\u0028\u0029",
+            "name": "exists",
+            "summary": "Checks\u0020if\u0020the\u0020given\u0020key\u0020exists\u0020in\u0020the\u0020provided\u0020array.",
+            "url": "classes/Adbar-Dot.html#method_exists"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aflatten\u0028\u0029",
+            "name": "flatten",
+            "summary": "Flatten\u0020an\u0020array\u0020with\u0020the\u0020given\u0020character\u0020as\u0020a\u0020key\u0020delimiter",
+            "url": "classes/Adbar-Dot.html#method_flatten"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aget\u0028\u0029",
+            "name": "get",
+            "summary": "Return\u0020the\u0020value\u0020of\u0020a\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_get"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AgetArrayItems\u0028\u0029",
+            "name": "getArrayItems",
+            "summary": "Return\u0020the\u0020given\u0020items\u0020as\u0020an\u0020array",
+            "url": "classes/Adbar-Dot.html#method_getArrayItems"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Ahas\u0028\u0029",
+            "name": "has",
+            "summary": "Check\u0020if\u0020a\u0020given\u0020key\u0020or\u0020keys\u0020exists",
+            "url": "classes/Adbar-Dot.html#method_has"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AisEmpty\u0028\u0029",
+            "name": "isEmpty",
+            "summary": "Check\u0020if\u0020a\u0020given\u0020key\u0020or\u0020keys\u0020are\u0020empty",
+            "url": "classes/Adbar-Dot.html#method_isEmpty"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Amerge\u0028\u0029",
+            "name": "merge",
+            "summary": "Merge\u0020a\u0020given\u0020array\u0020or\u0020a\u0020Dot\u0020object\u0020with\u0020the\u0020given\u0020key\nor\u0020with\u0020the\u0020whole\u0020Dot\u0020object",
+            "url": "classes/Adbar-Dot.html#method_merge"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AmergeRecursive\u0028\u0029",
+            "name": "mergeRecursive",
+            "summary": "Recursively\u0020merge\u0020a\u0020given\u0020array\u0020or\u0020a\u0020Dot\u0020object\u0020with\u0020the\u0020given\u0020key\nor\u0020with\u0020the\u0020whole\u0020Dot\u0020object.",
+            "url": "classes/Adbar-Dot.html#method_mergeRecursive"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AmergeRecursiveDistinct\u0028\u0029",
+            "name": "mergeRecursiveDistinct",
+            "summary": "Recursively\u0020merge\u0020a\u0020given\u0020array\u0020or\u0020a\u0020Dot\u0020object\u0020with\u0020the\u0020given\u0020key\nor\u0020with\u0020the\u0020whole\u0020Dot\u0020object.",
+            "url": "classes/Adbar-Dot.html#method_mergeRecursiveDistinct"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AarrayMergeRecursiveDistinct\u0028\u0029",
+            "name": "arrayMergeRecursiveDistinct",
+            "summary": "Merges\u0020two\u0020arrays\u0020recursively.\u0020In\u0020contrast\u0020to\u0020array_merge_recursive,\nduplicate\u0020keys\u0020are\u0020not\u0020converted\u0020to\u0020arrays\u0020but\u0020rather\u0020overwrite\u0020the\nvalue\u0020in\u0020the\u0020first\u0020array\u0020with\u0020the\u0020duplicate\u0020value\u0020in\u0020the\u0020second\u0020array.",
+            "url": "classes/Adbar-Dot.html#method_arrayMergeRecursiveDistinct"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Apull\u0028\u0029",
+            "name": "pull",
+            "summary": "Return\u0020the\u0020value\u0020of\u0020a\u0020given\u0020key\u0020and\ndelete\u0020the\u0020key",
+            "url": "classes/Adbar-Dot.html#method_pull"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Apush\u0028\u0029",
+            "name": "push",
+            "summary": "Push\u0020a\u0020given\u0020value\u0020to\u0020the\u0020end\u0020of\u0020the\u0020array\nin\u0020a\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_push"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Areplace\u0028\u0029",
+            "name": "replace",
+            "summary": "Replace\u0020all\u0020values\u0020or\u0020values\u0020within\u0020the\u0020given\u0020key\nwith\u0020an\u0020array\u0020or\u0020Dot\u0020object",
+            "url": "classes/Adbar-Dot.html#method_replace"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Aset\u0028\u0029",
+            "name": "set",
+            "summary": "Set\u0020a\u0020given\u0020key\u0020\/\u0020value\u0020pair\u0020or\u0020pairs",
+            "url": "classes/Adbar-Dot.html#method_set"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AsetArray\u0028\u0029",
+            "name": "setArray",
+            "summary": "Replace\u0020all\u0020items\u0020with\u0020a\u0020given\u0020array",
+            "url": "classes/Adbar-Dot.html#method_setArray"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AsetReference\u0028\u0029",
+            "name": "setReference",
+            "summary": "Replace\u0020all\u0020items\u0020with\u0020a\u0020given\u0020array\u0020as\u0020a\u0020reference",
+            "url": "classes/Adbar-Dot.html#method_setReference"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AtoJson\u0028\u0029",
+            "name": "toJson",
+            "summary": "Return\u0020the\u0020value\u0020of\u0020a\u0020given\u0020key\u0020or\u0020all\u0020the\u0020values\u0020as\u0020JSON",
+            "url": "classes/Adbar-Dot.html#method_toJson"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AoffsetExists\u0028\u0029",
+            "name": "offsetExists",
+            "summary": "Check\u0020if\u0020a\u0020given\u0020key\u0020exists",
+            "url": "classes/Adbar-Dot.html#method_offsetExists"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AoffsetGet\u0028\u0029",
+            "name": "offsetGet",
+            "summary": "Return\u0020the\u0020value\u0020of\u0020a\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_offsetGet"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AoffsetSet\u0028\u0029",
+            "name": "offsetSet",
+            "summary": "Set\u0020a\u0020given\u0020value\u0020to\u0020the\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_offsetSet"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AoffsetUnset\u0028\u0029",
+            "name": "offsetUnset",
+            "summary": "Delete\u0020the\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_offsetUnset"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003Acount\u0028\u0029",
+            "name": "count",
+            "summary": "Return\u0020the\u0020number\u0020of\u0020items\u0020in\u0020a\u0020given\u0020key",
+            "url": "classes/Adbar-Dot.html#method_count"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AgetIterator\u0028\u0029",
+            "name": "getIterator",
+            "summary": "Get\u0020an\u0020iterator\u0020for\u0020the\u0020stored\u0020items",
+            "url": "classes/Adbar-Dot.html#method_getIterator"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003AjsonSerialize\u0028\u0029",
+            "name": "jsonSerialize",
+            "summary": "Return\u0020items\u0020for\u0020JSON\u0020serialization",
+            "url": "classes/Adbar-Dot.html#method_jsonSerialize"
+        },                {
+            "fqsen": "\\Adbar\\Dot\u003A\u003A\u0024items",
+            "name": "items",
+            "summary": "The\u0020stored\u0020items",
+            "url": "classes/Adbar-Dot.html#property_items"
         },                {
             "fqsen": "\\",
             "name": "\\",
@@ -1055,5 +1210,10 @@ Search.appendIndex(
             "name": "GSC",
             "summary": "",
             "url": "namespaces/gsc.html"
+        },                {
+            "fqsen": "\\Adbar",
+            "name": "Adbar",
+            "summary": "",
+            "url": "namespaces/adbar.html"
         }            ]
 );

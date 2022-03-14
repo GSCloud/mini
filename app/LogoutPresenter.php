@@ -3,7 +3,7 @@
  * GSC Tesseract
  *
  * @category Framework
- * @author   Fred Brooker <oscadal@gscloud.cz>
+ * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
  */
 
@@ -21,10 +21,9 @@ class LogoutPresenter extends APresenter
     public function process()
     {
         if (ob_get_level()) {
-            ob_end_clean();
+            @ob_end_clean();
         }
         $this->logout();
         exit;
     }
-
 }

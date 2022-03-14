@@ -3,7 +3,7 @@
  * GSC Tesseract
  *
  * @category Framework
- * @author   Fred Brooker <oscadal@gscloud.cz>
+ * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
  */
 
@@ -26,7 +26,6 @@ interface IStringFilters
  */
 class StringFilters implements IStringFilters
 {
-
     /**
      * Convert EOLs to <br>
      *
@@ -422,5 +421,4 @@ class StringFilters implements IStringFilters
         );
         return str_replace(array_keys($replace), $replace, $content);
     }
-
 }

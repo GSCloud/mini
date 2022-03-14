@@ -37,8 +37,6 @@ info:
 	@echo ""
 docs:
 	@echo "🔨 \e[1;32m Creating documentation\e[0m\n"
-	@cat TECHNICAL_DETAILS_EN.md | grep ^# | sed 'G;' > TECHNICAL_DETAILS_EN_OUTLINE.md
-	@cat TECHNICAL_DETAILS_CZ.md | grep ^# | sed 'G;' > TECHNICAL_DETAILS_CZ_OUTLINE.md
 	@bash ./bin/create_pdf.sh
 update:
 	@bash ./bin/update.sh
