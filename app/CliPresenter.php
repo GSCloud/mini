@@ -23,14 +23,12 @@ class CliPresenter extends APresenter
      * @param argc int count of arguments
      * @return object Singleton instance
      */
-    public function process($argc = null)
+    public function process()
     {
         $climate = new CLImate;
-        if ($argc != 3) {
-            $climate->out("\n<bold><green>Tesseract CLI</green></bold>\tapp: "
-                . $this->getData("VERSION_SHORT")
-                . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n");
-        }
+        $climate->out("\n<bold><green>Tesseract CLI</green></bold>\tapp: "
+            . $this->getData("VERSION_SHORT")
+            . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n");
         return $this;
     }
 
@@ -125,8 +123,12 @@ class CliPresenter extends APresenter
             $climate->out("\t" . '<bold>app</bold> \'dump($app->getIdentity())\'');
         } else {
             try {
-                eval(trim($argv[2]) . ";");
-            } catch (Exception $e) {}
+                error_reporting(0);
+                eval(trim($argv[2]) . ';');
+            } catch (ParseError $e) {
+                echo 'Caught exception: '.$e->getMessage()."\n";
+            }
+            error_reporting(E_ALL);
         }
         echo "\n";
         return $this;
@@ -209,6 +211,12 @@ class CliPresenter extends APresenter
                 break;
 
             default:
+                $module = ucfirst(strtolower($module));
+                $presenter = "\\GSC\\Cli{$module}";
+                if (\class_exists($presenter)) {
+                    $presenter::getInstance()->setData($this->getData())->process();
+                    exit;
+                }
                 $this->help();
                 break;
         }

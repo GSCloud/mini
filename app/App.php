@@ -33,7 +33,9 @@ set_error_handler("\\GSC\\exception_error_handler");
 // POPULATE DATA ARRAY
 $base58 = new \Tuupola\Base58;
 $cfg = $data = $cfg ?? [];
-$data["cfg"] = $cfg; // cfg backup
+$data["cfg"] = $cfg; // cfg backup array
+$data["ARGC"] = $argc ?? 0; // arguments count
+$data["ARGV"] = $argv ?? []; // arguments array
 $data["GET"] = array_map("htmlspecialchars", $_GET);
 $data["POST"] = array_map("htmlspecialchars", $_POST);
 $data["VERSION"] = $version = trim(@file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n");
@@ -293,7 +295,7 @@ if (CLI) {
         @ob_end_clean();
     }
     if (isset($argv[1])) {
-        CliPresenter::getInstance()->setData($data)->process($argc)->selectModule($argv[1], $argc, $argv);
+        CliPresenter::getInstance()->setData($data)->selectModule($argv[1], $argc, $argv);
         exit;
     }
     CliPresenter::getInstance()->setData($data)->process()->help();
