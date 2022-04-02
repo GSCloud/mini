@@ -2,8 +2,8 @@
 /**
  * GSC Tesseract
  *
- * @category Framework
  * @author   Fred Brooker <git@gscloud.cz>
+ * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://lasagna.gscloud.cz
  */
@@ -15,7 +15,7 @@ use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 use Nette\Neon\Neon;
 
-// SANITY CHECK - CONSTANTS
+// SANITY CHECK
 foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP", "ENABLE_CSV_CACHE"] as $x) {
     defined($x) || die("FATAL ERROR: sanity check for constant '$x' failed!");
 }
@@ -33,27 +33,34 @@ set_error_handler("\\GSC\\exception_error_handler");
 // POPULATE DATA ARRAY
 $base58 = new \Tuupola\Base58;
 $cfg = $data = $cfg ?? [];
+
 $data["cfg"] = $cfg; // cfg backup array
 $data["ARGC"] = $argc ?? 0; // arguments count
 $data["ARGV"] = $argv ?? []; // arguments array
+
 $data["GET"] = array_map("htmlspecialchars", $_GET);
 $data["POST"] = array_map("htmlspecialchars", $_POST);
+
+$data["DATA_VERSION"] = null;
+$data["PHP_VERSION"] = PHP_VERSION_ID;
 $data["VERSION"] = $version = trim(@file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n");
+$data["VERSION_SHORT"] = $base58->encode(base_convert(substr(hash("sha256", $version), 0, 4), 16, 10));
 $data["VERSION_DATE"] = date("j. n. Y", @filemtime(ROOT . DS . "VERSION") ?? time());
 $data["VERSION_TIMESTAMP"] = @filemtime(ROOT . DS . "VERSION") ?? time();
 $data["REVISIONS"] = (int) trim(@file_get_contents(ROOT . DS . "REVISIONS") ?? "0", "\r\n");
-$data["PHP_VERSION"] = PHP_VERSION_ID;
-$data["DATA_VERSION"] = null;
+
 $data["cdn"] = $data["CDN"] = DS . "cdn-assets" . DS . $version;
 $data["host"] = $data["HOST"] = $host = $_SERVER["HTTP_HOST"] ?? "";
 $data["base"] = $data["BASE"] = $host ? (($_SERVER["HTTPS"] ?? "off" == "on") ? "https://${host}/" : "http://${host}/") : "";
+
 $data["request_uri"] = $_SERVER["REQUEST_URI"] ?? "";
 $data["request_path"] = $rqp = trim(trim(strtok($_SERVER["REQUEST_URI"] ?? "", "?&"), "/"));
 $data["request_path_hash"] = ($rqp == "") ? "" : hash("sha256", $rqp);
-$data["LOCALHOST"] = (bool) LOCALHOST;
-$data["VERSION_SHORT"] = $base58->encode(base_convert(substr(hash("sha256", $version), 0, 4), 16, 10));
-$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(16) . (string) time()), 0, 16);
+
+$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(16) . (string) time()), 0, 8);
 $data["utm"] = $data["UTM"] = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
+
+$data["LOCALHOST"] = (bool) LOCALHOST;
 $data["ALPHA"] = (in_array($host, (array) ($cfg["alpha_hosts"] ?? [])));
 $data["BETA"] = (in_array($host, (array) ($cfg["beta_hosts"] ?? [])));
 
@@ -312,7 +319,7 @@ $data["view"] = $view;
 
 // "sethl" property = set HOME LANGUAGE
 if ($router[$view]["sethl"] ?? false) {
-    $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? null));
+    $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? ""));
     switch ($r) {
         case "cs":
         case "de":
@@ -414,4 +421,4 @@ if (DEBUG) {
     bdump($data, 'model');
 }
 
-exit;
+exit(0);

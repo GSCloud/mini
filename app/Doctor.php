@@ -2,9 +2,10 @@
 /**
  * GSC Tesseract
  *
- * @category Framework
  * @author   Fred Brooker <git@gscloud.cz>
+ * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -12,7 +13,9 @@ namespace GSC;
 use League\CLImate\CLImate;
 
 /**
- * Doctor
+ * Doctor CLI class
+ * 
+ * @package GSC
  */
 class Doctor
 {
@@ -20,12 +23,14 @@ class Doctor
     private int $errors = 0;
 
     /**
-     * Doctor constructor
-     *
+     * Doctor CLI Constructor
+     * 
+     * @return void
      */
     public function __construct()
     {
         $climate = new CLImate;
+        $climate->out("<bold><green>Tesseract CLI</green></bold>");
 
         $climate->out("\n<blue><bold>File System - FOLDERS");
 
@@ -105,7 +110,7 @@ class Doctor
     /**
      * Check whether extension is loaded
      *
-     * @param string $f name
+     * @param string $f extension name
      * @return bool result
      */
     private function isloaded($f)
@@ -118,10 +123,10 @@ class Doctor
     }
 
     /**
-     * Validate
+     * Validate something
      *
-     * @param string $message
-     * @param bool $result
+     * @param string $message status message
+     * @param bool $result testing result outcome
      * @return void
      */
     function validate($message, $result)

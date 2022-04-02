@@ -2,15 +2,18 @@
 /**
  * GSC Tesseract
  *
- * @category Framework
  * @author   Fred Brooker <git@gscloud.cz>
+ * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
 
 /**
- * Error Presenter
+ * Error Presenter class
+ *
+ * @package GSC
  */
 class ErrorPresenter extends APresenter
 {
@@ -30,13 +33,16 @@ class ErrorPresenter extends APresenter
     ];
 
     /**
-     * Main controller
+     * Controller processor
      *
      * @param int $error error code (optional)
+     * @return self
      */
     public function process($err = null)
     {
         $this->setHeaderHtml();
+
+        // get the error code: either as a method parameter or URL parameter
         if (is_int($err)) {
             $code = $err;
         } else {
@@ -52,19 +58,27 @@ class ErrorPresenter extends APresenter
             $code = 404;
         }
         $error = self::CODESET[$code];
+
+        // set HTTP error code
         header("HTTP/1.1 ${code} ${error}");
 
-        // set error image
+        // find error image
         $img = "error.png";
         if (\file_exists(WWW . "/img/${code}.png")) {
             $img = "${code}.png";
         } elseif (\file_exists(WWW . "/img/${code}.jpg")) {
             $img = "${code}.jpg";
+        } elseif (\file_exists(WWW . "/img/${code}.webp")) {
+            $img = "${code}.webp";
         }
-        $template = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body><center><h1>'
-            . "<br>🤔 Error ${code}</h1><h2>" . self::CODESET[$code]
-            . '<br></h2><h4><a rel=nofollow style="color:red;text-decoration:none" href="/">Click to reload ↻</a></h4>'
-            . '<img height="100%" alt="' . $error . '" src=/img/' . $img . '></body></html>';
+
+        // HTML5 string template
+        $template = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body>';
+        $template .= "<center><h1><br>🤔 Error #${code}</h1>";
+        $template .= '<h2>Message: ' . self::CODESET[$code] . '</h2>';
+        $template .= '<h2><center><a rel=nofollow style="color:red;text-decoration:none" href="/?nonce=' . $this->getNonce() . '">Click here to reload the main page ↻</a></center></h2>';
+        $template .= '<img style="border:10px solid #000;" height="100%" alt="' . $error . '" src="/img/' . $img . '"></center></body></html>';
+
         return $this->setData("output", $this->renderHTML($template));
     }
 }

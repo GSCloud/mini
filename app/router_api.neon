@@ -1,0 +1,28 @@
+call1:
+  path: "/api/v1/call1/[a:string]"
+  api_description: "API call example #1"
+  api_info: "Returns: array of records"
+  api_example: [
+    "api/v1/call1/foo"
+    "api/v1/call1/bar42"
+    "api/v1/call1/666"
+  ]
+  api: true
+  assert_json: true
+  finished: true
+  presenter: api
+
+call2:
+  path: "/api/v1/call2/[i:number]"
+  api_description: "API call example #2"
+  api_info: "Returns: array of records"
+  api_example: [
+    "api/v1/call2/42"
+    "api/v1/call2/0"
+    "api/v1/call2/1"
+    "api/v1/call2/error"
+  ]
+  api: true
+  assert_json: true
+  finished: true
+  presenter: api

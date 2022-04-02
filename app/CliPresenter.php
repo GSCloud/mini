@@ -2,9 +2,10 @@
 /**
  * GSC Tesseract
  *
- * @category Framework
  * @author   Fred Brooker <git@gscloud.cz>
+ * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -13,65 +14,82 @@ use Cake\Cache\Cache;
 use League\CLImate\CLImate;
 
 /**
- * CLI Presenter
+ * CLI Presenter class
+ * 
+ * @package GSC
  */
 class CliPresenter extends APresenter
 {
     /**
-     * Main controller
+     * Controller processor
      *
-     * @param argc int count of arguments
-     * @return object Singleton instance
+     * @return self
      */
     public function process()
     {
         $climate = new CLImate;
-        $climate->out("\n<bold><green>Tesseract CLI</green></bold>\tapp: "
+        $climate->out("<bold><green>Tesseract CLI</green></bold>\tapp: "
             . $this->getData("VERSION_SHORT")
             . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n");
         return $this;
     }
 
     /**
-     * Show custom presenter output
+     * Show presenter output
+     * 
+     * @param string presenter name (optional)
      */
     public function show($p = "home")
     {
-        if (empty($p)) { // no presenter
-            exit;
+        $p = trim($p);
+        if (empty($p) || !strlen($p)) { // no presenter
+            die("FATAL ERROR: No presenter is set!\n");
         }
         $data = $this->getData();
         $router = $this->getRouter();
         $presenter = $this->getPresenter();
-        $data["view"] = $view = $router[$p]["view"] ?? "home";
-        $data["controller"] = $c = ucfirst(strtolower($presenter[$view]["presenter"]) ?? "home") . "Presenter";
+
+        $route = $router[$p];
+        $pres = $route["presenter"] ?? "home";
+        $data["view"] = $route["view"] ?? "home";
+        $data["controller"] = $c = ucfirst(strtolower($pres)) . "Presenter";
         $controller = "\\GSC\\${c}";
+
         echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
+        exit(0);
     }
 
     /**
-     * Show core presenter output
+     * Show CORE presenter output
+     * 
+     * @param string view name inside CORE presenter
+     * @param array arguments (optional)
      */
-    public function core($v = "PingBack", $m = null)
+    public function showCore($v = "PingBack", $arg = null)
     {
-        if (empty($v)) { // no view
-            exit;
+        $v = trim($v);
+        if (empty($v) || !strlen($v)) { // no view
+            die("FATAL ERROR: No view is set!\n");
         }
         $data = $this->getData();
         $router = $this->getRouter();
         $presenter = $this->getPresenter();
-        $data["base"] = $m["base"] ?? "https://example.com/";
+
         $data["controller"] = $c = "CorePresenter";
-        $data["match"] = $m["match"] ?? null;
-        $data["view"] = $v;
         $controller = "\\GSC\\${c}";
+        $data["view"] = $v;
+
+        $data["base"] = $arg["base"] ?? "https://example.com/";
+        $data["match"] = $arg["match"] ?? null;
+
         echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
+        exit(0);
     }
 
     /**
      * Display user defined constants
      *
-     * @return object Singleton instance
+     * @return self
      */
     private function showConst()
     {
@@ -85,7 +103,7 @@ class CliPresenter extends APresenter
     /**
      * Display CLI help
      *
-     * @return object Singleton instance
+     * @return self
      */
     public function help()
     {
@@ -96,37 +114,43 @@ class CliPresenter extends APresenter
         $climate->out("\t <bold>clearall</bold>\t - clear all temporary files");
         $climate->out("\t <bold>clearcache</bold>\t - clear cache");
         $climate->out("\t <bold>clearci</bold>\t - clear CI logs");
-        $climate->out("\t <bold>clearlogs</bold>\t - clear logs");
+        $climate->out("\t <bold>clearlogs</bold>\t - clear runtime logs");
         $climate->out("\t <bold>cleartemp</bold>\t - clear temporary files");
         $climate->out("\t <bold>doctor</bold>\t\t - check system requirements");
-        $climate->out("\t <bold>local</bold>\t\t - local CI test");
-        $climate->out("\t <bold>prod</bold>\t\t - production CI test");
-        $climate->out("\t <bold>unit</bold>\t\t - run Unit test (TBD)\n");
+        $climate->out("\t <bold>local</bold>\t\t - run local CI test");
+        $climate->out("\t <bold>prod</bold>\t\t - run production CI test");
+        $climate->out("\t <bold>unit</bold>\t\t - run Unit tests");
+        $climate->out("\t <bold>version</bold>\t - display version information in JSON format\n");
         return $this;
     }
 
     /**
      * Evaluate input string
      *
-     * @param object $app this
-     * @param int $argc ARGC
-     * @param array $argv ARGV
-     * @return object Singleton instance
+     * @param object this object
+     * @param int ARGC
+     * @param array ARGV
+     * @return self
      */
     private function evaler($app, $argc, $argv)
     {
         $climate = new CLImate;
-        if ($argc != 3) { // show examples
+        if ($argc != 3) {
+            // show examples
             $climate->out("Examples:");
             $climate->out("\t" . '<bold>app</bold> \'$app->showConst()\'');
             $climate->out("\t" . '<bold>app</bold> \'dump($app->getCurrentUser())\'');
             $climate->out("\t" . '<bold>app</bold> \'dump($app->getIdentity())\'');
+            $climate->out("\t" . '<bold>app</bold> \'$app->show()\'');
+            $climate->out("\t" . '<bold>app</bold> \'$app->showCore("GetTXTSitemap")\'');
+            $climate->out("\t" . '<bold>app</bold> \'$app->showCore("GetWebManifest")\'');
         } else {
+            $code = trim($argv[2]) . ';';
             try {
-                error_reporting(0);
-                eval(trim($argv[2]) . ';');
+                //error_reporting(0);
+                eval($code);
             } catch (ParseError $e) {
-                echo 'Caught exception: '.$e->getMessage()."\n";
+                echo 'Caught exception: ' . $e->getMessage() . "\n";
             }
             error_reporting(E_ALL);
         }
@@ -137,14 +161,15 @@ class CliPresenter extends APresenter
     /**
      * Select CLI module
      *
-     * @param string $module CLI parameter
-     * @param int $argc ARGC
-     * @param array $argv ARGV
+     * @param string CLI parameter
+     * @param int ARGC
+     * @param array ARGV
      * @return void
      */
     public function selectModule($module, $argc = null, $argv = null)
     {
         $climate = new CLImate;
+        $module = trim($module);
         switch ($module) {
             case "clear":
             case "clearall":
@@ -218,6 +243,7 @@ class CliPresenter extends APresenter
                     exit;
                 }
                 $this->help();
+                return $this;
                 break;
         }
     }

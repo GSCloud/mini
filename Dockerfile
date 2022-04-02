@@ -1,6 +1,6 @@
 #@author Filip Oščádal <git@gscloud.cz>
 
-ARG CODE_VERSION=8.0-apache
+ARG CODE_VERSION=8.1-apache
 ARG DEBIAN_FRONTEND=noninteractive
 ARG LC_ALL=en_US.UTF-8
 ARG TERM=linux

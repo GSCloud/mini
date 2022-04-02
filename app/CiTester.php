@@ -2,25 +2,29 @@
 /**
  * GSC Tesseract
  *
- * @category Framework
  * @author   Fred Brooker <git@gscloud.cz>
+ * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
 
 use League\CLImate\CLImate;
 
+/**
+ * Continuous Integration Tester class
+ * 
+ * @package GSC
+ */
 class CiTester
 {
     /**
-     * Main controller
+     * Controller processor
      *
-     * @param array $cfg Configuration.
-     * @param array $presenter Presenter.
-     * @param string $type Test type: testlocal, testprod.
-     *
-     * @return void
+     * @param array $cfg configuration array
+     * @param array $presenter presenter array
+     * @param string $type test type: 'local', 'prod'
      */
     public function __construct($cfg, $presenter, $type)
     {

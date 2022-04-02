@@ -67,6 +67,7 @@ sync:
 	@bash ./bin/sync.sh b
 	@bash ./bin/sync.sh a
 test:
+	@bash ./cli.sh unit
 	@bash ./cli.sh local
 prod:
 	@bash ./cli.sh prod
@@ -91,5 +92,5 @@ du:
 	@echo "🔨 \e[1;32m Updating\e[0m\n"
 	@bash ./bin/update_docker.sh
 
-everything: doctor clear unit test update sync prod
-reimage: doctor clear unit test update build run
+everything: doctor clear test update sync prod
+reimage: doctor clear test update build run
