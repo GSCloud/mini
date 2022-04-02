@@ -60,9 +60,3 @@ l:
   title: "Tesseract MINI"
   author: "Fred Brooker @ GS Cloud Ltd."
   noscript: "Please enable JavaScript!"
-
-routes: [
-    "router_defaults.neon",
-    "router_admin.neon",
-    "router.neon",
-]
