@@ -1,4 +1,4 @@
-#@author Filip Oščádal <git@gscloud.cz>
+#@author Fred Brooker <git@gscloud.cz>
 include .env
 
 all: info
@@ -78,13 +78,17 @@ build:
 	@echo "🔨 \e[1;32m Building image\e[0m\n"
 	@bash ./bin/build.sh
 push:
-	@echo "🔨 \e[1;32m Pushing image\e[0m\n"
+	@make stop
+	@echo "🔨 \e[1;32m Pushing image to Docker.io\e[0m\n"
 	@bash ./bin/push.sh
 run:
+	@echo "🔨 \e[1;32m Running container\e[0m\n"
 	@bash ./bin/run.sh
 stop:
+	@echo "🔨 \e[1;32m Stoping container\e[0m\n"
 	@bash ./bin/stop.sh
 kill:
+	@echo "🔨 \e[1;32m Killing container\e[0m\n"
 	@bash ./bin/kill.sh
 execbash:
 	@bash ./bin/execbash.sh
