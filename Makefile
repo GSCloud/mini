@@ -97,4 +97,4 @@ du:
 	@bash ./bin/update_docker.sh
 
 everything: doctor clear test update sync prod
-reimage: doctor clear test update build run
+image: doctor clear test update build run
