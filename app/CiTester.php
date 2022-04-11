@@ -175,8 +175,8 @@ class CiTester
             $jsformat = "HTML";
             $jscode = "-";
             if ($x["assert_json"]) {
-                $arr = json_decode($content, true);
-                if (is_null($arr)) {
+                $arr = @json_decode($content ?? '', true);
+                if (is_null($content) || is_null($arr)) {
                     $bad++;
                     $json = false;
                     $jsformat = "JSON_ERROR";
@@ -185,11 +185,11 @@ class CiTester
                 } else {
                     $jsformat = "JSON";
                     if ($arr["code"] == 200) {
-                        $jscode = "200";
+                        $jscode = 'OK';
                     } else {
-                        $jscode = "BAD_CODE:" . $arr["code"];
+                        $jscode = "BAD_CODE: " . $arr["code"];
                         $bad++;
-                        $climate->out('!!! JSON CODE ERRROR !!!');
+                        $climate->out('!!! JSON ERRROR !!!');
                     }
                 }
             }
@@ -203,7 +203,7 @@ class CiTester
             }
             if ($bad == 0) { // OK
                 $climate->out(
-                    "${u1} length: <green>${length}</green> code: <green>${code}</green> time: <green>${time} ms</green> format: <blue>$jsformat</blue> JScode: <green>$jscode</green>"
+                    "${u1} length: <green>${length}</green> code: <green>${code}</green> time: <green>${time} ms</green> format: <blue>$jsformat</blue> JS: <green>$jscode</green>"
                 );
                 @file_put_contents(ROOT . "/ci/tests_${f1}.assert.txt",
                     "${u2};length:${length};code:${code};assert:${x['assert_httpcode']};time:${time};$jsformat;$jscode\n", FILE_APPEND | LOCK_EX);
@@ -223,7 +223,7 @@ class CiTester
         $climate->out("\nTotal time: <bold><green>$time s</green></bold>");
 
         if ($errors) {
-            $climate->out("\nErrors: <bold>" . $errors . "\007\n");
+            $climate->out("\nErrors: <bold>" . $errors . "\n");
         }
         exit($errors);
     }
