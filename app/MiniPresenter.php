@@ -19,7 +19,7 @@ class MiniPresenter extends APresenter
     /**
      * Main controller
      *
-     * @return object Singleton instance
+     * @return self
      */
     public function process()
     {
@@ -33,6 +33,7 @@ class MiniPresenter extends APresenter
         $use_cache = (bool) (DEBUG ? false : $data["use_cache"] ?? false);
         $cache_key = hash("sha256", join("_", [$data["host"], $data["request_path"], "htmlpage"]));
         if ($use_cache && $output = Cache::read($cache_key, "page")) {
+            header("X-Cached: true");
             return $this->setData("output", $output .= "\n<script>console.log('*** page content cached');</script>");
         }
 

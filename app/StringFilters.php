@@ -367,7 +367,7 @@ class StringFilters implements IStringFilters
      * Correct the text spacing in passed content for various languages.
      *
      * @param string $content content by reference
-     * @param string $language (optional: "cs", "en" - for now)
+     * @param string $language (optional: "cs", "sk", "en" - for now)
      * @return void
      */
     public static function correct_text_spacing(&$content, $language = "en")

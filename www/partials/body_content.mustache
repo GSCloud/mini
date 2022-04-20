@@ -2,11 +2,11 @@
 
 {{^user.id}}
 <div class="container">
-  <div class="float-right center">
-    {{>login}}
-  </div>
   <div class="row">
     <div class="column">
+      <div class="float-right center">
+        {{>login}}
+      </div>
       <p>{{ l.readme }}</p>
     </div>
   </div>
@@ -16,10 +16,10 @@
 {{#user.id}}
 <div class="container">
   <div class="row">
-    <div class="column column-20 center">
-      {{>logout}}
-    </div>
-    <div class="column column-80">
+    <div class="column">
+      <div class="float-right center">
+        {{>logout}}
+      </div>
       <p>{{ l.readme }}</p>
     </div>
   </div>
