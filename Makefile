@@ -34,64 +34,84 @@ info:
 	@echo ""
 	@echo "🆘 \e[0;1mmake everything\e[0m - run: doctor clear unit test update sync prod"
 	@echo "🆘 \e[0;1mmake reimage\e[0m - run: doctor clear unit test update build run"
-	@echo ""
+
 docs:
 	@echo "🔨 \e[1;32m Creating documentation\e[0m\n"
 	@cat TECHNICAL_DETAILS_EN.md | grep ^# | sed 'G;' > TECHNICAL_DETAILS_EN_OUTLINE.md
 	@cat TECHNICAL_DETAILS_CZ.md | grep ^# | sed 'G;' > TECHNICAL_DETAILS_CZ_OUTLINE.md
 	@bash ./bin/create_pdf.sh
+
 update:
 	@bash ./bin/update.sh
 	@make clearall
 	@echo ""
+
 unit:
 	@bash ./cli.sh unit
+
 clear:
 	@bash ./cli.sh clearall
+
 clearall:
 	@bash ./cli.sh clearall
+
 clearcache:
 	@bash ./cli.sh clearcache
+
 clearci:
 	@bash ./cli.sh clearci
+
 clearlogs:
 	@bash ./cli.sh clearlogs
+
 cleartemp:
 	@bash ./cli.sh cleartemp
+
 install:
 	@bash ./bin/install.sh
+
 doctor:
 	@bash ./cli.sh doctor
+
 sync:
 	@bash ./bin/sync.sh x
 	@bash ./bin/sync.sh b
 	@bash ./bin/sync.sh a
+
 test:
 	@bash ./cli.sh unit
 	@bash ./cli.sh local
+
 prod:
 	@bash ./cli.sh prod
+
 gulp:
 	@echo "🔨 \e[1;32m Setting gulp\e[0m\n"
 	@bash ./bin/gulp.sh
+
 build:
 	@echo "🔨 \e[1;32m Building image\e[0m\n"
 	@bash ./bin/build.sh
+
 push:
-	@make stop
 	@echo "🔨 \e[1;32m Pushing image to Docker.io\e[0m\n"
 	@bash ./bin/push.sh
+
 run:
 	@echo "🔨 \e[1;32m Running container\e[0m\n"
 	@bash ./bin/run.sh
+
 stop:
 	@echo "🔨 \e[1;32m Stoping container\e[0m\n"
 	@bash ./bin/stop.sh
+
 kill:
 	@echo "🔨 \e[1;32m Killing container\e[0m\n"
 	@bash ./bin/kill.sh
+
 execbash:
 	@bash ./bin/execbash.sh
+
 du:
 	@echo "🔨 \e[1;32m Updating\e[0m\n"
 	@bash ./bin/update_docker.sh
