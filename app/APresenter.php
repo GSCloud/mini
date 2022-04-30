@@ -1561,8 +1561,10 @@ abstract class APresenter implements IPresenter
     public function writeJsonData($data, $headers = [], $switches = null)
     {
         $code = 200;
+        $time = \time();
         $out = [
-            'timestamp' => \time(),
+            'timestamp' => $time,
+            'timestamp_RFC2822' => date(\DATE_RFC2822, $time),
             'version' => (string) ($this->getCfg('version') ?? 'v1'),
         ];
         switch (\json_last_error()) { // last decoding error

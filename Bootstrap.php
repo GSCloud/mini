@@ -8,6 +8,8 @@
  * @link     https://lasagna.gscloud.cz
  */
 
+declare(strict_types=1);
+
 use Nette\Neon\Neon;
 use Tracy\Debugger;
 
@@ -23,9 +25,9 @@ if (PHP_SAPI == 'cli') {
 }
 
 // PHP INI - modify default configuration
-@ini_set('auto_detect_line_endings', defined('AUTO_DETECT_LINE_ENDINGS') ? AUTO_DETECT_LINE_ENDINGS : true);
-@ini_set('default_socket_timeout', defined('DEFAULT_SOCKET_TIMEOUT') ? DEFAULT_SOCKET_TIMEOUT : 30);
-@ini_set('display_errors', defined('DISPLAY_ERRORS') ? DISPLAY_ERRORS : true);
+ini_set('auto_detect_line_endings', defined('AUTO_DETECT_LINE_ENDINGS') ? AUTO_DETECT_LINE_ENDINGS : 'true');
+ini_set('default_socket_timeout', defined('DEFAULT_SOCKET_TIMEOUT') ? DEFAULT_SOCKET_TIMEOUT : '30');
+ini_set('display_errors', defined('DISPLAY_ERRORS') ? DISPLAY_ERRORS : 'true');
 
 ob_start();
 error_reporting(E_ALL);
