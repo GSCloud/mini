@@ -87,7 +87,7 @@
 
     <article class="phpdocumentor-element -class">
         <h2 class="phpdocumentor-content__title">
-    ErrorPresenter
+    CliVersion
 
         <span class="phpdocumentor-element__extends">
         extends <a href="classes/GSC-APresenter.html"><abbr title="\GSC\APresenter">APresenter</abbr></a>
@@ -104,13 +104,13 @@
     </h2>
 
         <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ErrorPresenter.php"><a href="files/app-errorpresenter.html"><abbr title="app/ErrorPresenter.php">ErrorPresenter.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="app/CliVersion.php"><a href="files/app-cliversion.html"><abbr title="app/CliVersion.php">CliVersion.php</abbr></a></abbr>
     :
     <span class="phpdocumentor-element-found-in__line">18</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Error Presenter class</p>
+            <p class="phpdocumentor-summary">CLI Version class</p>
 
 
 
@@ -126,13 +126,6 @@
 </h3>
 
 <dl class="phpdocumentor-table-of-contents">
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a href="classes/GSC-ErrorPresenter.html#constant_CODESET">CODESET</a>
-    <span>
-        &nbsp;= [400 =&gt; &quot;Bad Request&quot;, 401 =&gt; &quot;Unauthorized&quot;, 403 =&gt; &quot;Forbidden&quot;, 404 =&gt; &quot;Not Found&quot;, 406 =&gt; &quot;Not Acceptable&quot;, 410 =&gt; &quot;Gone&quot;, 420 =&gt; &quot;Enhance Your Calm&quot;, 429 =&gt; &quot;Too Many Requests&quot;, 500 =&gt; &quot;Internal Server Error&quot;, 502 =&gt; &quot;Bad Gateway&quot;, 503 =&gt; &quot;Service Unavailable&quot;, 504 =&gt; &quot;Gateway Timeout&quot;]                    </span>
-</dt>
-<dd></dd>
-
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/GSC-APresenter.html#constant_COOKIE_KEY_FILEMODE">COOKIE_KEY_FILEMODE</a>
     <span>
@@ -377,6 +370,13 @@
                         &nbsp;: void    </span>
 </dt>
 <dd>Magic call static</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/GSC-CliVersion.html#method___construct">__construct()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Controller constructor</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/GSC-APresenter.html#method___destruct">__destruct()</a>
@@ -645,9 +645,9 @@
 <dd>Pre-load application CSV data</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/GSC-ErrorPresenter.html#method_process">process()</a>
+    <a href="classes/GSC-CliVersion.html#method_process">process()</a>
     <span>
-                        &nbsp;: self    </span>
+                        &nbsp;: void    </span>
 </dt>
 <dd>Controller processor</dd>
 
@@ -771,13 +771,6 @@
 <dd>Magic clone</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/GSC-APresenter.html#method___construct">__construct()</a>
-    <span>
-                        &nbsp;: mixed    </span>
-</dt>
-<dd>Class constructor</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a href="classes/GSC-APresenter.html#method_csv_preloader">csv_preloader()</a>
     <span>
                         &nbsp;: self    </span>
@@ -792,37 +785,8 @@
     <section class="phpdocumentor-constants">
         <h3 class="phpdocumentor-elements__header" id="constants">
             Constants
-            <a href="classes/GSC-ErrorPresenter.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/GSC-CliVersion.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CODESET">
-        CODESET
-        <a href="classes/GSC-ErrorPresenter.html#constant_CODESET" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ErrorPresenter.php"><a href="files/app-errorpresenter.html"><abbr title="app/ErrorPresenter.php">ErrorPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">20</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CODESET</span>
-    = <span class="phpdocumentor-signature__default-value">[400 =&gt; &quot;Bad Request&quot;, 401 =&gt; &quot;Unauthorized&quot;, 403 =&gt; &quot;Forbidden&quot;, 404 =&gt; &quot;Not Found&quot;, 406 =&gt; &quot;Not Acceptable&quot;, 410 =&gt; &quot;Gone&quot;, 420 =&gt; &quot;Enhance Your Calm&quot;, 429 =&gt; &quot;Too Many Requests&quot;, 500 =&gt; &quot;Internal Server Error&quot;, 502 =&gt; &quot;Bad Gateway&quot;, 503 =&gt; &quot;Service Unavailable&quot;, 504 =&gt; &quot;Gateway Timeout&quot;]</span>
-</code>
-
-
-        <section class="phpdocumentor-description"></section>
-
-        <section class="phpdocumentor-description"></section>
-
-    
-
-</article>
                     <article class="phpdocumentor-element -constant -public ">
     <h4 class="phpdocumentor-element__name" id="constant_COOKIE_KEY_FILEMODE">
         COOKIE_KEY_FILEMODE
@@ -1499,7 +1463,7 @@
     <section class="phpdocumentor-properties">
         <h3 class="phpdocumentor-elements__header" id="properties">
             Properties
-            <a href="classes/GSC-ErrorPresenter.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/GSC-CliVersion.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
                     <article
         class="
@@ -1812,7 +1776,7 @@
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
             Methods
-            <a href="classes/GSC-ErrorPresenter.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+            <a href="classes/GSC-CliVersion.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
                     <article
         class="phpdocumentor-element
@@ -1910,6 +1874,39 @@
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type">void</span>
+            &mdash;
+        
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method___construct">
+        __construct()
+        <a href="classes/GSC-CliVersion.html#method___construct" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="app/CliVersion.php"><a href="files/app-cliversion.html"><abbr title="app/CliVersion.php">CliVersion.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">23</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Controller constructor</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
             &mdash;
         
     
@@ -3467,12 +3464,12 @@
 >
     <h4 class="phpdocumentor-element__name" id="method_process">
         process()
-        <a href="classes/GSC-ErrorPresenter.html#method_process" class="headerlink"><i class="fas fa-link"></i></a>
+        <a href="classes/GSC-CliVersion.html#method_process" class="headerlink"><i class="fas fa-link"></i></a>
     </h4>
     <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ErrorPresenter.php"><a href="files/app-errorpresenter.html"><abbr title="app/ErrorPresenter.php">ErrorPresenter.php</abbr></a></abbr>
+    <abbr class="phpdocumentor-element-found-in__file" title="app/CliVersion.php"><a href="files/app-cliversion.html"><abbr title="app/CliVersion.php">CliVersion.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">41</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
@@ -3480,25 +3477,16 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">process</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$err</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">self</span></code>
+                <span class="phpdocumentor-signature__name">process</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+        <section class="phpdocumentor-description"><p>Show version information as a JSON formatted string.</p>
+</section>
 
     
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$err</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"></section>
-
-            </dd>
-            </dl>
-
     
 
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">self</span>
+    <span class="phpdocumentor-signature__response_type">void</span>
             &mdash;
         
     
@@ -4213,39 +4201,6 @@
             -private
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method___construct">
-        __construct()
-        <a href="classes/GSC-APresenter.html#method___construct" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">222</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Class constructor</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                <span class="phpdocumentor-signature__name">__construct</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-    
-    
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
-            &mdash;
-        
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -private
-                                                        "
->
     <h4 class="phpdocumentor-element__name" id="method_csv_preloader">
         csv_preloader()
         <a href="classes/GSC-APresenter.html#method_csv_preloader" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4381,7 +4336,7 @@
 </section>
             </div>
         </div>
-        <a href="classes/GSC-ErrorPresenter.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
+        <a href="classes/GSC-CliVersion.html#top" class="phpdocumentor-back-to-top"><i class="fas fa-chevron-circle-up"></i></a>
 
     </main>
 

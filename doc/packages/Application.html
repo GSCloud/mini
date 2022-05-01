@@ -52,17 +52,21 @@
     Menu
 </label>
 <aside class="phpdocumentor-column -four phpdocumentor-sidebar">
-                    <section class="phpdocumentor-sidebar__category">
-            <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/gsc.html">GSC</a></h4>
-
+        
+    <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Namespaces</h2>
+                                <h3 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/default.html"><abbr title="\">Global</abbr></a></h3>
+                                        <h4 class="phpdocumentor-sidebar__root-namespace"><a href="namespaces/gsc.html"><abbr title="\GSC">GSC</abbr></a></h4>
+                <ul class="phpdocumentor-list">
+                                    </ul>
                         </section>
-                <section class="phpdocumentor-sidebar__category">
-            <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                                    <h4 class="phpdocumentor-sidebar__root-namespace"><a href="packages/Application.html">Application</a></h4>
 
+        <section class="phpdocumentor-sidebar__category">
+        <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
+                    <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Application.html"><abbr title="\Application">Application</abbr></a></h3>
+                                <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/GSC.html"><abbr title="\GSC">GSC</abbr></a></h3>
                         </section>
-            
+    
     <section class="phpdocumentor-sidebar__category">
         <h2 class="phpdocumentor-sidebar__category-header">Reports</h2>
                 <h3 class="phpdocumentor-sidebar__root-package"><a href="reports/deprecated.html">Deprecated</a></h3>
@@ -93,35 +97,15 @@
 <dl class="phpdocumentor-table-of-contents">
             <dt class="phpdocumentor-table-of-contents__entry -interface"><a href="classes/GSC-IPresenter.html"><abbr title="\GSC\IPresenter">IPresenter</abbr></a></dt>
         <dd></dd>
-            <dt class="phpdocumentor-table-of-contents__entry -interface"><a href="classes/GSC-IStringFilters.html"><abbr title="\GSC\IStringFilters">IStringFilters</abbr></a></dt>
-        <dd>String filters interface</dd>
     
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-ApiPresenter.html"><abbr title="\GSC\ApiPresenter">ApiPresenter</abbr></a></dt>
         <dd>API Presenter</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-APresenter.html"><abbr title="\GSC\APresenter">APresenter</abbr></a></dt>
-        <dd></dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-CiTester.html"><abbr title="\GSC\CiTester">CiTester</abbr></a></dt>
-        <dd></dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-CliPresenter.html"><abbr title="\GSC\CliPresenter">CliPresenter</abbr></a></dt>
-        <dd>CLI Presenter</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-CorePresenter.html"><abbr title="\GSC\CorePresenter">CorePresenter</abbr></a></dt>
         <dd>Core Presenter</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-Doctor.html"><abbr title="\GSC\Doctor">Doctor</abbr></a></dt>
-        <dd>Doctor</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-ErrorPresenter.html"><abbr title="\GSC\ErrorPresenter">ErrorPresenter</abbr></a></dt>
-        <dd>Error Presenter</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-LoginPresenter.html"><abbr title="\GSC\LoginPresenter">LoginPresenter</abbr></a></dt>
         <dd>Login Presenter</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-LogoutPresenter.html"><abbr title="\GSC\LogoutPresenter">LogoutPresenter</abbr></a></dt>
-        <dd>Logout Presenter</dd>
             <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-MiniPresenter.html"><abbr title="\GSC\MiniPresenter">MiniPresenter</abbr></a></dt>
         <dd>Mini Presenter</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-RSSPresenter.html"><abbr title="\GSC\RSSPresenter">RSSPresenter</abbr></a></dt>
-        <dd>RSS Presenter</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-StringFilters.html"><abbr title="\GSC\StringFilters">StringFilters</abbr></a></dt>
-        <dd>String filters - modify content passed by a reference</dd>
-            <dt class="phpdocumentor-table-of-contents__entry -class"><a href="classes/GSC-UnitTester.html"><abbr title="\GSC\UnitTester">UnitTester</abbr></a></dt>
-        <dd>Unit Tester</dd>
     
     </dl>
 
@@ -133,23 +117,16 @@
 
 <dl class="phpdocumentor-table-of-contents">
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a href="namespaces/default.html#constant_CLI">CLI</a>
-    <span>
-        &nbsp;= (bool) (PHP_SAPI == &quot;cli&quot;)                    </span>
-</dt>
-<dd></dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a href="namespaces/default.html#constant_LOCALHOST">LOCALHOST</a>
-    <span>
-        &nbsp;= (bool) (($_SERVER[&quot;SERVER_NAME&quot;] ?? &quot;&quot;) == &quot;localhost&quot;) || CLI                    </span>
-</dt>
-<dd></dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="namespaces/default.html#constant_ROOT">ROOT</a>
     <span>
         &nbsp;= __DIR__ . &quot;/..&quot;                    </span>
+</dt>
+<dd></dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
+    <a href="namespaces/default.html#constant_TESSERACT_END">TESSERACT_END</a>
+    <span>
+        &nbsp;= microtime(true)                    </span>
 </dt>
 <dd></dd>
 
@@ -172,7 +149,7 @@
     <span>
                         &nbsp;: void    </span>
 </dt>
-<dd>Stackdriver logger</dd>
+<dd>Google Stackdriver logger</dd>
 
     </dl>
 
@@ -182,92 +159,6 @@
             Constants
             <a href="packages/Application.html#constants" class="headerlink"><i class="fas fa-link"></i></a>
         </h3>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_CLI">
-        CLI
-        <a href="namespaces/default.html#constant_CLI" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Bootstrap.php"><a href="files/bootstrap.html"><abbr title="Bootstrap.php">Bootstrap.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">71</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">CLI</span>
-    = <span class="phpdocumentor-signature__default-value">(bool) (PHP_SAPI == &quot;cli&quot;)</span>
-</code>
-
-
-    
-        <section class="phpdocumentor-description"></section>
-
-    
-    <h5 class="phpdocumentor-tag-list__heading" id="tags">
-        Tags
-        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
-    </h5>
-    <dl class="phpdocumentor-tag-list">
-                                    <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">const</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                                
-                                                 <section class="phpdocumentor-description"><p>true if running from command line interface</p>
-</section>
-
-                                    </dd>
-                        </dl>
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_LOCALHOST">
-        LOCALHOST
-        <a href="namespaces/default.html#constant_LOCALHOST" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Bootstrap.php"><a href="files/bootstrap.html"><abbr title="Bootstrap.php">Bootstrap.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">74</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">mixed</span>
-    <span class="phpdocumentor-signature__name">LOCALHOST</span>
-    = <span class="phpdocumentor-signature__default-value">(bool) (($_SERVER[&quot;SERVER_NAME&quot;] ?? &quot;&quot;) == &quot;localhost&quot;) || CLI</span>
-</code>
-
-
-    
-        <section class="phpdocumentor-description"></section>
-
-    
-    <h5 class="phpdocumentor-tag-list__heading" id="tags">
-        Tags
-        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
-    </h5>
-    <dl class="phpdocumentor-tag-list">
-                                    <dt class="phpdocumentor-tag-list__entry">
-                    <span class="phpdocumentor-tag__name">const</span>
-                </dt>
-                <dd class="phpdocumentor-tag-list__definition">
-                                                                                
-                                                 <section class="phpdocumentor-description"><p>true if running server locally</p>
-</section>
-
-                                    </dd>
-                        </dl>
-
-</article>
                     <article class="phpdocumentor-element -constant -public ">
     <h4 class="phpdocumentor-element__name" id="constant_ROOT">
         ROOT
@@ -298,6 +189,49 @@
 
 </article>
                     <article class="phpdocumentor-element -constant -public ">
+    <h4 class="phpdocumentor-element__name" id="constant_TESSERACT_END">
+        TESSERACT_END
+        <a href="namespaces/default.html#constant_TESSERACT_END" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="app/App.php"><a href="files/app-app.html"><abbr title="app/App.php">App.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">413</span>
+
+    </aside>
+
+    
+    <code class="phpdocumentor-signature phpdocumentor-code ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
+    <span class="phpdocumentor-signature__name">TESSERACT_END</span>
+    = <span class="phpdocumentor-signature__default-value">microtime(true)</span>
+</code>
+
+
+    
+        <section class="phpdocumentor-description"></section>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">const</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>global timer - end</p>
+</section>
+
+                                    </dd>
+                        </dl>
+
+</article>
+                    <article class="phpdocumentor-element -constant -public ">
     <h4 class="phpdocumentor-element__name" id="constant_TESSERACT_START">
         TESSERACT_START
         <a href="namespaces/default.html#constant_TESSERACT_START" class="headerlink"><i class="fas fa-link"></i></a>
@@ -306,7 +240,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Bootstrap.php"><a href="files/bootstrap.html"><abbr title="Bootstrap.php">Bootstrap.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">15</span>
+    <span class="phpdocumentor-element-found-in__line">17</span>
 
     </aside>
 
@@ -333,7 +267,7 @@
                 </dt>
                 <dd class="phpdocumentor-tag-list__definition">
                                                                                 
-                                                 <section class="phpdocumentor-description"><p>start global timer</p>
+                                                 <section class="phpdocumentor-description"><p>global timer - start</p>
 </section>
 
                                     </dd>
@@ -355,7 +289,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/App.php"><a href="files/app-app.html"><abbr title="app/App.php">App.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">19</span>
+    <span class="phpdocumentor-element-found-in__line">24</span>
 
     </aside>
 
@@ -418,11 +352,11 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/App.php"><a href="files/app-app.html"><abbr title="app/App.php">App.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">103</span>
+    <span class="phpdocumentor-element-found-in__line">105</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Stackdriver logger</p>
+        <p class="phpdocumentor-summary">Google Stackdriver logger</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility"></span>
