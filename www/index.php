@@ -1,20 +1,15 @@
 <?php
+/**
+ * WEB INDEX
+ * php version 7.4.0
+ * 
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://opensource.org/licenses/MIT
+ * @link     https://lasagna.gscloud.cz
+ */
+defined("DS") || define("DS", DIRECTORY_SEPARATOR);
+defined("ROOT") || define("ROOT", __DIR__ . DS . "..");
 
-define("ROOT", __DIR__ . "/..");
-
-#define("DEBUG", true);
-
-#define("CACHE", ROOT . "/cache");
-#define("DATA", ROOT . "/data");
-#define("WWW", ROOT . "/www");
-#define("CONFIG", ROOT . "/config.neon");
-#define("CONFIG_PRIVATE", ROOT . "/config_private.neon");
-
-#define("TEMPLATES", WWW . "/templates");
-#define("PARTIALS", WWW . "/partials");
-#define("DOWNLOAD", WWW . "/download");
-#define("UPLOAD", WWW . "/upload");
-
-#define("TEMP", "/tmp");
-
-require_once ROOT . "/Bootstrap.php";
+require_once ROOT . DS . "Bootstrap.php";

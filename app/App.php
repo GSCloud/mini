@@ -1,9 +1,11 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 7.4
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://lasagna.gscloud.cz
  */
@@ -16,19 +18,38 @@ use Monolog\Logger;
 use Nette\Neon\Neon;
 
 // SANITY CHECK
-foreach (["APP", "CACHE", "DATA", "DS", "LOGS", "ROOT", "TEMP", "ENABLE_CSV_CACHE"] as $x) {
+foreach ([
+    "APP",
+    "CACHE",
+    "DATA",
+    "DS",
+    "LOGS",
+    "ROOT",
+    "TEMP",
+    "ENABLE_CSV_CACHE",
+] as $x) {
     defined($x) || die("FATAL ERROR: sanity check for constant '$x' failed!");
 }
 
-// USER-DEFINED ERROR HANDLER
-function exception_error_handler($severity, $message, $file, $line)
+/**
+ * Exception handler
+ *
+ * @param int    $severity severity level
+ * @param string $message  message
+ * @param int    $file     file
+ * @param int    $line     line
+ *
+ * @return void
+ */
+function exceptionErrorHandler($severity, $message, $file, $line)
 {
-    if (!(error_reporting() & $severity)) { // this error code is not included in error_reporting
+    if (!(error_reporting() & $severity)) {
+        // this error code is not included in error_reporting
         return;
     }
     throw new \Exception("ERROR: $message FILE: $file LINE: $line");
 }
-set_error_handler("\\GSC\\exception_error_handler");
+set_error_handler("\\GSC\\exceptionErrorHandler");
 
 // POPULATE DATA ARRAY
 $base58 = new \Tuupola\Base58;
@@ -43,51 +64,67 @@ $data["POST"] = array_map("htmlspecialchars", $_POST);
 
 $data["DATA_VERSION"] = null;
 $data["PHP_VERSION"] = PHP_VERSION_ID;
-$data["VERSION"] = $version = trim(@file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n");
-$data["VERSION_SHORT"] = $base58->encode(base_convert(substr(hash("sha256", $version), 0, 4), 16, 10));
+$data["VERSION"] = $version = trim(
+    @file_get_contents(ROOT . DS . "VERSION") ?? "", "\r\n"
+);
+$data["VERSION_SHORT"] = $base58->encode(
+    base_convert(substr(hash("sha256", $version), 0, 4), 16, 10)
+);
 $data["VERSION_DATE"] = date("j. n. Y", @filemtime(ROOT . DS . "VERSION") ?? time());
 $data["VERSION_TIMESTAMP"] = @filemtime(ROOT . DS . "VERSION") ?? time();
-$data["REVISIONS"] = (int) trim(@file_get_contents(ROOT . DS . "REVISIONS") ?? "0", "\r\n");
-
+$data["REVISIONS"] = (int) trim(
+    @file_get_contents(ROOT . DS . "REVISIONS") ?? "0", "\r\n"
+);
 $data["cdn"] = $data["CDN"] = DS . "cdn-assets" . DS . $version;
 $data["host"] = $data["HOST"] = $host = $_SERVER["HTTP_HOST"] ?? "";
-$data["base"] = $data["BASE"] = $host ? (($_SERVER["HTTPS"] ?? "off" == "on") ? "https://${host}/" : "http://${host}/") : "";
-
+$data["base"] = $data["BASE"] = $host ? (
+    ($_SERVER["HTTPS"] ?? "off" == "on") ? "https://${host}/" : "http://${host}/"
+    ) : "";
 $data["request_uri"] = $_SERVER["REQUEST_URI"] ?? "";
-$data["request_path"] = $rqp = trim(trim(strtok($_SERVER["REQUEST_URI"] ?? "", "?&"), "/"));
+$data["request_path"] = $rqp = trim(
+    trim(strtok($_SERVER["REQUEST_URI"] ?? "", "?&"), "/")
+);
 $data["request_path_hash"] = ($rqp == "") ? "" : hash("sha256", $rqp);
 
-$data["nonce"] = $data["NONCE"] = $nonce = substr(hash("sha256", random_bytes(16) . (string) time()), 0, 8);
-$data["utm"] = $data["UTM"] = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
+$data["nonce"] = $data["NONCE"] = $nonce = substr(
+    hash(
+        "sha256", random_bytes(16) . (string) time()
+    ), 0, 8
+);
+$data["utm"] = $data["UTM"]
+    = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
 
 $data["LOCALHOST"] = (bool) LOCALHOST;
 $data["ALPHA"] = (in_array($host, (array) ($cfg["alpha_hosts"] ?? [])));
 $data["BETA"] = (in_array($host, (array) ($cfg["beta_hosts"] ?? [])));
 
-/** @const cache name prefix */
 $x = $cfg["app"] ?? $cfg["canonical_url"] ?? $cfg["goauth_origin"] ?? "";
-defined("CACHEPREFIX") || define("CACHEPREFIX",
-    "cache_" . hash("sha256", $x) . "_");
-
-/** @const domain name, extracted from $_SERVER */
-defined("DOMAIN") || define("DOMAIN", strtolower(preg_replace("/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-
-/** @const server name, extracted from $_SERVER */
-defined("SERVER") || define("SERVER", strtolower(preg_replace("/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost")));
-
-/** @const project name, default "LASAGNA" */
+defined("CACHEPREFIX") || define(
+    "CACHEPREFIX",
+    "cache_" . hash("sha256", $x) . "_"
+);
+defined("DOMAIN") || define(
+    "DOMAIN",
+    strtolower(
+        preg_replace(
+            "/[^A-Za-z0-9.-]/", "", $_SERVER["SERVER_NAME"] ?? "localhost"
+        )
+    )
+);
+defined("SERVER") || define(
+    "SERVER",
+    strtolower(
+        preg_replace(
+            "/[^A-Za-z0-9]/", "", $_SERVER["SERVER_NAME"] ?? "localhost"
+        )
+    )
+);
 defined("PROJECT") || define("PROJECT", (string) ($cfg["project"] ?? "LASAGNA"));
-
-/** @const Application name, default "app" */
 defined("APPNAME") || define("APPNAME", (string) ($cfg["app"] ?? "app"));
-
-/** @const Monolog log filename, full path */
-defined("MONOLOG") || define("MONOLOG", LOGS . DS . "MONOLOG_" . SERVER . "_" . PROJECT . ".log");
-
-/** @const Google Cloud Platform project ID */
+defined("MONOLOG") || define(
+    "MONOLOG", LOGS . DS . "MONOLOG_" . SERVER . "_" . PROJECT . ".log"
+);
 defined("GCP_PROJECTID") || define("GCP_PROJECTID", $cfg["gcp_project_id"] ?? null);
-
-/** @const Google Cloud Platform JSON auth keys */
 defined("GCP_KEYS") || define("GCP_KEYS", $cfg["gcp_keys"] ?? null);
 
 // set GCP_KEYS ENV variable
@@ -98,9 +135,10 @@ if (GCP_KEYS && file_exists(APP . DS . GCP_KEYS)) {
 /**
  * Google Stackdriver logger
  *
- * @param string $message
- * @param mixed $severity (optional)
- * @return void
+ * @param string $message  message
+ * @param mixed  $severity severity
+ *
+ * @return mixed
  */
 function logger($message, $severity = Logger::INFO)
 {
@@ -111,86 +149,118 @@ function logger($message, $severity = Logger::INFO)
         ob_end_clean();
     }
     try {
-        $logging = new LoggingClient([
-            "projectId" => GCP_PROJECTID,
-            "keyFilePath" => APP . DS . GCP_KEYS,
-        ]);
+        $logging = new LoggingClient(
+            [
+                "projectId" => GCP_PROJECTID,
+                "keyFilePath" => APP . DS . GCP_KEYS,
+            ]
+        );
         $stack = $logging->logger(PROJECT);
-        $stack->write(DOMAIN . " " . $stack->entry($message), [
-            "severity" => $severity,
-        ]);
-    } finally {}
+        $stack->write(
+            DOMAIN . " " . $stack->entry($message), [
+                "severity" => $severity,
+            ]
+        );
+    } finally {
+    }
     return true;
 }
 
 // CACHING PROFILES
-$cache_profiles = array_replace([
-    "default" => "+2 minutes",
-    "second" => "+1 seconds",
-    "tenseconds" => "+10 seconds",
-    "thirtyseconds" => "+30 seconds",
-    "minute" => "+60 seconds",
-    "fiveminutes" => "+5 minutes",
-    "tenminutes" => "+10 minutes",
-    "thirtyminutes" => "+30 minutes",
-    "hour" => "+60 minutes",
-    "day" => "+24 hours",
-    "csv" => "+360 minutes", // CSV cold storage
-    "limiter" => "+5 seconds", // access limiter
-    "page" => "+10 seconds", // public web page, user not logged
-], (array) ($cfg["cache_profiles"] ?? []));
+$cache_profiles = array_replace(
+    [
+        "default" => "+2 minutes",
+        "second" => "+1 seconds",
+        "tenseconds" => "+10 seconds",
+        "thirtyseconds" => "+30 seconds",
+        "minute" => "+60 seconds",
+        "fiveminutes" => "+5 minutes",
+        "tenminutes" => "+10 minutes",
+        "thirtyminutes" => "+30 minutes",
+        "hour" => "+60 minutes",
+        "day" => "+24 hours",
+        "csv" => "+360 minutes", // CSV cold storage
+        "limiter" => "+5 seconds", // access limiter
+        "page" => "+10 seconds", // public web page, user not logged
+    ], (array) ($cfg["cache_profiles"] ?? [])
+);
 
 // init caching profiles
 foreach ($cache_profiles as $k => $v) {
     if ($cfg["redis"]["port"] ?? null) {
         // use REDIS
-        Cache::setConfig("${k}_file", [
-            "className" => "Cake\Cache\Engine\FileEngine", // fallback File engine
-            "duration" => $v,
-            "lock" => true,
-            "path" => CACHE,
-            "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_" . CACHEPREFIX,
-        ]);
-        Cache::setConfig($k, [
-            "className" => "Cake\Cache\Engine\RedisEngine",
-            "database" => $cfg["redis"]["database"] ?? 0,
-            "duration" => $v,
-            "fallback" => "${k}_file", // use fallback
-            "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
-            "password" => $cfg["redis"]["password"] ?? "",
-            "path" => CACHE,
-            "persistent" => true,
-            "port" => $cfg["redis"]["port"] ?? 6377,
-            "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_" . CACHEPREFIX,
-            "timeout" => $cfg["redis"]["timeout"] ?? 1,
-            "unix_socket" => $cfg["redis"]["unix_socket"] ?? "",
-        ]);
+        Cache::setConfig(
+            "${k}_file", [
+                // fallback File engine
+                "className" => "Cake\Cache\Engine\FileEngine",
+                "duration" => $v,
+                "lock" => true,
+                "path" => CACHE,
+                "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_"
+                    . CACHEPREFIX,
+            ]
+        );
+        Cache::setConfig(
+            $k, [
+                "className" => "Cake\Cache\Engine\RedisEngine",
+                "database" => $cfg["redis"]["database"] ?? 0,
+                "duration" => $v,
+                "fallback" => "${k}_file", // use fallback
+                "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
+                "password" => $cfg["redis"]["password"] ?? "",
+                "path" => CACHE,
+                "persistent" => true,
+                "port" => $cfg["redis"]["port"] ?? 6377,
+                "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_"
+                    . CACHEPREFIX,
+                "timeout" => $cfg["redis"]["timeout"] ?? 1,
+                "unix_socket" => $cfg["redis"]["unix_socket"] ?? "",
+            ]
+        );
     } else {
         // no REDIS !!!
-        Cache::setConfig("${k}_file", [
-            "className" => "Cake\Cache\Engine\FileEngine", // File engine
-            "duration" => $v,
-            "fallback" => false,
-            "lock" => true,
-            "path" => CACHE,
-            "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_" . CACHEPREFIX,
-        ]);
-        Cache::setConfig($k, [
-            "className" => "Cake\Cache\Engine\FileEngine", // File engine
-            "duration" => $v,
-            "fallback" => false,
-            "lock" => true,
-            "path" => CACHE,
-            "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_" . CACHEPREFIX,
-        ]);
+        Cache::setConfig(
+            "${k}_file", [
+                "className" => "Cake\Cache\Engine\FileEngine", // File engine
+                "duration" => $v,
+                "fallback" => false,
+                "lock" => true,
+                "path" => CACHE,
+                "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_"
+                    . CACHEPREFIX,
+            ]
+        );
+        Cache::setConfig(
+            $k, [
+                "className" => "Cake\Cache\Engine\FileEngine", // File engine
+                "duration" => $v,
+                "fallback" => false,
+                "lock" => true,
+                "path" => CACHE,
+                "prefix" => SERVER . "_" . PROJECT . "_" . APPNAME . "_"
+                    . CACHEPREFIX,
+            ]
+        );
     }
 }
 
 // MULTI-SITE PROFILES
 $multisite_names = [];
-$multisite_profiles = array_replace([
-    "default" => [strtolower(trim(str_replace("https://", "", (string) ($cfg["canonical_url"] ?? "")), "/") ?? DOMAIN)],
-], (array) ($cfg["multisite_profiles"] ?? []));
+$multisite_profiles = array_replace(
+    [
+        "default" => [
+            strtolower(
+                trim(
+                    str_replace(
+                        "https://", "", (string) (
+                        $cfg["canonical_url"] ?? ""
+                        )
+                    ), "/"
+                ) ?? DOMAIN
+            )
+        ],
+    ], (array) ($cfg["multisite_profiles"] ?? [])
+);
 foreach ($multisite_profiles as $k => $v) {
     $multisite_names[] = strtolower($k);
 }
@@ -198,7 +268,9 @@ $profile_index = (string) trim(strtolower($_GET["profile"] ?? "default"));
 if (!in_array($profile_index, $multisite_names)) {
     $profile_index = "default";
 }
-$auth_domain = strtolower(str_replace("https://", "", (string) ($cfg["goauth_origin"] ?? "")));
+$auth_domain = strtolower(
+    str_replace("https://", "", (string) ($cfg["goauth_origin"] ?? ""))
+);
 if (!in_array($auth_domain, $multisite_profiles["default"])) {
     $multisite_profiles["default"][] = $auth_domain;
 }
@@ -230,7 +302,7 @@ foreach ($routes as $r) {
             ob_end_clean();
         }
         header("HTTP/1.1 500 Internal Server Error");
-        echo "<h1>Internal Server Error</h1><h2>Error in routing table</h2><h3>$r</h3>";
+        echo "<h1>Server Error</h1><h2>Routing table</h2><h3>$r</h3>";
         exit;
     }
     $router = array_replace_recursive($router, @Neon::decode($content));
@@ -246,9 +318,11 @@ foreach ($router ?? [] as $k => $v) {
     // ALIASED ROUTE
     if (isset($v["alias"]) && $v["alias"]) {
         foreach ($defaults as $i => $j) {
-            $router[$k][$i] = $router[$v["alias"]][$i] ?? $defaults[$i]; // data from the aliased origin
+            // data from the aliased origin
+            $router[$k][$i] = $router[$v["alias"]][$i] ?? $defaults[$i];
             if ($i == "path") {
-                $router[$k][$i] = $v[$i]; // path property from the source
+                // path property from the source
+                $router[$k][$i] = $v[$i];
             }
         }
         $presenter[$k] = $router[$k];
@@ -257,9 +331,11 @@ foreach ($router ?? [] as $k => $v) {
     // CLONED ROUTE
     if (isset($v["clone"]) && $v["clone"]) {
         foreach ($defaults as $i => $j) {
-            $router[$k][$i] = $router[$v["clone"]][$i] ?? $defaults[$i]; // data from the cloned origin
+            // data from the cloned origin
+            $router[$k][$i] = $router[$v["clone"]][$i] ?? $defaults[$i];
             if (isset($v[$i])) {
-                $router[$k][$i] = $v[$i]; // existing properties from the source
+                // existing properties from the source
+                $router[$k][$i] = $v[$i];
             }
         }
         $presenter[$k] = $router[$k];
@@ -279,13 +355,15 @@ foreach ($presenter as $k => $v) {
         continue;
     }
     if ($v["path"] == "/") {
-        if ($data["request_path_hash"] == "") { // set homepage hash to default language
+        if ($data["request_path_hash"] == "") {
+            // set homepage hash to default language
             $data["request_path_hash"] = hash("sha256", $v["language"]);
         }
     }
     $alto->map($v["method"], $v["path"], $k, "route_${k}");
-    if (substr($v["path"], -1) != "/") { // skip the root route
-        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x"); // map also slash endings
+    if (substr($v["path"], -1) != "/") {
+        // skip the root route, map also slash endings
+        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x");
     }
 }
 
@@ -295,14 +373,15 @@ $data["router"] = $router;
 
 // CLI HANDLER
 if (CLI) {
-    /** @const end global timer */
     define("TESSERACT_END", microtime(true));
 
     if (ob_get_level()) {
         @ob_end_clean();
     }
     if (isset($argv[1])) {
-        CliPresenter::getInstance()->setData($data)->selectModule($argv[1], $argc, $argv);
+        CliPresenter::getInstance()->setData($data)->selectModule(
+            $argv[1], $argc, $argv
+        );
         exit;
     }
     CliPresenter::getInstance()->setData($data)->process()->help();
@@ -321,17 +400,18 @@ $data["view"] = $view;
 if ($router[$view]["sethl"] ?? false) {
     $r = trim(strtolower($_GET["hl"] ?? $_COOKIE["hl"] ?? ""));
     switch ($r) {
-        case "cs":
-        case "de":
-        case "en":
-        case "sk":
-            break;
+    case "cs":
+    case "de":
+    case "en":
+    case "sk":
+        break;
 
-        default:
-            $r = null;
+    default:
+        $r = null;
     }
     if ($r) {
-        setcookie("hl", $r, time() + 86400 * 31, "/"); // no need to sanitize this cookie
+        // there is no need to sanitize this cookie
+        setcookie("hl", $r, time() + 86400 * 31, "/");
         $presenter[$view]["language"] = $r;
         $data["presenter"] = $presenter;
     }
@@ -349,17 +429,17 @@ if ($router[$view]["redirect"] ?? false) {
 
 // CSP HEADERS
 switch ($presenter[$view]["template"]) {
-    case "epub": // skip CSP for EPUB reader
-        break;
+case "epub": // skip CSP for EPUB reader
+    break;
 
-    default: // set CSP HEADER
-        if (file_exists(CSP) && is_readable(CSP)) {
-            $csp = @Neon::decode(@file_get_contents(CSP));
-            header(implode(" ", (array) $csp["csp"]));
-        }
+default: // set CSP HEADER
+    if (file_exists(CSP) && is_readable(CSP)) {
+        $csp = @Neon::decode(@file_get_contents(CSP));
+        header(implode(" ", (array) $csp["csp"]));
+    }
 }
 
-# POPULATE GLOBAL CSV CACHE
+// POPULATE GLOBAL CSV CACHE
 $arr = [];
 if (ENABLE_CSV_CACHE && \is_array($locales = $data["locales"] ?? null)) {
     foreach (array_replace($locales, $data["app_data"] ?? []) as $name => $csvkey) {
@@ -374,7 +454,8 @@ $data["csvcache"] = $arr;
 unset($arr);
 
 // GEO BLOCKING
-$blocked = (array) ($data["geoblock"] ?? ["RU", "BY", "KZ", "MD"]); // use XX to block unknown locations
+// use XX to block unknown locations
+$blocked = (array) ($data["geoblock"] ?? ["RU", "BY", "KZ", "MD"]);
 $data["country"] = $country = (string) ($_SERVER["HTTP_CF_IPCOUNTRY"] ?? "XX");
 if (!LOCALHOST && in_array($country, $blocked)) {
     header("HTTP/1.1 403 Not Found");
@@ -382,15 +463,23 @@ if (!LOCALHOST && in_array($country, $blocked)) {
 }
 
 // CORE SINGLETON CLASS
-$data["controller"] = $p = ucfirst(strtolower($presenter[$view]["presenter"])) . "Presenter";
+$data["controller"] = $p = ucfirst(
+    strtolower($presenter[$view]["presenter"])
+) . "Presenter";
 $controller = "\\GSC\\${p}";
 \Tracy\Debugger::timer("PROCESS");
-$app = $controller::getInstance()->setData($data)->process(); // set Model and start processing
+
+// set Model and start processing
+$app = $controller::getInstance()->setData($data)->process();
 $data = $app->getData(); // get Model
 
 // PREPARE ANALYTICS DATA
-$data["running_time"] = $time1 = round((float) \Tracy\Debugger::timer("RUN") * 1000, 2);
-$data["processing_time"] = $time2 = round((float) \Tracy\Debugger::timer("PROCESS") * 1000, 2);
+$data["running_time"] = $time1 = round(
+    (float) \Tracy\Debugger::timer("RUN") * 1000, 2
+);
+$data["processing_time"] = $time2 = round(
+    (float) \Tracy\Debugger::timer("PROCESS") * 1000, 2
+);
 
 // SET X-HEADERS
 header("X-Engine: Tesseract 2.0 beta");
@@ -409,7 +498,6 @@ echo $data["output"] ?? "";
 
 // PROCESS DEBUGGING
 if (DEBUG) {
-    /** @const global timer - end */
     define("TESSERACT_END", microtime(true));
 
     // remove private information
