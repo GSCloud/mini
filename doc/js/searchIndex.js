@@ -76,10 +76,10 @@ Search.appendIndex(
             "summary": "",
             "url": "namespaces/default.html#constant_TESSERACT_END"
         },                {
-            "fqsen": "\\GSC\\exception_error_handler\u0028\u0029",
-            "name": "exception_error_handler",
-            "summary": "",
-            "url": "namespaces/gsc.html#function_exception_error_handler"
+            "fqsen": "\\GSC\\exceptionErrorHandler\u0028\u0029",
+            "name": "exceptionErrorHandler",
+            "summary": "Exception\u0020handler",
+            "url": "namespaces/gsc.html#function_exceptionErrorHandler"
         },                {
             "fqsen": "\\GSC\\logger\u0028\u0029",
             "name": "logger",
@@ -1055,11 +1055,6 @@ Search.appendIndex(
             "name": "TESSERACT_START",
             "summary": "",
             "url": "namespaces/default.html#constant_TESSERACT_START"
-        },                {
-            "fqsen": "\\ROOT",
-            "name": "ROOT",
-            "summary": "",
-            "url": "namespaces/default.html#constant_ROOT"
         },                {
             "fqsen": "\\GSC\\CliDemo",
             "name": "CliDemo",
