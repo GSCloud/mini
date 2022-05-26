@@ -9,7 +9,7 @@
         "chillerlan/php-qrcode": "^4",
         "cloudflare/sdk": "^1",
         "google/cloud": "^0",
-        "guzzlehttp/guzzle": "^6",
+        "guzzlehttp/guzzle": "^7",
         "league/climate": "^3",
         "league/csv": "^9",
         "league/oauth2-client": "^2",
