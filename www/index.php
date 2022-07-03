@@ -9,6 +9,7 @@
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://lasagna.gscloud.cz
  */
+
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
 defined("ROOT") || define("ROOT", __DIR__ . DS . "..");
 

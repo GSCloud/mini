@@ -1,4 +1,5 @@
 #@author Filip Oščádal <git@gscloud.cz>
+
 #CSP Headers
 
 csp: [
@@ -32,10 +33,8 @@ csp: [
     "*.googleapis.com"
     "*.googletagmanager.com"
     "*.ytimg.com"
-    "cdn.onesignal.com"
     "cdn.syndication.twimg.com"
     "cdnjs.cloudflare.com"
-    "onesignal.com"
     "platform.twitter.com"
     "static.cloudflareinsights.com"
     "'self'"
