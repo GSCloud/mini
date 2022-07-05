@@ -44,11 +44,12 @@ GetServiceWorker:
   cached: true
 
 API:
-  path: /api
   api: true
   api_description: "Show REST API dashboard"
   api_info: "This page 🐱"
+  path: /api
   presenter: core
+  template: mini
 
 PingBack:
   path: /pingback
