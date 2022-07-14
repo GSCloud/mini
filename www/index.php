@@ -1,13 +1,13 @@
 <?php
 /**
- * WEB INDEX
+ * WWW INDEX
  * php version 7.4.0
  * 
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://lasagna.gscloud.cz
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://mini.gscloud.cz
  */
 
 defined("DS") || define("DS", DIRECTORY_SEPARATOR);
