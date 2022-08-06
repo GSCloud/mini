@@ -33,7 +33,7 @@ info:
 	@echo "🆘 \e[0;1mmake docs\e[0m - build documentation"
 	@echo ""
 	@echo "🆘 \e[0;1mmake everything\e[0m - run: doctor clear unit test update sync prod"
-	@echo "🆘 \e[0;1mmake reimage\e[0m - run: doctor clear unit test update build run"
+	@echo "🆘 \e[0;1mmake image\e[0m - run: doctor clear unit test update build run"
 
 docs:
 	@echo "🔨 \e[1;32m Creating documentation\e[0m\n"
