@@ -50,6 +50,7 @@ API:
   path: /api
   presenter: core
   template: mini
+  finished: true
 
 PingBack:
   path: /pingback
@@ -59,6 +60,7 @@ PingBack:
   assert_json: true
   method: GET|POST
   presenter: core
+  finished: true
 
 GetError:
   path: '/err/[i:code]'
@@ -68,6 +70,7 @@ GetError:
   cached: true
   method: GET|POST
   presenter: error
+  finished: true
   api_example: [
     "err/404"
     "err/420"

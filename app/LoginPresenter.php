@@ -38,13 +38,16 @@ class LoginPresenter extends APresenter
         }
         \setcookie("return_uri", $uri, 0, "/", DOMAIN);
         try {
-            $provider = new \League\OAuth2\Client\Provider\Google([
+            $provider = new \League\OAuth2\Client\Provider\Google(
+                [
                 // set OAuth 2.0 credentials
                 "clientId" => $cfg["goauth_client_id"],
                 "clientSecret" => $cfg["goauth_secret"],
                 "redirectUri" => (LOCALHOST === true) ? $cfg["local_goauth_redirect"] : $cfg["goauth_redirect"],
-            ]);
-        } finally {}
+                ]
+            );
+        } finally {
+        }
         // check for errors
         $errors = [];
         if (!empty($_GET["error"])) {
@@ -55,14 +58,18 @@ class LoginPresenter extends APresenter
             // check URL for relogin parameter
             if (isset($_GET["relogin"])) {
                 $hint = "";
-                $authUrl = $provider->getAuthorizationUrl([
+                $authUrl = $provider->getAuthorizationUrl(
+                    [
                     "prompt" => "select_account consent",
                     "response_type" => "code",
-                ]);
+                    ]
+                );
             } else {
-                $authUrl = $provider->getAuthorizationUrl([
+                $authUrl = $provider->getAuthorizationUrl(
+                    [
                     "response_type" => "code",
-                ]);
+                    ]
+                );
             }
             \setcookie("oauth2state", $provider->getState());
             header("Location: " . $authUrl . $hint, true, 303);
@@ -74,24 +81,30 @@ class LoginPresenter extends APresenter
 
             try {
                 // get access token
-                $token = $provider->getAccessToken("authorization_code", [
+                $token = $provider->getAccessToken(
+                    "authorization_code", [
                     "code" => $_GET["code"],
-                ]);
+                    ]
+                );
                 // get owner details
-                $ownerDetails = $provider->getResourceOwner($token, [
+                $ownerDetails = $provider->getResourceOwner(
+                    $token, [
                     "useOidcMode" => true,
-                ]);
-                $this->setIdentity([
+                    ]
+                );
+                $this->setIdentity(
+                    [
                     "avatar" => $ownerDetails->getAvatar(),
                     "email" => $ownerDetails->getEmail(),
                     "id" => $ownerDetails->getId(),
                     "name" => $ownerDetails->getName(),
-                ]);
+                    ]
+                );
                 $this->addMessage("Google login: " . $ownerDetails->getName() . " " . $ownerDetails->getEmail());
                 //$this->addAuditMessage("GOOGLE OAUTH LOGIN");
 
-/*
-// DEBUGGING START
+                /*
+                // DEBUGGING START
 
                 dump("NEW IDENTITY:");
                 dump($this->getIdentity());
@@ -99,7 +112,7 @@ class LoginPresenter extends APresenter
                 dump($ownerDetails);
                 exit;
 
-/* DEBUGGING END */
+                /* DEBUGGING END */
 
                 if ($this->getUserGroup() == "admin") {
                     // set Tracy debug cookie
@@ -107,25 +120,26 @@ class LoginPresenter extends APresenter
                         \setcookie("tracy-debug", $this->getCfg("DEBUG_COOKIE"));
                     }
                 }
-                $this->clearCookie("oauth2state");
+                $this->clearCookie('oauth2state');
                 // store email for the next run
                 if (strlen($ownerDetails->getEmail())) {
-                    \setcookie("login_hint", $ownerDetails->getEmail() ?? "", time() + 86400 * 31, "/", DOMAIN);
+                    \setcookie('login_hint', $ownerDetails->getEmail() ?? '', time() + 86400 * 31, "/", DOMAIN);
                 }
                 $this->clearCookie("oauth2state");
                 $this->setLocation("/${nonce}");
                 exit;
             } catch (Exception $e) {
-                $this->addError("Google OAuth: " . $e->getMessage());
+                $this->addError('Google OAuth: ' . $e->getMessage());
             }
         }
         // process errors
-        header("HTTP/1.1 400 Bad Request");
-        $this->clearCookie("login_hint");
-        $this->clearCookie("oauth2state");
-        $this->clearcookie("return_uri");
-        echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
-        echo '<h2><a href="/login?relogin">RELOAD ↻</a></h2><hr>';
+        //header('HTTP/1.1 400 Bad Request');
+        $this->clearCookie('login_hint');
+        $this->clearCookie('oauth2state');
+        $this->clearcookie('return_uri');
+        $this->setLocation('/login?relogin');
+        //echo "<html><body><center><h1>😐 AUTHENTICATION ERROR 😐</h1>";
+        //echo '<h2><a href="/login?relogin">RELOAD ↻</a></h2><hr>';
         exit;
     }
 }
