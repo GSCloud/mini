@@ -1,19 +1,27 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 7.4
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
  * @link     https://lasagna.gscloud.cz
  */
+
+declare (strict_types = 1);
 
 namespace GSC;
 
 /**
  * Error Presenter class
  *
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class ErrorPresenter extends APresenter
 {
@@ -30,12 +38,14 @@ class ErrorPresenter extends APresenter
         502 => "Bad Gateway",
         503 => "Service Unavailable",
         504 => "Gateway Timeout",
+        600 => "Unsupported Browser",
     ];
 
     /**
      * Controller processor
      *
-     * @param int $error error code (optional)
+     * @param int $err error code (optional)
+     * 
      * @return self
      */
     public function process($err = null)
@@ -72,12 +82,20 @@ class ErrorPresenter extends APresenter
             $img = "${code}.webp";
         }
 
-        // HTML5 string template
-        $template = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="IE=edge"><body>';
+        // HTML5 template
+        $template = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+        $template .= '<meta http-equiv="x-ua-compatible" content="IE=edge"><body>';
         $template .= "<center><h1><br>🤔 Error #${code}</h1>";
         $template .= '<h2>Message: ' . self::CODESET[$code] . '</h2>';
-        $template .= '<h2><center><a rel=nofollow style="color:red;text-decoration:none" href="/?nonce=' . $this->getNonce() . '">Click here to reload the main page ↻</a></center></h2>';
-        $template .= '<img style="border:10px solid #000;" height="100%" alt="' . $error . '" src="/img/' . $img . '"></center></body></html>';
+        $template .= '<h2><center><a rel=nofollow '
+            . 'style="color:red;text-decoration:none" href="/?nonce='
+            . $this->getNonce()
+            . '">Click here to reload the main page ↻</a></center></h2>';
+        $template .= '<img style="border:10px solid #000;" height="100%" alt="'
+            . $error
+            . '" src="/img/'
+            . $img
+            . '"></center></body></html>';
 
         return $this->setData("output", $this->renderHTML($template));
     }
