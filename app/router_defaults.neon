@@ -16,6 +16,7 @@ defaults:
   sitemap: false
   template: mini
   use_key: false
+  allow_key: false
   view: home
 
 GetWebManifest:
