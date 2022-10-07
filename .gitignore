@@ -10,9 +10,11 @@
 
 .DS_Store
 .Trash-1000
-.phpintel/
-.phpdoc/
-.vscode/
+.phpdoc/**
+.phpintel/**
+.vscode/**
+
+output/**
 
 REVISIONS
 Thumbs.db
