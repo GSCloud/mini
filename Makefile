@@ -6,12 +6,12 @@ info:
 	@echo "\e[1;32m👾 Welcome to ${APP_NAME}"
 	@echo ""
 	@echo "🆘 \e[0;1mmake build\e[0m - build Docker image"
-	@echo "🆘 \e[0;1mmake run\e[0m - run Docker image and show web browser"
+	@echo "🆘 \e[0;1mmake run\e[0m - start container and show web browser"
 	@echo "🆘 \e[0;1mmake push\e[0m - push Docker image into the registry"
 	@echo "🆘 \e[0;1mmake start\e[0m - start container"
 	@echo "🆘 \e[0;1mmake stop\e[0m - stop container"
 	@echo "🆘 \e[0;1mmake kill\e[0m - kill container"
-	@echo "🆘 \e[0;1mmake execbash\e[0m - exec bash in the container"
+	@echo "🆘 \e[0;1mmake exec\e[0m - exec bash in the container"
 	@echo "🆘 \e[0;1mmake du\e[0m - update container"
 	@echo ""
 	@echo "🆘 \e[0;1mmake install\e[0m - install"
@@ -110,7 +110,7 @@ kill:
 	@echo "🔨 \e[1;32m Killing container\e[0m\n"
 	@bash ./bin/kill.sh
 
-execbash:
+exec:
 	@bash ./bin/execbash.sh
 
 du:

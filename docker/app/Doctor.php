@@ -47,7 +47,7 @@ class Doctor
         $this->validate("<bold>CONFIG</bold> » " . CONFIG, $this->isreadable(CONFIG));
         $this->validate("<bold>REVISIONS</bold> in ROOT", $this->isreadable(ROOT . DS . "REVISIONS"));
         $this->validate("<bold>VERSION</bold> in ROOT", $this->isreadable(ROOT . DS . "VERSION"));
-        $this->validate("<bold>.env</bold> in ROOT", $this->isreadable(".env"));
+//        $this->validate("<bold>.env</bold> in ROOT", $this->isreadable(".env"));
         $this->validate("<bold>router.neon</bold> in APP", $this->isreadable(APP . DS . "router.neon"));
         $this->validate("<bold>router_admin.neon</bold> in APP", $this->isreadable(APP . DS . "router_admin.neon"));
         $this->validate("<bold>router_defaults.neon</bold> in APP", $this->isreadable(APP . DS . "router_defaults.neon"));
