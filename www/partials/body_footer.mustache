@@ -3,18 +3,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap">
 
-<script>
-  // register PWA Service Worker
-  window.addEventListener("load", function () {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
-        console.log("ServiceWorker registration successful with scope: ", registration.scope);
-      }, function (err) {
-        console.log("ServiceWorker registration failed: ", err);
-      });
-    } else {
-      console.log("Service worker not supported!");
-    }
-  });
-
-</script>
+<style type="text/css">
+body {-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+</style>
