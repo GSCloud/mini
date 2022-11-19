@@ -32,8 +32,7 @@
 
   // *** DELAYED FUNCTIONS ***
 
-  GSC._fn.push(function () {
-    // add nonce to all anchors
+  GSC._fn.push(function addNonces() {
     $('.container').find('a').each(function() {
       var h = $(this).attr('href');
       var nonce = '?nonce=' + Math.round(Math.random() * 10000);

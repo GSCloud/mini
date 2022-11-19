@@ -1,22 +1,23 @@
 //@author Fred Brooker <git@gscloud.cz>
 "use strict";
 
-var version = "{{ version }}_{{ VERSION_SHORT }}";
+var version = "{{ VERSION }}";
 var core = [
   {{#sitemap}}"/{{ . }}", {{/sitemap}}
   {{#swpreload}}"{{ . }}", {{/swpreload}}
-  "{{ cdn }}/img/favicon-128.webp",
+  {{#swpreload_cdn}}"{{ cdn }}{{ . }}", {{/swpreload_cdn}}
   "{{ cdn }}/img/favicon-16.webp",
+  "{{ cdn }}/img/favicon-32.webp",
+  "{{ cdn }}/img/favicon-128.webp",
   "{{ cdn }}/img/favicon-180.webp",
   "{{ cdn }}/img/favicon-192.png",
   "{{ cdn }}/img/favicon-192.webp",
+  "{{ cdn }}/img/favicon-144.png",
   "{{ cdn }}/img/favicon-512.png",
   "{{ cdn }}/img/favicon-512.webp",
   "{{ cdn }}/img/logo.webp",
-  "/css/beer.min.css",
   "/img/g.png",
   "/img/google_signin.png",
-  "/js/beer.min.js",
   "/js/jquery.min.js",
   "/webfonts/materialicons-regular.woff2",
 ];
@@ -34,31 +35,24 @@ self.addEventListener("install", function (event) {
 self.addEventListener("fetch", function (event) {
   // ignore non-http requests
   if (!(event.request.url.indexOf('http') === 0)) return;
-
   // ignore non-GET requests
   if (event.request.method !== "GET") return;
-
   if (event.request.url.indexOf("/logout") !== -1) {
-    console.log("No caching for %s", event.request.url);
+    console.log("Skip cache for %s", event.request.url);
     return;
   }
-
   if (event.request.url.indexOf("/login") !== -1) {
-    console.log("No caching for %s", event.request.url);
+    console.log("Skip cache for %s", event.request.url);
     return;
   }
-
   if (event.request.url.indexOf("?nonce") !== -1) {
-    console.log("NO caching for %s", event.request.url);
+    console.log("Skip cache for %s", event.request.url);
     return;
   }
-
   if (event.request.url.indexOf("/api/") !== -1) {
-    console.log("NO caching for %s", event.request.url);
+    console.log("Skip cache for %s", event.request.url);
     return;
   }
-
-  //console.log("fetch event for", event.request.url);
 
   event.respondWith(
     caches.match(event.request)
@@ -75,7 +69,6 @@ self.addEventListener("fetch", function (event) {
             return cache.put(event.request, cacheCopy);
           })
           .then(function () {
-            //console.log("caching %s response", event.request.url);
           });
         return response;
       }
@@ -109,7 +102,7 @@ self.addEventListener("activate", function (event) {
       );
     })
     .then(function () {
-      console.log("WORKER: activate completed");
+      console.log("Service Worker active");
     })
   );
 });

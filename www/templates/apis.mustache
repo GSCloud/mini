@@ -73,20 +73,22 @@ window.GSC = {_fn:[]};
 window.addEventListener('load', function() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js?" + Date.now()).then(function (registration) {
-      console.log("ServiceWorker registration successful with scope: ", registration.scope);
-    }, function (err) {
-      console.log("ServiceWorker registration failed: ", err);
+      console.log("API: Service Worker registration successful with scope: ", registration.scope);
+    }, function (e) {
+      console.log("API: Service Worker registration failed: ", e);
     });
   } else {
-    console.log("Service worker not supported!");
+    console.log("API: Service Worker not supported!");
   }
   for (var fn = window.GSC._fn, i = 0, l = fn.length; i < l; i++) {
     try {
+      if (fn[i].name) console.log('» fn: ' + fn[i].name);
       fn[i]();
     }
-    catch(e) {}
+    catch(e) {
+      if (fn[i].name) console.log('» ERROR - fn:' + fn[i].name + "\n" + e);
+    }
   };
-  console.log("Delayed calls: %s", l);
 });
 
 </script>
