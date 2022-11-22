@@ -80,6 +80,7 @@ test:
 	@bash ./cli.sh local
 
 prod:
+	@bash ./cli.sh unit
 	@bash ./cli.sh prod
 
 gulp:
