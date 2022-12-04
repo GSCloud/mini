@@ -1,8 +1,8 @@
 <?php
 /**
- * WWW INDEX
+ * INDEX
  * php version 7.4.0
- * 
+ *
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>

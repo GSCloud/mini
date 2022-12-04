@@ -18,7 +18,6 @@ find . -type d \( -path ./node_modules -o -path ./vendor \) -prune -false -o -mt
 
 # cleaning
 find . -maxdepth 1 -iname "*.adoc" -delete
-rm temp/* >/dev/null 2>&1
 
 # phpdocumentor
 docker run --rm -v $(pwd):/data phpdoc/phpdoc:3.1.0 \
