@@ -1,5 +1,5 @@
 #!/bin/bash
-#@author Filip Oščádal <git@gscloud.cz>
+#@author Fred Brooker <git@gscloud.cz>
 
 info() {
   echo -e " \e[1;32m*\e[0;1m ${*}\e[0m" 1>&2
