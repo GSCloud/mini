@@ -70,7 +70,7 @@ $data["VERSION"] = $version = trim(
 $data["VERSION_SHORT"] = $base58->encode(
     base_convert(substr(hash("sha256", $version), 0, 4), 16, 10)
 );
-$data["VERSION_DATE"] = date("j. n. Y", @filemtime(ROOT . DS . "VERSION") ?? time());
+$data["VERSION_DATE"] = date("j. n. Y G:i", @filemtime(ROOT . DS . "VERSION") ?? time());
 $data["VERSION_TIMESTAMP"] = @filemtime(ROOT . DS . "VERSION") ?? time();
 $data["REVISIONS"] = (int) trim(
     @file_get_contents(ROOT . DS . "REVISIONS") ?? "0", "\r\n"
