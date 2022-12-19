@@ -5,7 +5,7 @@
  * @author   Fred Brooker <git@gscloud.cz>
  * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 namespace GSC;
@@ -28,9 +28,11 @@ class CliPresenter extends APresenter
     public function process()
     {
         $climate = new CLImate;
-        $climate->out("<bold><green>Tesseract CLI</green></bold>\tapp: "
+        $climate->out(
+            "<bold><green>Tesseract CLI</green></bold>\tapp: "
             . $this->getData("VERSION_SHORT")
-            . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n");
+            . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n"
+        );
         return $this;
     }
 
@@ -53,7 +55,7 @@ class CliPresenter extends APresenter
         $pres = $route["presenter"] ?? "home";
         $data["view"] = $route["view"] ?? "home";
         $data["controller"] = $c = ucfirst(strtolower($pres)) . "Presenter";
-        $controller = "\\GSC\\${c}";
+        $controller = "\\GSC\\{$c}";
 
         echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
         exit(0);
@@ -76,7 +78,7 @@ class CliPresenter extends APresenter
         $presenter = $this->getPresenter();
 
         $data["controller"] = $c = "CorePresenter";
-        $controller = "\\GSC\\${c}";
+        $controller = "\\GSC\\{$c}";
         $data["view"] = $v;
 
         $data["base"] = $arg["base"] ?? "https://example.com/";
@@ -93,9 +95,11 @@ class CliPresenter extends APresenter
      */
     private function showConst()
     {
-        $arr = array_filter(get_defined_constants(true)["user"], function ($key) {
-            return !(stripos($key, "sodium") === 0); // filter out Sodium constants
-        }, ARRAY_FILTER_USE_KEY);
+        $arr = array_filter(
+            get_defined_constants(true)["user"], function ($key) {
+                return !(stripos($key, "sodium") === 0); // filter out Sodium constants
+            }, ARRAY_FILTER_USE_KEY
+        );
         dump($arr);
         return $this;
     }
@@ -127,9 +131,9 @@ class CliPresenter extends APresenter
     /**
      * Evaluate input string
      *
-     * @param object this object
-     * @param int ARGC
-     * @param array ARGV
+     * @param  object this object
+     * @param  int ARGC
+     * @param  array ARGV
      * @return self
      */
     private function evaler($app, $argc, $argv)
@@ -161,9 +165,9 @@ class CliPresenter extends APresenter
     /**
      * Select CLI module
      *
-     * @param string CLI parameter
-     * @param int ARGC
-     * @param array ARGV
+     * @param  string CLI parameter
+     * @param  int ARGC
+     * @param  array ARGV
      * @return void
      */
     public function selectModule($module, $argc = null, $argv = null)
@@ -171,79 +175,79 @@ class CliPresenter extends APresenter
         $climate = new CLImate;
         $module = trim($module);
         switch ($module) {
-            case "clear":
-            case "clearall":
-                $this->selectModule("clearcache");
-                $this->selectModule("clearci");
-                $this->selectModule("clearlogs");
-                $this->selectModule("cleartemp");
-                $climate->out('');
-                break;
+        case "clear":
+        case "clearall":
+            $this->selectModule("clearcache");
+            $this->selectModule("clearci");
+            $this->selectModule("clearlogs");
+            $this->selectModule("cleartemp");
+            $climate->out('');
+            break;
 
-            case "local":
-            case "prod":
-            case "testlocal":
-            case "testprod":
-                require_once "CiTester.php";
-                new CiTester($this->getCfg(), $this->getPresenter(), $module);
-                break;
+        case "local":
+        case "prod":
+        case "testlocal":
+        case "testprod":
+            include_once "CiTester.php";
+            new CiTester($this->getCfg(), $this->getPresenter(), $module);
+            break;
 
-            case "clearcache":
-                foreach ($this->getData("cache_profiles") as $k => $v) { // clear all cache profiles
-                    Cache::clear($k);
-                    Cache::clear("${k}_file");
-                }
-                array_map("unlink", glob(CACHE . DS . "*.php"));
-                array_map("unlink", glob(CACHE . DS . "*.tmp"));
-                array_map("unlink", glob(CACHE . DS . CACHEPREFIX . "*"));
-                clearstatcache();
-                $climate->out("<bold>Cache 🧹</bold>");
-                break;
+        case "clearcache":
+            foreach ($this->getData("cache_profiles") as $k => $v) { // clear all cache profiles
+                Cache::clear($k);
+                Cache::clear("{$k}_file");
+            }
+            array_map("unlink", glob(CACHE . DS . "*.php"));
+            array_map("unlink", glob(CACHE . DS . "*.tmp"));
+            array_map("unlink", glob(CACHE . DS . CACHEPREFIX . "*"));
+            clearstatcache();
+            $climate->out("<bold>Cache 🧹</bold>");
+            break;
 
-            case "clearci":
-                $files = glob(ROOT . DS . "ci" . DS . "*");
-                $c = count($files);
-                array_map("unlink", $files);
-                $climate->out("CI logs <bold>$c file(s) 🧹</bold>");
-                break;
+        case "clearci":
+            $files = glob(ROOT . DS . "ci" . DS . "*");
+            $c = count($files);
+            array_map("unlink", $files);
+            $climate->out("CI logs <bold>$c file(s) 🧹</bold>");
+            break;
 
-            case "clearlogs":
-                $files = glob(LOGS . DS . "*");
-                $c = count($files);
-                array_map("unlink", $files);
-                $climate->out("Other logs <bold>$c file(s) 🧹</bold>");
-                break;
+        case "clearlogs":
+            $files = glob(LOGS . DS . "*");
+            $c = count($files);
+            array_map("unlink", $files);
+            $climate->out("Other logs <bold>$c file(s) 🧹</bold>");
+            break;
 
-            case "cleartemp":
-                $files = glob(TEMP . DS . "*");
-                $c = count($files);
-                array_map("unlink", $files);
-                $climate->out("Temporary <bold>$c file(s) 🧹</bold>");
-                break;
+        case "cleartemp":
+            $files = glob(TEMP . DS . "*");
+            $c = count($files);
+            array_map("unlink", $files);
+            $climate->out("Temporary <bold>$c file(s) 🧹</bold>");
+            break;
 
-            case "unit":
-                require_once "UnitTester.php";
-                new UnitTester;
-                break;
+        case "unit":
+            include_once "UnitTester.php";
+            new UnitTester;
+            break;
 
-            case "doctor":
-                require_once "Doctor.php";
-                new Doctor;
-                break;
+        case "doctor":
+            include_once "Doctor.php";
+            new Doctor;
+            break;
 
-            case "app":
-                $this->evaler($this, $argc, $argv);
-                break;
+        case "app":
+            $this->evaler($this, $argc, $argv);
+            break;
 
-            default:
-                $module = ucfirst(strtolower($module));
-                $presenter = "\\GSC\\Cli{$module}";
-                if (\class_exists($presenter)) {
-                    $presenter::getInstance()->setData($this->getData())->process();
-                    exit;
-                }
-                $this->help();
-                return $this;
+        default:
+            $module = ucfirst(strtolower($module));
+            $presenter = "\\GSC\\Cli{$module}";
+            if (\class_exists($presenter)) {
+                $presenter::getInstance()->setData($this->getData())->process();
+                exit;
+            }
+            $this->help();
+            return $this;
                 break;
         }
     }

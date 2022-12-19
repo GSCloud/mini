@@ -5,7 +5,7 @@
  * @author   Fred Brooker <git@gscloud.cz>
  * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 namespace GSC;
@@ -48,7 +48,7 @@ class UnitTester
 
         // check controllers
         foreach ($controllers as $c) {
-            $controller = "\\GSC\\${c}";
+            $controller = "\\GSC\\{$c}";
             $app = $controller::getInstance();
             $app2 = $controller::getInstance();
 
@@ -77,16 +77,19 @@ class UnitTester
             Assert::same('127.0.0.1', $app->getIP());
 
             // getIdentity()
-            Assert::same([
+            Assert::same(
+                [
                 'country' => 'XX',
                 'email' => 'john.doe@example.com',
                 'id' => 1,
                 'ip' => '127.0.0.1',
                 'name' => 'John Doe',
-            ], $app->getIdentity());
+                ], $app->getIdentity()
+            );
 
             // getCurrentUser()
-            Assert::same([
+            Assert::same(
+                [
                 'avatar' => '',
                 'country' => 'XX',
                 'email' => 'john.doe@example.com',
@@ -95,7 +98,8 @@ class UnitTester
                 'ip' => '127.0.0.1',
                 'uid' => '5d93b9f0de6d0b30934db74b6d877154d704f562ad5bb88002409d51db5345c1',
                 'uidstring' => 'CLI__127.0.0.1',
-            ], $app->getCurrentUser());
+                ], $app->getCurrentUser()
+            );
 
             // fluent interface
             Assert::same($app, $app->addCritical());

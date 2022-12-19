@@ -1,13 +1,13 @@
 <?php
 /**
  * GSC Tesseract
- * php version 7.4
+ * php version 8.2
  *
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 namespace GSC;
@@ -80,7 +80,7 @@ $data["REVISIONS"] = (int) trim(
 $data["cdn"] = $data["CDN"] = DS . "cdn-assets" . DS . $version;
 $data["host"] = $data["HOST"] = $host = $_SERVER["HTTP_HOST"] ?? "";
 $data["base"] = $data["BASE"] = $host ? (
-    ($_SERVER["HTTPS"] ?? "off" == "on") ? "https://${host}/" : "http://${host}/"
+    ($_SERVER["HTTPS"] ?? "off" == "on") ? "https://{$host}/" : "http://{$host}/"
     ) : "";
 $data["request_uri"] = $_SERVER["REQUEST_URI"] ?? "";
 $data["request_path"] = $rqp = trim(
@@ -94,7 +94,7 @@ $data["nonce"] = $data["NONCE"] = $nonce = substr(
     ), 0, 8
 );
 $data["utm"] = $data["UTM"]
-    = "?utm_source=${host}&utm_medium=website&nonce=${nonce}";
+    = "?utm_source={$host}&utm_medium=website&nonce={$nonce}";
 
 $data["LOCALHOST"] = (bool) LOCALHOST;
 $data["ALPHA"] = (in_array($host, (array) ($cfg["alpha_hosts"] ?? [])));
@@ -192,7 +192,7 @@ foreach ($cache_profiles as $k => $v) {
     if ($cfg["redis"]["port"] ?? null) {
         // use REDIS
         Cache::setConfig(
-            "${k}_file", [
+            "{$k}_file", [
                 // fallback File engine
                 "className" => "Cake\Cache\Engine\FileEngine",
                 "duration" => $v,
@@ -207,7 +207,7 @@ foreach ($cache_profiles as $k => $v) {
                 "className" => "Cake\Cache\Engine\RedisEngine",
                 "database" => $cfg["redis"]["database"] ?? 0,
                 "duration" => $v,
-                "fallback" => "${k}_file", // use fallback
+                "fallback" => "{$k}_file", // use fallback
                 "host" => $cfg["redis"]["host"] ?? "127.0.0.1",
                 "password" => $cfg["redis"]["password"] ?? "",
                 "path" => CACHE,
@@ -222,7 +222,7 @@ foreach ($cache_profiles as $k => $v) {
     } else {
         // no REDIS !!!
         Cache::setConfig(
-            "${k}_file", [
+            "{$k}_file", [
                 "className" => "Cake\Cache\Engine\FileEngine", // File engine
                 "duration" => $v,
                 "fallback" => false,
@@ -362,10 +362,10 @@ foreach ($presenter as $k => $v) {
             $data["request_path_hash"] = hash("sha256", $v["language"]);
         }
     }
-    $alto->map($v["method"], $v["path"], $k, "route_${k}");
+    $alto->map($v["method"], $v["path"], $k, "route_{$k}");
     if (substr($v["path"], -1) != "/") {
         // skip the root route, map also slash endings
-        $alto->map($v["method"], $v["path"] . "/", $k, "route_${k}_x");
+        $alto->map($v["method"], $v["path"] . "/", $k, "route_{$k}_x");
     }
 }
 
@@ -468,7 +468,7 @@ if (!LOCALHOST && in_array($country, $blocked)) {
 $data["controller"] = $p = ucfirst(
     strtolower($presenter[$view]["presenter"])
 ) . "Presenter";
-$controller = "\\GSC\\${p}";
+$controller = "\\GSC\\{$p}";
 \Tracy\Debugger::timer("PROCESS");
 
 // set Model and start processing

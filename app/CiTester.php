@@ -5,7 +5,7 @@
  * @author   Fred Brooker <git@gscloud.cz>
  * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 namespace GSC;
@@ -22,9 +22,9 @@ class CiTester
     /**
      * Controller processor
      *
-     * @param array $cfg configuration array
-     * @param array $presenter presenter array
-     * @param string $type test type: 'local', 'prod'
+     * @param array  $cfg       configuration array
+     * @param array  $presenter presenter array
+     * @param string $type      test type: 'local', 'prod'
      */
     public function __construct($cfg, $presenter, $type)
     {
@@ -36,17 +36,17 @@ class CiTester
         $type = (string) $type;
 
         switch ($type) {
-            case "local":
-            case "testlocal":
-                $case = "local";
-                $target = $cfg["test_origin"] ?? $cfg["local_goauth_origin"] ?? "";
-                break;
+        case "local":
+        case "testlocal":
+            $case = "local";
+            $target = $cfg["test_origin"] ?? $cfg["local_goauth_origin"] ?? "";
+            break;
 
-            case "prod":
-            case "testprod":
-            default:
-                $case = "production";
-                $target = $cfg["goauth_origin"] ?? "";
+        case "prod":
+        case "testprod":
+        default:
+            $case = "production";
+            $target = $cfg["goauth_origin"] ?? "";
         }
         if (!$cfg['project']) {
             $climate->out("<red>FATAL ERROR: missing project definition\n\007");
@@ -57,28 +57,28 @@ class CiTester
             exit(1);
         }
         if (!strlen($target)) {
-            $climate->out("<bold><green>${cfg['project']}: ${cfg['app']} ${case}");
+            $climate->out("<bold><green>{$cfg['project']}: {$cfg['app']} {$case}");
             $climate->out("<red>FATAL ERROR: missing target URI!\n\007");
             exit;
         }
 
-        $climate->out("CI testing: <bold><green>${cfg['project']}: ${cfg['app']} ${case}\n");
+        $climate->out("CI testing: <bold><green>{$cfg['project']}: {$cfg['app']} {$case}\n");
 
         $i = 0;
         $pages = [];
         $redirects = [];
         foreach ($presenter as $p) {
             if (strpos($p["path"], "[") !== false) {
-                $u = "<bold><blue>${target}${p['path']}</blue></bold>";
+                $u = "<bold><blue>{$target}{$p['path']}</blue></bold>";
                 $climate->out(
-                    "${u};skipped"
+                    "{$u};skipped"
                 );
                 continue;
             }
             if (strpos($p["path"], "*") !== false) {
-                $u = "<bold><blue>${target}${p['path']}</blue></bold>";
+                $u = "<bold><blue>{$target}{$p['path']}</blue></bold>";
                 $climate->out(
-                    "${u};skipped"
+                    "{$u};skipped"
                 );
                 continue;
             }
@@ -111,7 +111,7 @@ class CiTester
         $multi = curl_multi_init();
         foreach ($pages_reworked as $x) {
             $ch[$i] = curl_init();
-            curl_setopt($ch[$i], CURLOPT_URL, $x["url"] . "?api=${key}");
+            curl_setopt($ch[$i], CURLOPT_URL, $x["url"] . "?api={$key}");
             curl_setopt($ch[$i], CURLINFO_HEADER_OUT, true);
             curl_setopt($ch[$i], CURLOPT_BUFFERSIZE, 4096);
             curl_setopt($ch[$i], CURLOPT_FAILONERROR, true);
@@ -143,14 +143,14 @@ class CiTester
         $errors = 0;
         foreach ($pages_reworked as $x) {
             $bad = 0;
-            $f1 = date("Y-m-d") . strtr("_${target}", '\/:.', '____');
-            $f2 = date("Y-m-d") . strtr("_${target}_${x['path']}", '\/:.', '____');
-            $u1 = "<bold>${x['site']}${x['path']}</bold>";
-            $u2 = "${x['site']}${x['path']}";
+            $f1 = date("Y-m-d") . strtr("_{$target}", '\/:.', '____');
+            $f2 = date("Y-m-d") . strtr("_{$target}_{$x['path']}", '\/:.', '____');
+            $u1 = "<bold>{$x['site']}{$x['path']}</bold>";
+            $u2 = "{$x['site']}{$x['path']}";
 
             // get curl data
             $m = curl_multi_getcontent($ch[$i]);
-            @file_put_contents(ROOT . "/ci/${f2}.curl.txt", $m);
+            @file_put_contents(ROOT . "/ci/{$f2}.curl.txt", $m);
             curl_multi_remove_handle($multi, $ch[$i]);
 
             // separate headers and content
@@ -203,17 +203,21 @@ class CiTester
             }
             if ($bad == 0) { // OK
                 $climate->out(
-                    "${u1} length: <green>${length}</green> code: <green>${code}</green> time: <green>${time} ms</green> format: <blue>$jsformat</blue> JS: <green>$jscode</green>"
+                    "{$u1} length: <green>{$length}</green> code: <green>{$code}</green> time: <green>{$time} ms</green> format: <blue>$jsformat</blue> JS: <green>$jscode</green>"
                 );
-                @file_put_contents(ROOT . "/ci/tests_${f1}.assert.txt",
-                    "${u2};length:${length};code:${code};assert:${x['assert_httpcode']};time:${time};$jsformat;$jscode\n", FILE_APPEND | LOCK_EX);
+                @file_put_contents(
+                    ROOT . "/ci/tests_{$f1}.assert.txt",
+                    "{$u2};length:{$length};code:{$code};assert:{$x['assert_httpcode']};time:{$time};$jsformat;$jscode\n", FILE_APPEND | LOCK_EX
+                );
             } else { // error
                 $errors++;
                 $climate->out(
-                    "<red>${u1} length: <bold>${length}</bold> code: <bold>${code}</bold> assert: <bold>${x['assert_httpcode']}</bold> time: ${time} ms format: $jsformat JScode: $jscode</red>\007"
+                    "<red>{$u1} length: <bold>{$length}</bold> code: <bold>{$code}</bold> assert: <bold>{$x['assert_httpcode']}</bold> time: {$time} ms format: $jsformat JScode: $jscode</red>\007"
                 );
-                @file_put_contents(ROOT . "/ci/errors_${f1}.assert.txt",
-                    "${u2};length:${length};code:${code};assert:${x['assert_httpcode']};time:${time};format:$jsformat;jscode:$jscode\n", FILE_APPEND | LOCK_EX);
+                @file_put_contents(
+                    ROOT . "/ci/errors_{$f1}.assert.txt",
+                    "{$u2};length:{$length};code:{$code};assert:{$x['assert_httpcode']};time:{$time};format:$jsformat;jscode:$jscode\n", FILE_APPEND | LOCK_EX
+                );
             }
             $i++;
         }

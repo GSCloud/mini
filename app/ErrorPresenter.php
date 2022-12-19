@@ -1,13 +1,13 @@
 <?php
 /**
  * GSC Tesseract
- * php version 7.4
+ * php version 8.2
  *
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 declare (strict_types = 1);
@@ -21,7 +21,7 @@ namespace GSC;
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 class ErrorPresenter extends APresenter
 {
@@ -70,22 +70,22 @@ class ErrorPresenter extends APresenter
         $error = self::CODESET[$code];
 
         // set HTTP error code
-        header("HTTP/1.1 ${code} ${error}");
+        header("HTTP/1.1 {$code} {$error}");
 
         // find error image
         $img = "error.png";
-        if (\file_exists(WWW . "/img/${code}.png")) {
-            $img = "${code}.png";
-        } elseif (\file_exists(WWW . "/img/${code}.jpg")) {
-            $img = "${code}.jpg";
-        } elseif (\file_exists(WWW . "/img/${code}.webp")) {
-            $img = "${code}.webp";
+        if (\file_exists(WWW . "/img/{$code}.png")) {
+            $img = "{$code}.png";
+        } elseif (\file_exists(WWW . "/img/{$code}.jpg")) {
+            $img = "{$code}.jpg";
+        } elseif (\file_exists(WWW . "/img/{$code}.webp")) {
+            $img = "{$code}.webp";
         }
 
         // HTML5 template
         $template = '<!DOCTYPE html><html><head><meta charset="utf-8">';
         $template .= '<meta http-equiv="x-ua-compatible" content="IE=edge"><body>';
-        $template .= "<center><h1><br>🤔 Error #${code}</h1>";
+        $template .= "<center><h1><br>🤔 Error #{$code}</h1>";
         $template .= '<h2>Message: ' . self::CODESET[$code] . '</h2>';
         $template .= '<h2><center><a rel=nofollow '
             . 'style="color:red;text-decoration:none" href="/?nonce='

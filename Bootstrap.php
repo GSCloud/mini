@@ -1,13 +1,13 @@
 <?php
 /**
  * GSC Tesseract
- * php version 7.4
+ * php version 8.2
  *
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 declare (strict_types = 1);
@@ -131,7 +131,7 @@ if (DEBUG === true) {
             ?? $_SERVER['REMOTE_ADDR'];
         $debug_cookie = (string) $cfg['DEBUG_COOKIE']; // private config value
         Debugger::enable(
-            "${debug_cookie}@${address}", LOGS, (string) ($cfg['DEBUG_EMAIL'] ?? '')
+            "{$debug_cookie}@{$address}", LOGS, (string) ($cfg['DEBUG_EMAIL'] ?? '')
         );
     } else {
         // turn it ON

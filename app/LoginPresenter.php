@@ -30,7 +30,7 @@ class LoginPresenter extends APresenter
         $nonce = "?nonce=" . substr(hash("sha256", random_bytes(8) . (string) time()), 0, 8);
         // set return URI
         $refhost = parse_url($_SERVER["HTTP_REFERER"] ?? "", PHP_URL_HOST);
-        $uri = "/${nonce}";
+        $uri = "/{$nonce}";
         if ($refhost ?? null) {
             if (in_array($refhost, $this->getData("multisite_profiles.default"))) {
                 $uri = $_SERVER["HTTP_REFERER"];
@@ -54,7 +54,7 @@ class LoginPresenter extends APresenter
             $errors[] = htmlspecialchars($_GET["error"], ENT_QUOTES, "UTF-8");
         } elseif (empty($_GET["code"])) {
             $email = $_GET["login_hint"] ?? $_COOKIE["login_hint"] ?? null;
-            $hint = $email ? strtolower("&login_hint=${email}") : "";
+            $hint = $email ? strtolower("&login_hint={$email}") : "";
             // check URL for relogin parameter
             if (isset($_GET["relogin"])) {
                 $hint = "";
@@ -126,7 +126,7 @@ class LoginPresenter extends APresenter
                     \setcookie('login_hint', $ownerDetails->getEmail() ?? '', time() + 86400 * 31, "/", DOMAIN);
                 }
                 $this->clearCookie("oauth2state");
-                $this->setLocation("/${nonce}");
+                $this->setLocation("/{$nonce}");
                 exit;
             } catch (Exception $e) {
                 $this->addError('Google OAuth: ' . $e->getMessage());

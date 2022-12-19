@@ -1,7 +1,7 @@
 <?php
 /**
  * GSC Tesseract
- * php version 7.4.0
+ * php version 8.2
  *
  * @category Framework
  * @package  Tesseract
@@ -155,7 +155,7 @@ class CorePresenter extends APresenter
                         "exam" => $p["api_example"] ?? [],
                         "finished" => $p["finished"] ?? false,
                         "info" => $info ?
-                            "<br><blockquote>${info}</blockquote>" : "",
+                            "<br><blockquote>{$info}</blockquote>" : "",
                         "key" => $p["use_key"] ?? false,
                         "linkit" => !(\strpos($p["path"], "[") ?? false),
                         "method" => \strtoupper($p["method"]),
