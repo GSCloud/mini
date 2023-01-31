@@ -14,12 +14,6 @@ use Cake\Cache\Cache;
 use Google\Cloud\Logging\LoggingClient;
 use League\Csv\Reader;
 use League\Csv\Statement;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\BrowserConsoleHandler;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Monolog\Processor\MemoryUsageProcessor;
-use Monolog\Processor\WebProcessor;
 use ParagonIE\Halite\Cookie;
 use ParagonIE\Halite\KeyFactory;
 
@@ -79,7 +73,7 @@ interface IPresenter
     public function renderHTML($template); // UT
     public function writeJsonData($data, $headers = [], $switches = null);
 
-    public function process(); // abstract method
+    public function process($param); // abstract method
 
     public static function getInstance(); // UT
     public static function getTestInstance(); // for testing purposes only
@@ -280,7 +274,7 @@ abstract class APresenter implements IPresenter
      * @abstract
      * @return   self
      */
-    abstract public function process();
+    abstract public function process($param = null);
 
     /**
      * Class constructor
@@ -362,91 +356,9 @@ abstract class APresenter implements IPresenter
         if (\ob_get_level()) {
             @\ob_end_flush();
         }
-
         // finish request
         if (\function_exists('fastcgi_finish_request')) {
             \fastcgi_finish_request();
-        }
-
-        // preload CSV definitions
-        foreach ($this->csv_postload as $key) {
-            $this->preloadAppData((string) $key, true);
-        }
-        // load actual CSV data
-        $this->checkLocales((bool) $this->force_csv_check);
-
-        // setup Monolog logger
-        $monolog = new Logger('Tesseract log');
-        $streamhandler = new StreamHandler(MONOLOG, Logger::INFO, true, self::LOG_FILEMODE);
-        $streamhandler->setFormatter(new LineFormatter);
-        $consolehandler = new BrowserConsoleHandler(Logger::INFO);
-        $monolog->pushHandler($consolehandler);
-        $monolog->pushHandler($streamhandler);
-        $monolog->pushProcessor(new MemoryUsageProcessor);
-        $monolog->pushProcessor(new WebProcessor);
-
-        $criticals = $this->getCriticals();
-        $errors = $this->getErrors();
-        $messages = $this->getMessages();
-
-        list($usec, $sec) = \explode(' ', \microtime());
-        defined('TESSERACT_STOP') || define('TESSERACT_STOP', ((float) $usec + (float) $sec));
-        $add = '; processing: ' . \round(((float) TESSERACT_STOP - (float) TESSERACT_START) * 1000, 2) . ' ms'
-            . '; request_uri: ' . ($_SERVER['REQUEST_URI'] ?? 'N/A');
-
-        $google_logger = null;
-        try {
-            if (\count($criticals)+\count($errors)+\count($messages)) {
-                if (GCP_PROJECTID && GCP_KEYS && !LOCALHOST) {
-                    if (file_exists(APP . DS . GCP_KEYS)) {
-                        $logging = new LoggingClient(
-                            [
-                            'projectId' => GCP_PROJECTID,
-                            'keyFilePath' => APP . DS . GCP_KEYS,
-                            ]
-                        );
-                        $google_logger = $logging->logger(PROJECT);
-                    }
-                }
-            }
-            if (\count($criticals)) {
-                $monolog->critical(DOMAIN . ' FATAL: ' . \json_encode($criticals) . $add);
-                if ($google_logger) {
-                    $google_logger->write(
-                        $google_logger->entry(
-                            DOMAIN . ' ERR: ' . \json_encode($criticals) . $add, [
-                            'severity' => Logger::CRITICAL,
-                            ]
-                        )
-                    );
-                }
-            }
-            if (count($errors)) {
-                $monolog->error(DOMAIN . ' ERROR: ' . \json_encode($errors) . $add);
-                if ($google_logger) {
-                    $google_logger->write(
-                        $google_logger->entry(
-                            DOMAIN . ' ERR: ' . \json_encode($errors) . $add, [
-                            'severity' => Logger::ERROR,
-                            ]
-                        )
-                    );
-                }
-            }
-            if (count($messages)) {
-                $monolog->info(DOMAIN . ' INFO: ' . \json_encode($messages) . $add);
-                if ($google_logger) {
-                    $google_logger->write(
-                        $google_logger->entry(
-                            DOMAIN . ' MSG: ' . \json_encode($messages) . $add, [
-                            'severity' => Logger::INFO,
-                            ]
-                        )
-                    );
-                }
-            }
-        } finally {
-            exit(0);
         }
         exit(0);
     }
@@ -555,9 +467,7 @@ abstract class APresenter implements IPresenter
             'CONST.DOMAIN' => DOMAIN,
             'CONST.DOWNLOAD' => DOWNLOAD,
             'CONST.DS' => DS,
-            'CONST.ENABLE_CSV_CACHE' => ENABLE_CSV_CACHE,
             'CONST.LOGS' => LOGS,
-            'CONST.MONOLOG' => MONOLOG,
             'CONST.PARTIALS' => PARTIALS,
             'CONST.PROJECT' => PROJECT,
             'CONST.ROOT' => ROOT,
@@ -954,7 +864,8 @@ abstract class APresenter implements IPresenter
     /**
      * Cfg getter
      *
-     * @param  string $key Index to configuration data / void
+     * @param string $key Index to configuration data / void
+     * 
      * @return mixed Configuration data by index / whole array
      */
     public function getCfg($key = null)
@@ -1652,7 +1563,7 @@ abstract class APresenter implements IPresenter
     /**
      * Write JSON data to output
      *
-     * @param  array $data     integer error code / array of data
+     * @param  mixed $data     integer error code / array of data
      * @param  array $headers  array of extra data (optional)
      * @param  mixed $switches JSON encoder switches
      * @return self

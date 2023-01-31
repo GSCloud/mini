@@ -16,10 +16,12 @@ class LoginPresenter extends APresenter
 {
     /**
      * Main controller
-     *
+     * 
+     * @param mixed $param optional parameter
+     * 
      * @return void
      */
-    public function process()
+    public function process($param = null)
     {
         if (ob_get_level()) {
             ob_end_clean();

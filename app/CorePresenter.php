@@ -25,10 +25,12 @@ class CorePresenter extends APresenter
 {
     /**
      * Main controller
+     * 
+     * @param mixed $param optional parameter
      *
      * @return void
      */
-    public function process()
+    public function process($param = null)
     {
         if (isset($_GET["api"])) {
             $api = (string) $_GET["api"];

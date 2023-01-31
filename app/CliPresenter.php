@@ -22,10 +22,12 @@ class CliPresenter extends APresenter
 {
     /**
      * Controller processor
+     * 
+     * @param mixed $param optional parameter
      *
      * @return self
      */
-    public function process()
+    public function process($param = null)
     {
         $climate = new CLImate;
         $climate->out(
