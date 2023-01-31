@@ -1,5 +1,6 @@
 #@author Fred Brooker <git@gscloud.cz>
 include .env
+has_phpstan != command -v phpstan 2>/dev/null
 
 all: info
 
@@ -74,8 +75,10 @@ sync:
 	@bash ./bin/sync.sh b
 	@bash ./bin/sync.sh a
 
-test:
-	@bash ./cli.sh unit
+test: unit
+ifneq ($(strip $(has_phpstan)),)
+	phpstan -l9 analyse www/index.php Bootstrap.php app/App.php app/Doctor.php app/MiniPresenter.php app/ApiPresenter.php
+endif
 	@bash ./cli.sh local
 
 prod:
