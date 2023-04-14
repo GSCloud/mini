@@ -1,11 +1,12 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
  * @author   Fred Brooker <git@gscloud.cz>
  * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -19,12 +20,10 @@ class LogoutPresenter extends APresenter
 {
     /**
      * Controller processor
-     * 
-     * @param mixed $param optional parameter
-     * 
+     *
      * @return void
      */
-    public function process($param = null)
+    public function process()
     {
         if (\ob_get_level()) {
             @\ob_end_clean();
