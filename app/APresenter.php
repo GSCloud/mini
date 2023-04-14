@@ -5,7 +5,7 @@
  * @author   Fred Brooker <git@gscloud.cz>
  * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://app.gscloud.cz
  */
 
 namespace GSC;
@@ -14,46 +14,40 @@ use Cake\Cache\Cache;
 use Google\Cloud\Logging\LoggingClient;
 use League\Csv\Reader;
 use League\Csv\Statement;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\BrowserConsoleHandler;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Monolog\Processor\MemoryUsageProcessor;
-use Monolog\Processor\WebProcessor;
 use ParagonIE\Halite\Cookie;
 use ParagonIE\Halite\KeyFactory;
 
 // UT = Unit Tested
 interface IPresenter
 {
-    public function addCritical($message); # UT
-    public function addError($message); # UT
-    public function addMessage($message); # UT
-    public function addAuditMessage($message); # UT
+    public function addCritical($message); // UT
+    public function addError($message); // UT
+    public function addMessage($message); // UT
+    public function addAuditMessage($message); // UT
 
-    public function getCriticals(); # UT
-    public function getErrors(); # UT
-    public function getMessages(); # UT
-    public function getCfg($key); # UT
+    public function getCriticals(); // UT
+    public function getErrors(); // UT
+    public function getMessages(); // UT
+    public function getCfg($key); // UT
     public function getCookie($name);
-    public function getCurrentUser(); # UT
-    public function getData($key); # UT
-    public function getIP(); # UT
-    public function getIdentity(); # UT
+    public function getCurrentUser(); // UT
+    public function getData($key); // UT
+    public function getIP(); // UT
+    public function getIdentity(); // UT
     public function getLocale($locale);
-    public function getRateLimit(); # UT
-    public function getUID(); # UT
-    public function getUIDstring(); # UT
-    public function getUserGroup(); # UT
+    public function getRateLimit(); // UT
+    public function getUID(); // UT
+    public function getUIDstring(); // UT
+    public function getUserGroup(); // UT
 
     public function getMatch();
     public function getPresenter();
     public function getRouter();
-    public function getView(); # UT
+    public function getView(); // UT
 
-    public function checkLocales(bool $force); # UT
-    public function checkPermission($roleslist); # UT
-    public function checkRateLimit($maximum); # UT
+    public function checkLocales(bool $force); // UT
+    public function checkPermission($roleslist); // UT
+    public function checkRateLimit($maximum); // UT
 
     public function setCookie($name, $data);
     public function setData($data, $value);
@@ -76,12 +70,12 @@ interface IPresenter
     public function postloadAppData($key);
     public function preloadAppData($key, $force);
     public function readAppData($name);
-    public function renderHTML($template); # UT
+    public function renderHTML($template); // UT
     public function writeJsonData($data, $headers = [], $switches = null);
 
-    public function process(); // abstract method
+    public function process($param); // abstract method
 
-    public static function getInstance(); # UT
+    public static function getInstance(); // UT
     public static function getTestInstance(); // for testing purposes only
 }
 
@@ -92,129 +86,195 @@ interface IPresenter
  */
 abstract class APresenter implements IPresenter
 {
-    /** @var integer Octal file mode for logs */
+    /**
+ * @var integer Octal file mode for logs 
+*/
     const LOG_FILEMODE = 0664;
 
-    /** @var integer Octal file mode for CSV */
+    /**
+ * @var integer Octal file mode for CSV 
+*/
     const CSV_FILEMODE = 0664;
 
-    /** @var integer CSV min. file size - something meaningful :) */
+    /**
+ * @var integer CSV min. file size - something meaningful :) 
+*/
     const CSV_MIN_SIZE = 42;
 
-    /** @var integer Octal file mode for cookie secret */
+    /**
+ * @var integer Octal file mode for cookie secret 
+*/
     const COOKIE_KEY_FILEMODE = 0600;
 
-    /** @var integer Cookie time to live in seconds */
+    /**
+ * @var integer Cookie time to live in seconds 
+*/
     const COOKIE_TTL = 86400 * 31;
 
-    /** @var string Google CSV URL prefix */
+    /**
+ * @var string Google CSV URL prefix 
+*/
     const GS_CSV_PREFIX = 'https://docs.google.com/spreadsheets/d/e/';
 
-    /** @var string Google CSV URL postfix */
+    /**
+ * @var string Google CSV URL postfix 
+*/
     const GS_CSV_POSTFIX = '/pub?gid=0&single=true&output=csv';
 
-    /** @var string Google Sheet URL prefix */
+    /**
+ * @var string Google Sheet URL prefix 
+*/
     const GS_SHEET_PREFIX = 'https://docs.google.com/spreadsheets/d/';
 
-    /** @var string Google Sheet URL postfix */
+    /**
+ * @var string Google Sheet URL postfix 
+*/
     const GS_SHEET_POSTFIX = '/edit#gid=0';
 
-    /** @var integer Access limiter maximum hits */
+    /**
+ * @var integer Access limiter maximum hits 
+*/
     const LIMITER_MAXIMUM = 100;
 
-    /** @var string Identity nonce filename */
+    /**
+ * @var string Identity nonce filename 
+*/
     const IDENTITY_NONCE = 'identity_nonce.key';
 
     // VARIOUS GOOGLE TEMPLATES - TBD
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_DOCUMENT_EXPORT_DOC =
         'https://docs.google.com/document/d/[FILEID]/export?format=doc';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_DOCUMENT_EXPORT_PDF =
         'https://docs.google.com/document/d/[FILEID]/export?format=pdf';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_EDIT =
         'https://docs.google.com/spreadsheets/d/[FILEID]/edit#gid=0';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_VIEW =
         'https://docs.google.com/spreadsheets/d/[FILEID]/view#gid=0';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_EXPORT_DOCX =
         'https://docs.google.com/spreadsheets/d/[FILEID]/export?format=docx';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_EXPORT_PDF =
         'https://docs.google.com/spreadsheets/d/[FILEID]/export?format=pdf';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_EXPORT_XLSX =
         'https://docs.google.com/spreadsheets/d/[FILEID]/export?format=xlsx';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_PUBLIC_EXPORT_CSV =
         'https://docs.google.com/spreadsheets/d/e/[FILEID]/pub?output=csv';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_SHEET_PUBLIC_EXPORT_HTML =
         'https://docs.google.com/spreadsheets/d/e/[FILEID]/pubhtml';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_WORKSPACE_IMAGE_THUMBNAIL =
         'https://drive.google.com/a/[DOMAIN]/thumbnail?id=[IMAGEID]';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_IMAGE_THUMBNAIL =
         'https://drive.google.com/thumbnail?id=[IMAGEID]';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_FILE_EXPORT_DOWNLOAD =
         'https://drive.google.com/uc?export=download&id=[FILEID]';
 
-    /** @var string */
+    /**
+ * @var string 
+*/
     const GOOGLE_FILE_EXPORT_VIEW =
         'https://drive.google.com/uc?export=view&id=[FILEID]';
 
     // PRIVATE VARIABLES
 
-    /** @var array Data Model */
+    /**
+     * @var array Data Model 
+     */
     private $data = [];
 
-    /** @var array Messages */
+    /**
+     * @var array Messages 
+     */
     private $messages = [];
 
-    /** @var array Errors */
+    /**
+     * @var array Errors 
+     */
     private $errors = [];
 
-    /** @var array Critical Errors */
+    /**
+     * @var array Critical Errors 
+     */
     private $criticals = [];
 
-    /** @var array User Identity */
+    /**
+     * @var array User Identity 
+     */
     private $identity = [];
 
-    /** @var boolean force check locales in desctructor */
+    /**
+     * @var boolean force check locales in desctructor 
+     */
     private $force_csv_check = false;
 
-    /** @var array CSV Keys */
+    /**
+     * @var array CSV Keys 
+     */
     private $csv_postload = [];
 
-    /** @var array Cookies */
+    /**
+     * @var array Cookies 
+     */
     private $cookies = [];
 
-    /** @var array Singleton Instances */
+    /**
+     * @var array Singleton Instances 
+     */
     private static $instances = [];
 
     /**
      * Abstract Processor
      *
      * @abstract
-     * @return self
+     * @return   self
      */
-    abstract public function process();
+    abstract public function process($param = null);
 
     /**
      * Class constructor
@@ -234,7 +294,8 @@ abstract class APresenter implements IPresenter
      * @return void
      */
     private function __clone()
-    {}
+    {
+    }
 
     /**
      * Magic sleep
@@ -242,7 +303,8 @@ abstract class APresenter implements IPresenter
      * @return void
      */
     public final function __sleep()
-    {}
+    {
+    }
 
     /**
      * Magic wakeup
@@ -250,27 +312,30 @@ abstract class APresenter implements IPresenter
      * @return void
      */
     public final function __wakeup()
-    {}
+    {
+    }
 
     /**
      * Magic call
      *
-     * @param string $name
-     * @param mixed $parameter
+     * @param  string $name
+     * @param  mixed  $parameter
      * @return void
      */
     public function __call($name, $parameter)
-    {}
+    {
+    }
 
     /**
      * Magic call static
      *
-     * @param string $name
-     * @param mixed $parameter
+     * @param  string $name
+     * @param  mixed  $parameter
      * @return void
      */
     public static function __callStatic($name, $parameter)
-    {}
+    {
+    }
 
     /**
      * Object to string
@@ -291,77 +356,9 @@ abstract class APresenter implements IPresenter
         if (\ob_get_level()) {
             @\ob_end_flush();
         }
-
         // finish request
         if (\function_exists('fastcgi_finish_request')) {
             \fastcgi_finish_request();
-        }
-
-        // preload CSV definitions
-        foreach ($this->csv_postload as $key) {
-            $this->preloadAppData((string) $key, true);
-        }
-        // load actual CSV data
-        $this->checkLocales((bool) $this->force_csv_check);
-
-        // setup Monolog logger
-        $monolog = new Logger('Tesseract log');
-        $streamhandler = new StreamHandler(MONOLOG, Logger::INFO, true, self::LOG_FILEMODE);
-        $streamhandler->setFormatter(new LineFormatter);
-        $consolehandler = new BrowserConsoleHandler(Logger::INFO);
-        $monolog->pushHandler($consolehandler);
-        $monolog->pushHandler($streamhandler);
-        $monolog->pushProcessor(new MemoryUsageProcessor);
-        $monolog->pushProcessor(new WebProcessor);
-
-        $criticals = $this->getCriticals();
-        $errors = $this->getErrors();
-        $messages = $this->getMessages();
-
-        list($usec, $sec) = \explode(' ', \microtime());
-        defined('TESSERACT_STOP') || define('TESSERACT_STOP', ((float) $usec + (float) $sec));
-        $add = '; processing: ' . \round(((float) TESSERACT_STOP - (float) TESSERACT_START) * 1000, 2) . ' ms'
-            . '; request_uri: ' . ($_SERVER['REQUEST_URI'] ?? 'N/A');
-
-        $google_logger = null;
-        try {
-            if (\count($criticals)+\count($errors)+\count($messages)) {
-                if (GCP_PROJECTID && GCP_KEYS && !LOCALHOST) {
-                    if (file_exists(APP . DS . GCP_KEYS)) {
-                        $logging = new LoggingClient([
-                            'projectId' => GCP_PROJECTID,
-                            'keyFilePath' => APP . DS . GCP_KEYS,
-                        ]);
-                        $google_logger = $logging->logger(PROJECT);
-                    }
-                }
-            }
-            if (\count($criticals)) {
-                $monolog->critical(DOMAIN . ' FATAL: ' . \json_encode($criticals) . $add);
-                if ($google_logger) {
-                    $google_logger->write($google_logger->entry(DOMAIN . ' ERR: ' . \json_encode($criticals) . $add, [
-                        'severity' => Logger::CRITICAL,
-                    ]));
-                }
-            }
-            if (count($errors)) {
-                $monolog->error(DOMAIN . ' ERROR: ' . \json_encode($errors) . $add);
-                if ($google_logger) {
-                    $google_logger->write($google_logger->entry(DOMAIN . ' ERR: ' . \json_encode($errors) . $add, [
-                        'severity' => Logger::ERROR,
-                    ]));
-                }
-            }
-            if (count($messages)) {
-                $monolog->info(DOMAIN . ' INFO: ' . \json_encode($messages) . $add);
-                if ($google_logger) {
-                    $google_logger->write($google_logger->entry(DOMAIN . ' MSG: ' . \json_encode($messages) . $add, [
-                        'severity' => Logger::INFO,
-                    ]));
-                }
-            }
-        } finally {
-            exit(0);
         }
         exit(0);
     }
@@ -398,7 +395,7 @@ abstract class APresenter implements IPresenter
     /**
      * Render HTML content from given template
      *
-     * @param string $template Template name
+     * @param  string $template Template name
      * @return string HTML output
      */
     public function renderHTML($template = null)
@@ -408,7 +405,8 @@ abstract class APresenter implements IPresenter
         }
         // $type: string = 0, template = 1
         $type = (file_exists(TEMPLATES . DS . "{$template}.mustache")) ? 1 : 0;
-        $renderer = new \Mustache_Engine(array(
+        $renderer = new \Mustache_Engine(
+            array(
             'template_class_prefix' => '__' . SERVER . '_' . PROJECT . '_',
             'cache' => TEMP,
             'cache_file_mode' => 0666,
@@ -426,7 +424,8 @@ abstract class APresenter implements IPresenter
                     $text = $lambdaHelper->render($source);
                     $text = preg_replace(
                         '/(https)\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,20})(\/[a-zA-Z0-9\-_\/]*)?/',
-                        '<a rel=noopener target=_blank href="$0">$2$3</a>', $text);
+                        '<a rel=noopener target=_blank href="$0">$2$3</a>', $text
+                    );
                     return (string) $text;
                 },
                 'shuffle_lines' => function ($source, \Mustache_LambdaHelper $lambdaHelper) {
@@ -441,20 +440,22 @@ abstract class APresenter implements IPresenter
             'escape' => function ($value) {
                 return $value;
             },
-        ));
+            )
+        );
         return $type ? $renderer->loadTemplate($template)->render($this->getData()) : $renderer->render($template, $this->getData());
     }
 
     /**
      * Data getter
      *
-     * @param string $key array key, dot notation (optional)
+     * @param  string $key array key, dot notation (optional)
      * @return mixed value / whole array
      */
     public function getData($key = null)
     {
         $dot = new \Adbar\Dot((array) $this->data);
-        $dot->set([ // global constants
+        $dot->set(
+            [ // global constants
             'CONST.APP' => APP,
             'CONST.CACHE' => CACHE,
             'CONST.CACHEPREFIX' => CACHEPREFIX,
@@ -466,9 +467,7 @@ abstract class APresenter implements IPresenter
             'CONST.DOMAIN' => DOMAIN,
             'CONST.DOWNLOAD' => DOWNLOAD,
             'CONST.DS' => DS,
-            'CONST.ENABLE_CSV_CACHE' => ENABLE_CSV_CACHE,
             'CONST.LOGS' => LOGS,
-            'CONST.MONOLOG' => MONOLOG,
             'CONST.PARTIALS' => PARTIALS,
             'CONST.PROJECT' => PROJECT,
             'CONST.ROOT' => ROOT,
@@ -477,8 +476,10 @@ abstract class APresenter implements IPresenter
             'CONST.TEMPLATES' => TEMPLATES,
             'CONST.UPLOAD' => UPLOAD,
             'CONST.WWW' => WWW,
-        ]);
-        $dot->set([ // class constants
+            ]
+        );
+        $dot->set(
+            [ // class constants
             'CONST.COOKIE_KEY_FILEMODE' => self::COOKIE_KEY_FILEMODE,
             'CONST.COOKIE_TTL' => self::COOKIE_TTL,
             'CONST.CSV_FILEMODE' => self::CSV_FILEMODE,
@@ -489,7 +490,8 @@ abstract class APresenter implements IPresenter
             'CONST.GS_SHEET_PREFIX' => self::GS_SHEET_PREFIX,
             'CONST.LIMITER_MAXIMUM' => self::LIMITER_MAXIMUM,
             'CONST.LOG_FILEMODE' => self::LOG_FILEMODE,
-        ]);
+            ]
+        );
         if (is_string($key)) {
             return $dot->get($key);
         }
@@ -500,8 +502,8 @@ abstract class APresenter implements IPresenter
     /**
      * Data setter
      *
-     * @param mixed $data array / key
-     * @param mixed $value
+     * @param  mixed $data  array / key
+     * @param  mixed $value
      * @return self
      */
     public function setData($data = null, $value = null)
@@ -552,7 +554,7 @@ abstract class APresenter implements IPresenter
     /**
      * Add audit message
      *
-     * @param string $message Message string
+     * @param  string $message Message string
      * @return self
      */
     public function addAuditMessage($message = null)
@@ -562,7 +564,8 @@ abstract class APresenter implements IPresenter
             $date = date('c');
             $message = \trim($message);
             $i = $this->getIdentity();
-            @file_put_contents($file, "$date;$message;IP:{$i['ip']};NAME:{$i['name']};EMAIL:{$i['email']};\n",
+            @file_put_contents(
+                $file, "$date;$message;IP:{$i['ip']};NAME:{$i['name']};EMAIL:{$i['email']};\n",
                 FILE_APPEND | LOCK_EX
             );
         }
@@ -592,7 +595,7 @@ abstract class APresenter implements IPresenter
     /**
      * Add info message
      *
-     * @param string $message Message string
+     * @param  string $message Message string
      * @return self
      */
     public function addMessage($message = null)
@@ -606,7 +609,7 @@ abstract class APresenter implements IPresenter
     /**
      * Add error message
      *
-     * @param string $message Error string
+     * @param  string $message Error string
      * @return self
      */
     public function addError($message = null)
@@ -621,7 +624,7 @@ abstract class APresenter implements IPresenter
     /**
      * Add critical message
      *
-     * @param string $message Critical error string
+     * @param  string $message Critical error string
      * @return self
      */
     public function addCritical($message = null)
@@ -649,15 +652,21 @@ abstract class APresenter implements IPresenter
      */
     public function getUIDstring()
     {
-        return preg_replace('/__/', '_', strtr(implode('_',
-            [
-                CLI ? 'CLI' : '',
-                CLI ? '' : $_SERVER['HTTP_ACCEPT_ENCODING'] ?? 'N/A',
-                CLI ? '' : $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'N/A',
-                CLI ? '' : $_SERVER['HTTP_USER_AGENT'] ?? 'N/A',
-                $this->getIP(),
-            ]),
-            ' ', '_'));
+        return preg_replace(
+            '/__/', '_', strtr(
+                implode(
+                    '_',
+                    [
+                    CLI ? 'CLI' : '',
+                    CLI ? '' : $_SERVER['HTTP_ACCEPT_ENCODING'] ?? 'N/A',
+                    CLI ? '' : $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'N/A',
+                    CLI ? '' : $_SERVER['HTTP_USER_AGENT'] ?? 'N/A',
+                    $this->getIP(),
+                    ]
+                ),
+                ' ', '_'
+            )
+        );
     }
 
     /**
@@ -673,7 +682,7 @@ abstract class APresenter implements IPresenter
     /**
      * Set user identity
      *
-     * @param array $identity Identity array
+     * @param  array $identity Identity array
      * @return self
      */
     public function setIdentity($identity = [])
@@ -856,6 +865,7 @@ abstract class APresenter implements IPresenter
      * Cfg getter
      *
      * @param string $key Index to configuration data / void
+     * 
      * @return mixed Configuration data by index / whole array
      */
     public function getCfg($key = null)
@@ -1000,7 +1010,7 @@ abstract class APresenter implements IPresenter
     /**
      * Get encrypted cookie
      *
-     * @param string $name Cookie name
+     * @param  string $name Cookie name
      * @return mixed Cookie value
      */
     public function getCookie($name)
@@ -1027,8 +1037,8 @@ abstract class APresenter implements IPresenter
     /**
      * Set encrypted cookie
      *
-     * @param string $name Cookie name
-     * @param string $data Cookie data
+     * @param  string $name Cookie name
+     * @param  string $data Cookie data
      * @return self
      */
     public function setCookie($name, $data)
@@ -1071,7 +1081,7 @@ abstract class APresenter implements IPresenter
     /**
      * Clear encrypted cookie
      *
-     * @param string $name Cookie name
+     * @param  string $name Cookie name
      * @return object  Singleton instance
      */
     public function clearCookie($name)
@@ -1090,8 +1100,8 @@ abstract class APresenter implements IPresenter
     /**
      * Set URL location and exit
      *
-     * @param string $location URL address (optional)
-     * @param integer $code HTTP code (optional)
+     * @param string  $location URL address (optional)
+     * @param integer $code     HTTP code (optional)
      */
     public function setLocation($location = null, $code = 303)
     {
@@ -1127,12 +1137,12 @@ abstract class APresenter implements IPresenter
     /**
      * Check current user rate limits
      *
-     * @param integer $max Hits per second (optional)
+     * @param  integer $max Hits per second (optional)
      * @return self
      */
     public function checkRateLimit($max = self::LIMITER_MAXIMUM)
     {
-//        if (CLI) {
+        //        if (CLI) {
         //            return $this;
         //        }
         //        if (LOCALHOST) {
@@ -1167,7 +1177,7 @@ abstract class APresenter implements IPresenter
     /**
      * Check if current user has access rights
      *
-     * @param mixed $rolelist roles (optional)
+     * @param  mixed $rolelist roles (optional)
      * @return self
      */
     public function checkPermission($rolelist = 'admin')
@@ -1228,7 +1238,7 @@ abstract class APresenter implements IPresenter
     /**
      * Force CSV checking
      *
-     * @param boolean $set Set true to force CSV check (optional)
+     * @param  boolean $set Set true to force CSV check (optional)
      * @return self
      */
     public function setForceCsvCheck($set = true)
@@ -1240,7 +1250,7 @@ abstract class APresenter implements IPresenter
     /**
      * Post-load CSV data
      *
-     * @param mixed $key string / array to be merged
+     * @param  mixed $key string / array to be merged
      * @return self
      */
     public function postloadAppData($key)
@@ -1261,8 +1271,8 @@ abstract class APresenter implements IPresenter
     /**
      * Get locales from GS Sheets
      *
-     * @param string $language language code
-     * @param string $key index column code (optional)
+     * @param  string $language language code
+     * @param  string $key      index column code (optional)
      * @return array locales
      */
     public function getLocale($language, $key = 'KEY')
@@ -1330,7 +1340,7 @@ abstract class APresenter implements IPresenter
                 $dolar = ['$' => '$'];
                 foreach ((array) $locale as $a => $b) {
                     if (\substr($a, 0, 1) === '$') {
-                        $a = \trim($a, '{}$' . "\x20\t\n\r\0\x0B");
+                        $a = \trim($a, '${}' . "\x20\t\n\r\0\x0B");
                         if (!\strlen($a)) {
                             continue;
                         }
@@ -1361,7 +1371,7 @@ abstract class APresenter implements IPresenter
     /**
      * Check and preload locales
      *
-     * @param boolean $force force loading locales (optional)
+     * @param  boolean $force force loading locales (optional)
      * @return self
      */
     public function checkLocales(bool $force = false)
@@ -1378,7 +1388,7 @@ abstract class APresenter implements IPresenter
     /**
      * Purge Cloudflare cache
      *
-     * @var array $cf Cloudflare authentication array
+     * @var    array $cf Cloudflare authentication array
      * @return self
      */
     public function CloudflarePurgeCache($cf)
@@ -1418,9 +1428,9 @@ abstract class APresenter implements IPresenter
     /**
      * Load CSV data into cache
      *
-     * @param string $name CSV nickname (foobar)
-     * @param string $csvkey Google CSV token (partial or full URI to CSV export endpoint)
-     * @param boolean $force force the resource refresh? (optional)
+     * @param  string  $name   CSV nickname (foobar)
+     * @param  string  $csvkey Google CSV token (partial or full URI to CSV export endpoint)
+     * @param  boolean $force  force the resource refresh? (optional)
      * @return self
      */
     private function csv_preloader($name, $csvkey, $force = false)
@@ -1486,8 +1496,8 @@ abstract class APresenter implements IPresenter
     /**
      * Pre-load application CSV data
      *
-     * @param string Configuration array name (optional)
-     * @param boolean force load? (optional)
+     * @param  string Configuration array name (optional)
+     * @param  boolean force load? (optional)
      * @return self
      */
     public function preloadAppData($key = 'app_data', $force = false)
@@ -1508,7 +1518,7 @@ abstract class APresenter implements IPresenter
     /**
      * Read application CSV data
      *
-     * @param string $name CSV nickname (foobar)
+     * @param  string $name CSV nickname (foobar)
      * @return string CSV data
      */
     public function readAppData($name)
@@ -1553,9 +1563,9 @@ abstract class APresenter implements IPresenter
     /**
      * Write JSON data to output
      *
-     * @param array $data integer error code / array of data
-     * @param array $headers array of extra data (optional)
-     * @param mixed $switches JSON encoder switches
+     * @param  mixed $data     integer error code / array of data
+     * @param  array $headers  array of extra data (optional)
+     * @param  mixed $switches JSON encoder switches
      * @return self
      */
     public function writeJsonData($data, $headers = [], $switches = null)
@@ -1568,34 +1578,34 @@ abstract class APresenter implements IPresenter
             'version' => (string) ($this->getCfg('version') ?? 'v1'),
         ];
         switch (\json_last_error()) { // last decoding error
-            case JSON_ERROR_NONE:
-                $code = 200;
-                $msg = 'DATA OK';
-                break;
-            case JSON_ERROR_DEPTH:
-                $code = 400;
-                $msg = 'Maximum stack depth exceeded.';
-                break;
-            case JSON_ERROR_STATE_MISMATCH:
-                $code = 400;
-                $msg = 'Underflow or the modes mismatch.';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                $code = 400;
-                $msg = 'Unexpected control character found.';
-                break;
-            case JSON_ERROR_SYNTAX:
-                $code = 500;
-                $msg = 'Syntax error, malformed JSON.';
-                break;
-            case JSON_ERROR_UTF8:
-                $code = 400;
-                $msg = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
-                break;
-            default:
-                $code = 500;
-                $msg = 'Internal server error.';
-                break;
+        case JSON_ERROR_NONE:
+            $code = 200;
+            $msg = 'DATA OK';
+            break;
+        case JSON_ERROR_DEPTH:
+            $code = 400;
+            $msg = 'Maximum stack depth exceeded.';
+            break;
+        case JSON_ERROR_STATE_MISMATCH:
+            $code = 400;
+            $msg = 'Underflow or the modes mismatch.';
+            break;
+        case JSON_ERROR_CTRL_CHAR:
+            $code = 400;
+            $msg = 'Unexpected control character found.';
+            break;
+        case JSON_ERROR_SYNTAX:
+            $code = 500;
+            $msg = 'Syntax error, malformed JSON.';
+            break;
+        case JSON_ERROR_UTF8:
+            $code = 400;
+            $msg = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
+            break;
+        default:
+            $code = 500;
+            $msg = 'Internal server error.';
+            break;
         }
         if (is_null($data)) {
             $code = 500;
@@ -1611,50 +1621,50 @@ abstract class APresenter implements IPresenter
             $h = $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1';
             $m = null;
             switch ($code) {
-                case 304:
-                    $m = 'Not Modified';
-                    break;
-                case 400:
-                    $m = 'Bad request';
-                    break;
-                case 401:
-                    $m = 'Unauthorized';
-                    break;
-                case 402:
-                    $m = 'Payment Required';
-                    break;
-                case 403:
-                    $m = 'Forbidden';
-                    break;
-                case 404:
-                    $m = 'Not Found';
-                    break;
-                case 405:
-                    $m = 'Method Not Allowed';
-                    break;
-                case 406:
-                    $m = 'Not Acceptable';
-                    break;
-                case 409:
-                    $m = 'Conflict';
-                    break;
-                case 410:
-                    $m = 'Gone';
-                    break;
-                case 412:
-                    $m = 'Precondition Failed';
-                    break;
-                case 415:
-                    $m = 'Unsupported Media Type';
-                    break;
-                case 416:
-                    $m = 'Requested Range Not Satisfiable';
-                    break;
-                case 417:
-                    $m = 'Expectation Failed';
-                    break;
-                default:
-                    $msg = 'Unknown Error 🦄';
+            case 304:
+                $m = 'Not Modified';
+                break;
+            case 400:
+                $m = 'Bad request';
+                break;
+            case 401:
+                $m = 'Unauthorized';
+                break;
+            case 402:
+                $m = 'Payment Required';
+                break;
+            case 403:
+                $m = 'Forbidden';
+                break;
+            case 404:
+                $m = 'Not Found';
+                break;
+            case 405:
+                $m = 'Method Not Allowed';
+                break;
+            case 406:
+                $m = 'Not Acceptable';
+                break;
+            case 409:
+                $m = 'Conflict';
+                break;
+            case 410:
+                $m = 'Gone';
+                break;
+            case 412:
+                $m = 'Precondition Failed';
+                break;
+            case 415:
+                $m = 'Unsupported Media Type';
+                break;
+            case 416:
+                $m = 'Requested Range Not Satisfiable';
+                break;
+            case 417:
+                $m = 'Expectation Failed';
+                break;
+            default:
+                $msg = 'Unknown Error 🦄';
             }
             if ($m) {
                 $msg = "$m.";
@@ -1683,7 +1693,7 @@ abstract class APresenter implements IPresenter
     /**
      * Data Expander
      *
-     * @param array $data Model by reference
+     * @param  array $data Model by reference
      * @return self
      */
     public function dataExpander(&$data)

@@ -1,13 +1,13 @@
 <?php
 /**
  * GSC Tesseract
- * php version 7.4
+ * php version 8.2
  *
  * @category CMS
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://lasagna.gscloud.cz
+ * @link     https://mini.gscloud.cz
  */
 
 declare (strict_types = 1);
@@ -19,7 +19,7 @@ define('TESSERACT_START', microtime(true));
 
 // external include for cli SAPI
 if (PHP_SAPI == 'cli') {
-    $req = getenv('CLI_REQ') ?? null;
+    $req = getenv('CLI_REQ');
     if ($req && file_exists($req) && is_readable($req)) {
         include_once $req;
     }
@@ -63,20 +63,29 @@ defined('CLI') || define('CLI', (bool) (PHP_SAPI == 'cli'));
 defined('LOCALHOST') || define(
     'LOCALHOST', (bool) (($_SERVER['SERVER_NAME'] ?? '') == 'localhost') || CLI
 );
-defined('ENABLE_CSV_CACHE') || define('ENABLE_CSV_CACHE', true);
 
 require_once ROOT . DS . 'vendor' . DS . 'autoload.php';
 
 // read CONFIGURATION
 $cfg = null;
 if (file_exists(CONFIG) && is_readable(CONFIG)) {
-    $cfg = @Neon::decode(@file_get_contents(CONFIG));
+    $cfg_content = file_get_contents(CONFIG);
+    if ($cfg_content) {
+        $cfg = Neon::decode($cfg_content);
+    } else {
+        $cfg = null;
+    }
     if (!is_array($cfg)) {
         die("FATAL ERROR: Invalid MAIN CONFIGURATION!\n");
     }
     try {
         if (file_exists(CONFIG_PRIVATE) && is_readable(CONFIG_PRIVATE)) {
-            $priv = @Neon::decode(@file_get_contents(CONFIG_PRIVATE));
+            $priv_content = file_get_contents(CONFIG_PRIVATE);
+            if ($priv_content) {
+                $priv = Neon::decode($priv_content);
+            } else {
+                $priv = null;
+            }
             if (!is_array($priv)) {
                 throw new Exception('FATAL ERROR: PRIVATE CONFIG NOT AN ARRAY');
             }
@@ -131,7 +140,7 @@ if (DEBUG === true) {
             ?? $_SERVER['REMOTE_ADDR'];
         $debug_cookie = (string) $cfg['DEBUG_COOKIE']; // private config value
         Debugger::enable(
-            "${debug_cookie}@${address}", LOGS, (string) ($cfg['DEBUG_EMAIL'] ?? '')
+            "{$debug_cookie}@{$address}", LOGS, (string) ($cfg['DEBUG_EMAIL'] ?? '')
         );
     } else {
         // turn it ON
