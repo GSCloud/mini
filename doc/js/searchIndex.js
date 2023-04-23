@@ -13,63 +13,33 @@ Search.appendIndex(
         },                {
             "fqsen": "\\GSC\\ApiPresenter\u003A\u003AaccessLimiter\u0028\u0029",
             "name": "accessLimiter",
-            "summary": "Access\u0020limiter",
+            "summary": "Redis\u0020access\u0020limiter",
             "url": "classes/GSC-ApiPresenter.html#method_accessLimiter"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AwriteOpStart\u0028\u0029",
-            "name": "writeOpStart",
-            "summary": "write\u0020to\u0020operations\u0020log\u0020\u002D\u0020START",
-            "url": "classes/GSC-ApiPresenter.html#method_writeOpStart"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AwriteOpEnd\u0028\u0029",
-            "name": "writeOpEnd",
-            "summary": "write\u0020to\u0020operations\u0020log\u0020\u002D\u0020END",
-            "url": "classes/GSC-ApiPresenter.html#method_writeOpEnd"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AproxyJsonData\u0028\u0029",
-            "name": "proxyJsonData",
-            "summary": "proxy\u0020JSON\u0020data\u0020to\u0020write",
-            "url": "classes/GSC-ApiPresenter.html#method_proxyJsonData"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AgetKeyUsage\u0028\u0029",
-            "name": "getKeyUsage",
-            "summary": "Get\u0020key\u0020usage\u0020from\u0020operations\u0020log",
-            "url": "classes/GSC-ApiPresenter.html#method_getKeyUsage"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AgetCallUsage\u0028\u0029",
-            "name": "getCallUsage",
-            "summary": "Get\u0020API\u0020call\u0020usage\u0020from\u0020operations\u0020log",
-            "url": "classes/GSC-ApiPresenter.html#method_getCallUsage"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AOPLOG",
-            "name": "OPLOG",
-            "summary": "",
-            "url": "classes/GSC-ApiPresenter.html#constant_OPLOG"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AUSE_CACHE",
-            "name": "USE_CACHE",
-            "summary": "",
-            "url": "classes/GSC-ApiPresenter.html#constant_USE_CACHE"
-        },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AAPI_CACHE",
-            "name": "API_CACHE",
-            "summary": "",
-            "url": "classes/GSC-ApiPresenter.html#constant_API_CACHE"
         },                {
             "fqsen": "\\GSC\\ApiPresenter\u003A\u003AACCESS_TIME_LIMIT",
             "name": "ACCESS_TIME_LIMIT",
             "summary": "",
             "url": "classes/GSC-ApiPresenter.html#constant_ACCESS_TIME_LIMIT"
         },                {
-            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AMAX_RECORDS",
-            "name": "MAX_RECORDS",
+            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AAPI_CACHE",
+            "name": "API_CACHE",
             "summary": "",
-            "url": "classes/GSC-ApiPresenter.html#constant_MAX_RECORDS"
+            "url": "classes/GSC-ApiPresenter.html#constant_API_CACHE"
         },                {
             "fqsen": "\\GSC\\ApiPresenter\u003A\u003AMAX_API_HITS",
             "name": "MAX_API_HITS",
             "summary": "",
             "url": "classes/GSC-ApiPresenter.html#constant_MAX_API_HITS"
+        },                {
+            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AMAX_RECORDS",
+            "name": "MAX_RECORDS",
+            "summary": "",
+            "url": "classes/GSC-ApiPresenter.html#constant_MAX_RECORDS"
+        },                {
+            "fqsen": "\\GSC\\ApiPresenter\u003A\u003AUSE_CACHE",
+            "name": "USE_CACHE",
+            "summary": "",
+            "url": "classes/GSC-ApiPresenter.html#constant_USE_CACHE"
         },                {
             "fqsen": "\\TESSERACT_END",
             "name": "TESSERACT_END",
@@ -80,11 +50,6 @@ Search.appendIndex(
             "name": "exceptionErrorHandler",
             "summary": "Exception\u0020handler",
             "url": "namespaces/gsc.html#function_exceptionErrorHandler"
-        },                {
-            "fqsen": "\\GSC\\logger\u0028\u0029",
-            "name": "logger",
-            "summary": "Google\u0020Stackdriver\u0020logger",
-            "url": "namespaces/gsc.html#function_logger"
         },                {
             "fqsen": "\\GSC\\APresenter",
             "name": "APresenter",

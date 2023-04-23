@@ -63,8 +63,8 @@
 
         <section class="phpdocumentor-sidebar__category">
         <h2 class="phpdocumentor-sidebar__category-header">Packages</h2>
-                    <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Application.html"><abbr title="\Application">Application</abbr></a></h3>
-                                <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Framework.html"><abbr title="\Framework">Framework</abbr></a></h3>
+                    <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Framework.html"><abbr title="\Framework">Framework</abbr></a></h3>
+                                <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Application.html"><abbr title="\Application">Application</abbr></a></h3>
                                 <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/GSC.html"><abbr title="\GSC">GSC</abbr></a></h3>
                                 <h3 class="phpdocumentor-sidebar__root-package"><a href="packages/Tesseract.html"><abbr title="\Tesseract">Tesseract</abbr></a></h3>
                         </section>
@@ -98,7 +98,7 @@
             <div class="phpdocumentor-element__package">
             in package
             <ul class="phpdocumentor-breadcrumbs">
-                                    <li class="phpdocumentor-breadcrumb"><a href="packages/Application.html">Application</a></li>
+                                    <li class="phpdocumentor-breadcrumb"><a href="packages/Framework.html">Framework</a></li>
                             </ul>
         </div>
     
@@ -108,7 +108,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">20</span>
+    <span class="phpdocumentor-element-found-in__line">29</span>
 
     </aside>
 
@@ -116,6 +116,46 @@
 
 
 
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="#tags" class="headerlink"><i class="fas fa-link"></i></a>
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">category</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>CMS</p>
+</section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">author</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>Fred Brooker <a href="mailto:git@gscloud.cz">git@gscloud.cz</a></p>
+</section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">license</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                
+                                                 <section class="phpdocumentor-description"><p>MIT https://gscloud.cz/LICENSE</p>
+</section>
+
+                                    </dd>
+                                                <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">link</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                                                        <a class="phpdocumentor-tag-link" href="https://app.gscloud.cz"> https://app.gscloud.cz </a>
+                    
+                                    </dd>
+                        </dl>
 
 
 
@@ -320,21 +360,14 @@
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/GSC-ApiPresenter.html#constant_MAX_RECORDS">MAX_RECORDS</a>
     <span>
-        &nbsp;= 300                    </span>
-</dt>
-<dd></dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -constant -public">
-    <a href="classes/GSC-ApiPresenter.html#constant_OPLOG">OPLOG</a>
-    <span>
-        &nbsp;= &quot;/operations.log&quot;                    </span>
+        &nbsp;= 100                    </span>
 </dt>
 <dd></dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a href="classes/GSC-ApiPresenter.html#constant_USE_CACHE">USE_CACHE</a>
     <span>
-        &nbsp;= true                    </span>
+        &nbsp;= false                    </span>
 </dt>
 <dd></dd>
 
@@ -444,6 +477,13 @@
 <dd>Magic wakeup</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a href="classes/GSC-ApiPresenter.html#method_accessLimiter">accessLimiter()</a>
+    <span>
+                        &nbsp;: mixed    </span>
+</dt>
+<dd>Redis access limiter</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/GSC-APresenter.html#method_addAuditMessage">addAuditMessage()</a>
     <span>
                         &nbsp;: self    </span>
@@ -512,13 +552,6 @@
                         &nbsp;: self    </span>
 </dt>
 <dd>Data Expander</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/GSC-ApiPresenter.html#method_getCallUsage">getCallUsage()</a>
-    <span>
-                        &nbsp;: mixed    </span>
-</dt>
-<dd>Get API call usage from operations log</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/GSC-APresenter.html#method_getCfg">getCfg()</a>
@@ -691,16 +724,9 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/GSC-ApiPresenter.html#method_process">process()</a>
     <span>
-                        &nbsp;: self    </span>
-</dt>
-<dd>Main controller</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a href="classes/GSC-ApiPresenter.html#method_proxyJsonData">proxyJsonData()</a>
-    <span>
                         &nbsp;: object    </span>
 </dt>
-<dd>proxy JSON data to write</dd>
+<dd>Main controller</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/GSC-APresenter.html#method_readAppData">readAppData()</a>
@@ -829,39 +855,11 @@
 <dd>Class constructor</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/GSC-ApiPresenter.html#method_accessLimiter">accessLimiter()</a>
-    <span>
-                        &nbsp;: mixed    </span>
-</dt>
-<dd>Access limiter</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a href="classes/GSC-APresenter.html#method_csv_preloader">csv_preloader()</a>
     <span>
                         &nbsp;: self    </span>
 </dt>
 <dd>Load CSV data into cache</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/GSC-ApiPresenter.html#method_getKeyUsage">getKeyUsage()</a>
-    <span>
-                        &nbsp;: mixed    </span>
-</dt>
-<dd>Get key usage from operations log</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/GSC-ApiPresenter.html#method_writeOpEnd">writeOpEnd()</a>
-    <span>
-                        &nbsp;: object    </span>
-</dt>
-<dd>write to operations log - END</dd>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -private">
-    <a href="classes/GSC-ApiPresenter.html#method_writeOpStart">writeOpStart()</a>
-    <span>
-                        &nbsp;: object    </span>
-</dt>
-<dd>write to operations log - START</dd>
 
         </dl>
 
@@ -882,22 +880,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">33</span>
+    <span class="phpdocumentor-element-found-in__line">31</span>
 
     </aside>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">ACCESS_TIME_LIMIT</span>
     = <span class="phpdocumentor-signature__default-value">3599</span>
 </code>
 
 
-    
-        <section class="phpdocumentor-description"><p>API access time limit</p>
-</section>
+        <section class="phpdocumentor-description"></section>
+
+        <section class="phpdocumentor-description"></section>
 
     
 
@@ -911,22 +909,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">30</span>
+    <span class="phpdocumentor-element-found-in__line">32</span>
 
     </aside>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">API_CACHE</span>
     = <span class="phpdocumentor-signature__default-value">&#039;tenminutes&#039;</span>
 </code>
 
 
-    
-        <section class="phpdocumentor-description"><p>API cache profile</p>
-</section>
+        <section class="phpdocumentor-description"></section>
+
+        <section class="phpdocumentor-description"></section>
 
     
 
@@ -940,7 +938,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">113</span>
+    <span class="phpdocumentor-element-found-in__line">107</span>
 
     </aside>
 
@@ -969,7 +967,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">118</span>
+    <span class="phpdocumentor-element-found-in__line">112</span>
 
     </aside>
 
@@ -998,7 +996,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">103</span>
+    <span class="phpdocumentor-element-found-in__line">97</span>
 
     </aside>
 
@@ -1027,7 +1025,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">108</span>
+    <span class="phpdocumentor-element-found-in__line">102</span>
 
     </aside>
 
@@ -1056,7 +1054,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">155</span>
+    <span class="phpdocumentor-element-found-in__line">149</span>
 
     </aside>
 
@@ -1083,7 +1081,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">161</span>
+    <span class="phpdocumentor-element-found-in__line">155</span>
 
     </aside>
 
@@ -1110,7 +1108,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">221</span>
+    <span class="phpdocumentor-element-found-in__line">215</span>
 
     </aside>
 
@@ -1137,7 +1135,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">227</span>
+    <span class="phpdocumentor-element-found-in__line">221</span>
 
     </aside>
 
@@ -1164,7 +1162,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">215</span>
+    <span class="phpdocumentor-element-found-in__line">209</span>
 
     </aside>
 
@@ -1191,7 +1189,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">167</span>
+    <span class="phpdocumentor-element-found-in__line">161</span>
 
     </aside>
 
@@ -1218,7 +1216,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">179</span>
+    <span class="phpdocumentor-element-found-in__line">173</span>
 
     </aside>
 
@@ -1245,7 +1243,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">185</span>
+    <span class="phpdocumentor-element-found-in__line">179</span>
 
     </aside>
 
@@ -1272,7 +1270,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">191</span>
+    <span class="phpdocumentor-element-found-in__line">185</span>
 
     </aside>
 
@@ -1299,7 +1297,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">197</span>
+    <span class="phpdocumentor-element-found-in__line">191</span>
 
     </aside>
 
@@ -1326,7 +1324,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">203</span>
+    <span class="phpdocumentor-element-found-in__line">197</span>
 
     </aside>
 
@@ -1353,7 +1351,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">173</span>
+    <span class="phpdocumentor-element-found-in__line">167</span>
 
     </aside>
 
@@ -1380,7 +1378,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">209</span>
+    <span class="phpdocumentor-element-found-in__line">203</span>
 
     </aside>
 
@@ -1407,7 +1405,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">128</span>
+    <span class="phpdocumentor-element-found-in__line">122</span>
 
     </aside>
 
@@ -1436,7 +1434,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">123</span>
+    <span class="phpdocumentor-element-found-in__line">117</span>
 
     </aside>
 
@@ -1465,7 +1463,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">138</span>
+    <span class="phpdocumentor-element-found-in__line">132</span>
 
     </aside>
 
@@ -1494,7 +1492,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">133</span>
+    <span class="phpdocumentor-element-found-in__line">127</span>
 
     </aside>
 
@@ -1523,7 +1521,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">148</span>
+    <span class="phpdocumentor-element-found-in__line">142</span>
 
     </aside>
 
@@ -1552,7 +1550,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">143</span>
+    <span class="phpdocumentor-element-found-in__line">137</span>
 
     </aside>
 
@@ -1581,7 +1579,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">98</span>
+    <span class="phpdocumentor-element-found-in__line">92</span>
 
     </aside>
 
@@ -1610,22 +1608,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">39</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">int</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">MAX_API_HITS</span>
     = <span class="phpdocumentor-signature__default-value">1000</span>
 </code>
 
 
-    
-        <section class="phpdocumentor-description"><p>maximum access hits</p>
-</section>
+        <section class="phpdocumentor-description"></section>
+
+        <section class="phpdocumentor-description"></section>
 
     
 
@@ -1639,51 +1637,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">36</span>
+    <span class="phpdocumentor-element-found-in__line">34</span>
 
     </aside>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">int</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">MAX_RECORDS</span>
-    = <span class="phpdocumentor-signature__default-value">300</span>
+    = <span class="phpdocumentor-signature__default-value">100</span>
 </code>
 
 
-    
-        <section class="phpdocumentor-description"><p>maximum records</p>
-</section>
+        <section class="phpdocumentor-description"></section>
 
-    
-
-</article>
-                    <article class="phpdocumentor-element -constant -public ">
-    <h4 class="phpdocumentor-element__name" id="constant_OPLOG">
-        OPLOG
-        <a href="classes/GSC-ApiPresenter.html#constant_OPLOG" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">24</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-signature phpdocumentor-code ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">string</span>
-    <span class="phpdocumentor-signature__name">OPLOG</span>
-    = <span class="phpdocumentor-signature__default-value">&quot;/operations.log&quot;</span>
-</code>
-
-
-    
-        <section class="phpdocumentor-description"><p>operations log</p>
-</section>
+        <section class="phpdocumentor-description"></section>
 
     
 
@@ -1697,22 +1666,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">27</span>
+    <span class="phpdocumentor-element-found-in__line">35</span>
 
     </aside>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-    <span class="phpdocumentor-signature__type">bool</span>
+    <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">USE_CACHE</span>
-    = <span class="phpdocumentor-signature__default-value">true</span>
+    = <span class="phpdocumentor-signature__default-value">false</span>
 </code>
 
 
-    
-        <section class="phpdocumentor-description"><p>use cache?</p>
-</section>
+        <section class="phpdocumentor-description"></section>
+
+        <section class="phpdocumentor-description"></section>
 
     
 
@@ -1741,7 +1710,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">270</span>
+    <span class="phpdocumentor-element-found-in__line">264</span>
 
     </aside>
 
@@ -1775,7 +1744,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">250</span>
+    <span class="phpdocumentor-element-found-in__line">244</span>
 
     </aside>
 
@@ -1809,7 +1778,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">265</span>
+    <span class="phpdocumentor-element-found-in__line">259</span>
 
     </aside>
 
@@ -1843,7 +1812,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">235</span>
+    <span class="phpdocumentor-element-found-in__line">229</span>
 
     </aside>
 
@@ -1877,7 +1846,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">245</span>
+    <span class="phpdocumentor-element-found-in__line">239</span>
 
     </aside>
 
@@ -1911,7 +1880,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">260</span>
+    <span class="phpdocumentor-element-found-in__line">254</span>
 
     </aside>
 
@@ -1945,7 +1914,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">255</span>
+    <span class="phpdocumentor-element-found-in__line">249</span>
 
     </aside>
 
@@ -1979,7 +1948,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">275</span>
+    <span class="phpdocumentor-element-found-in__line">269</span>
 
     </aside>
 
@@ -2013,7 +1982,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">240</span>
+    <span class="phpdocumentor-element-found-in__line">234</span>
 
     </aside>
 
@@ -2051,7 +2020,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">331</span>
+    <span class="phpdocumentor-element-found-in__line">325</span>
 
     </aside>
 
@@ -2101,7 +2070,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">342</span>
+    <span class="phpdocumentor-element-found-in__line">336</span>
 
     </aside>
 
@@ -2151,7 +2120,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">359</span>
+    <span class="phpdocumentor-element-found-in__line">353</span>
 
     </aside>
 
@@ -2184,7 +2153,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">311</span>
+    <span class="phpdocumentor-element-found-in__line">305</span>
 
     </aside>
 
@@ -2217,7 +2186,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">351</span>
+    <span class="phpdocumentor-element-found-in__line">345</span>
 
     </aside>
 
@@ -2252,7 +2221,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">320</span>
+    <span class="phpdocumentor-element-found-in__line">314</span>
 
     </aside>
 
@@ -2278,6 +2247,41 @@
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_accessLimiter">
+        accessLimiter()
+        <a href="classes/GSC-ApiPresenter.html#method_accessLimiter" class="headerlink"><i class="fas fa-link"></i></a>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">134</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Redis access limiter</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                <span class="phpdocumentor-signature__name">accessLimiter</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    
+    
+    
+
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+    <span class="phpdocumentor-signature__response_type">mixed</span>
+            &mdash;
+            <section class="phpdocumentor-description"><p>access count or null</p>
+</section>
+
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_addAuditMessage">
         addAuditMessage()
         <a href="classes/GSC-APresenter.html#method_addAuditMessage" class="headerlink"><i class="fas fa-link"></i></a>
@@ -2285,7 +2289,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">650</span>
+    <span class="phpdocumentor-element-found-in__line">560</span>
 
     </aside>
 
@@ -2330,7 +2334,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">720</span>
+    <span class="phpdocumentor-element-found-in__line">630</span>
 
     </aside>
 
@@ -2375,7 +2379,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">705</span>
+    <span class="phpdocumentor-element-found-in__line">615</span>
 
     </aside>
 
@@ -2420,7 +2424,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">691</span>
+    <span class="phpdocumentor-element-found-in__line">601</span>
 
     </aside>
 
@@ -2465,7 +2469,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1466</span>
+    <span class="phpdocumentor-element-found-in__line">1377</span>
 
     </aside>
 
@@ -2510,7 +2514,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1272</span>
+    <span class="phpdocumentor-element-found-in__line">1183</span>
 
     </aside>
 
@@ -2555,7 +2559,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1232</span>
+    <span class="phpdocumentor-element-found-in__line">1143</span>
 
     </aside>
 
@@ -2600,7 +2604,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1176</span>
+    <span class="phpdocumentor-element-found-in__line">1087</span>
 
     </aside>
 
@@ -2647,7 +2651,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1483</span>
+    <span class="phpdocumentor-element-found-in__line">1394</span>
 
     </aside>
 
@@ -2691,7 +2695,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1788</span>
+    <span class="phpdocumentor-element-found-in__line">1699</span>
 
     </aside>
 
@@ -2727,53 +2731,6 @@
         class="phpdocumentor-element
             -method
             -public
-                                    -static                    "
->
-    <h4 class="phpdocumentor-element__name" id="method_getCallUsage">
-        getCallUsage()
-        <a href="classes/GSC-ApiPresenter.html#method_getCallUsage" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">292</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Get API call usage from operations log</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__name">getCallUsage</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$fn</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$fn</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>function name</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>usage count</p>
-</section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
                                                         "
 >
     <h4 class="phpdocumentor-element__name" id="method_getCfg">
@@ -2783,7 +2740,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">960</span>
+    <span class="phpdocumentor-element-found-in__line">871</span>
 
     </aside>
 
@@ -2830,7 +2787,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1105</span>
+    <span class="phpdocumentor-element-found-in__line">1016</span>
 
     </aside>
 
@@ -2877,7 +2834,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">639</span>
+    <span class="phpdocumentor-element-found-in__line">549</span>
 
     </aside>
 
@@ -2912,7 +2869,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">937</span>
+    <span class="phpdocumentor-element-found-in__line">847</span>
 
     </aside>
 
@@ -2947,7 +2904,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">542</span>
+    <span class="phpdocumentor-element-found-in__line">454</span>
 
     </aside>
 
@@ -2994,7 +2951,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">629</span>
+    <span class="phpdocumentor-element-found-in__line">539</span>
 
     </aside>
 
@@ -3029,7 +2986,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">853</span>
+    <span class="phpdocumentor-element-found-in__line">763</span>
 
     </aside>
 
@@ -3064,7 +3021,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">461</span>
+    <span class="phpdocumentor-element-found-in__line">373</span>
 
     </aside>
 
@@ -3117,7 +3074,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">733</span>
+    <span class="phpdocumentor-element-found-in__line">643</span>
 
     </aside>
 
@@ -3152,7 +3109,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1367</span>
+    <span class="phpdocumentor-element-found-in__line">1278</span>
 
     </aside>
 
@@ -3208,7 +3165,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">976</span>
+    <span class="phpdocumentor-element-found-in__line">887</span>
 
     </aside>
 
@@ -3243,7 +3200,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">619</span>
+    <span class="phpdocumentor-element-found-in__line">529</span>
 
     </aside>
 
@@ -3278,7 +3235,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1850</span>
+    <span class="phpdocumentor-element-found-in__line">1761</span>
 
     </aside>
 
@@ -3313,7 +3270,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">986</span>
+    <span class="phpdocumentor-element-found-in__line">897</span>
 
     </aside>
 
@@ -3348,7 +3305,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1255</span>
+    <span class="phpdocumentor-element-found-in__line">1166</span>
 
     </aside>
 
@@ -3383,7 +3340,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">996</span>
+    <span class="phpdocumentor-element-found-in__line">907</span>
 
     </aside>
 
@@ -3418,7 +3375,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">477</span>
+    <span class="phpdocumentor-element-found-in__line">389</span>
 
     </aside>
 
@@ -3473,7 +3430,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">767</span>
+    <span class="phpdocumentor-element-found-in__line">677</span>
 
     </aside>
 
@@ -3508,7 +3465,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">743</span>
+    <span class="phpdocumentor-element-found-in__line">653</span>
 
     </aside>
 
@@ -3543,7 +3500,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1303</span>
+    <span class="phpdocumentor-element-found-in__line">1214</span>
 
     </aside>
 
@@ -3578,7 +3535,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1006</span>
+    <span class="phpdocumentor-element-found-in__line">917</span>
 
     </aside>
 
@@ -3613,7 +3570,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1214</span>
+    <span class="phpdocumentor-element-found-in__line">1125</span>
 
     </aside>
 
@@ -3646,7 +3603,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1345</span>
+    <span class="phpdocumentor-element-found-in__line">1256</span>
 
     </aside>
 
@@ -3691,7 +3648,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1592</span>
+    <span class="phpdocumentor-element-found-in__line">1503</span>
 
     </aside>
 
@@ -3751,68 +3708,17 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">process</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">self</span></code>
-
-    
-    
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">self</span>
-            &mdash;
-        
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_proxyJsonData">
-        proxyJsonData()
-        <a href="classes/GSC-ApiPresenter.html#method_proxyJsonData" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">241</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">proxy JSON data to write</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">proxyJsonData</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$p1</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$p2</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$p3</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
+                <span class="phpdocumentor-signature__name">process</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$param</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$p1</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>parameter 1</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$p2</span>
-                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>parameter 2</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$p3</span>
+                <span class="phpdocumentor-signature__argument__name">$param</span>
                 : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
                  = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>parameter 3 (optional)</p>
+                    <section class="phpdocumentor-description"><p>optional parameter</p>
 </section>
 
             </dd>
@@ -3823,7 +3729,7 @@
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
     <span class="phpdocumentor-signature__response_type">object</span>
             &mdash;
-            <section class="phpdocumentor-description"><p>Singleton</p>
+            <section class="phpdocumentor-description"><p>the controller</p>
 </section>
 
     
@@ -3841,7 +3747,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1613</span>
+    <span class="phpdocumentor-element-found-in__line">1524</span>
 
     </aside>
 
@@ -3888,7 +3794,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">489</span>
+    <span class="phpdocumentor-element-found-in__line">401</span>
 
     </aside>
 
@@ -3935,7 +3841,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1133</span>
+    <span class="phpdocumentor-element-found-in__line">1044</span>
 
     </aside>
 
@@ -3989,7 +3895,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">599</span>
+    <span class="phpdocumentor-element-found-in__line">509</span>
 
     </aside>
 
@@ -4041,7 +3947,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1333</span>
+    <span class="phpdocumentor-element-found-in__line">1244</span>
 
     </aside>
 
@@ -4086,7 +3992,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1016</span>
+    <span class="phpdocumentor-element-found-in__line">927</span>
 
     </aside>
 
@@ -4119,7 +4025,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1027</span>
+    <span class="phpdocumentor-element-found-in__line">938</span>
 
     </aside>
 
@@ -4152,7 +4058,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1038</span>
+    <span class="phpdocumentor-element-found-in__line">949</span>
 
     </aside>
 
@@ -4185,7 +4091,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1060</span>
+    <span class="phpdocumentor-element-found-in__line">971</span>
 
     </aside>
 
@@ -4218,7 +4124,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1049</span>
+    <span class="phpdocumentor-element-found-in__line">960</span>
 
     </aside>
 
@@ -4251,7 +4157,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1071</span>
+    <span class="phpdocumentor-element-found-in__line">982</span>
 
     </aside>
 
@@ -4284,7 +4190,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1082</span>
+    <span class="phpdocumentor-element-found-in__line">993</span>
 
     </aside>
 
@@ -4317,7 +4223,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1093</span>
+    <span class="phpdocumentor-element-found-in__line">1004</span>
 
     </aside>
 
@@ -4350,7 +4256,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">778</span>
+    <span class="phpdocumentor-element-found-in__line">688</span>
 
     </aside>
 
@@ -4395,7 +4301,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1195</span>
+    <span class="phpdocumentor-element-found-in__line">1106</span>
 
     </aside>
 
@@ -4449,7 +4355,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1660</span>
+    <span class="phpdocumentor-element-found-in__line">1571</span>
 
     </aside>
 
@@ -4457,14 +4363,14 @@
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                <span class="phpdocumentor-signature__name">writeJsonData</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$data</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$headers</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">[]</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$switches</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">self</span></code>
+                <span class="phpdocumentor-signature__name">writeJsonData</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$data</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$headers</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">[]</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$switches</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">self</span></code>
 
     
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-signature__argument__name">$data</span>
-                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
+                : <span class="phpdocumentor-signature__argument__return-type">mixed</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
                     <section class="phpdocumentor-description"><p>integer error code / array of data</p>
@@ -4512,7 +4418,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">302</span>
+    <span class="phpdocumentor-element-found-in__line">296</span>
 
     </aside>
 
@@ -4545,7 +4451,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">288</span>
+    <span class="phpdocumentor-element-found-in__line">282</span>
 
     </aside>
 
@@ -4571,41 +4477,6 @@
             -private
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_accessLimiter">
-        accessLimiter()
-        <a href="classes/GSC-ApiPresenter.html#method_accessLimiter" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">139</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Access limiter</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                <span class="phpdocumentor-signature__name">accessLimiter</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-    
-    
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>access count or null</p>
-</section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -private
-                                                        "
->
     <h4 class="phpdocumentor-element__name" id="method_csv_preloader">
         csv_preloader()
         <a href="classes/GSC-APresenter.html#method_csv_preloader" class="headerlink"><i class="fas fa-link"></i></a>
@@ -4613,7 +4484,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="app/APresenter.php"><a href="files/app-apresenter.html"><abbr title="app/APresenter.php">APresenter.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">1525</span>
+    <span class="phpdocumentor-element-found-in__line">1436</span>
 
     </aside>
 
@@ -4661,156 +4532,6 @@
     <span class="phpdocumentor-signature__response_type">self</span>
             &mdash;
         
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -private
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_getKeyUsage">
-        getKeyUsage()
-        <a href="classes/GSC-ApiPresenter.html#method_getKeyUsage" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">266</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">Get key usage from operations log</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                <span class="phpdocumentor-signature__name">getKeyUsage</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$key</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$key</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>API key</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">mixed</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>usage count</p>
-</section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -private
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_writeOpEnd">
-        writeOpEnd()
-        <a href="classes/GSC-ApiPresenter.html#method_writeOpEnd" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">209</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">write to operations log - END</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                <span class="phpdocumentor-signature__name">writeOpEnd</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$stat</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$stat</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>status</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">object</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>Singleton</p>
-</section>
-
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -private
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_writeOpStart">
-        writeOpStart()
-        <a href="classes/GSC-ApiPresenter.html#method_writeOpStart" class="headerlink"><i class="fas fa-link"></i></a>
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="app/ApiPresenter.php"><a href="files/app-apipresenter.html"><abbr title="app/ApiPresenter.php">ApiPresenter.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">175</span>
-
-    </aside>
-
-        <p class="phpdocumentor-summary">write to operations log - START</p>
-
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">private</span>
-                <span class="phpdocumentor-signature__name">writeOpStart</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$data</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$api_key</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">&quot;&quot;</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">object</span></code>
-
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$data</span>
-                : <span class="phpdocumentor-signature__argument__return-type">array&lt;string|int, mixed&gt;</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">null</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>extras</p>
-</section>
-
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-signature__argument__name">$api_key</span>
-                : <span class="phpdocumentor-signature__argument__return-type">string</span>
-                 = <span class="phpdocumentor-signature__argument__default-value">&quot;&quot;</span>            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>API key (optional)</p>
-</section>
-
-            </dd>
-            </dl>
-
-    
-
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-    <span class="phpdocumentor-signature__response_type">object</span>
-            &mdash;
-            <section class="phpdocumentor-description"><p>Singleton</p>
-</section>
-
     
 </article>
             </section>
