@@ -87,13 +87,13 @@ class ApiPresenter extends APresenter
         $cache_time_limit = array_key_exists(self::API_CACHE, $cache_profiles)
             ? $cache_profiles[self::API_CACHE] : null;
         $extras = [
+            "name" => "Tesseract REST API",
             "fn" => $view,
-            "name" => "REST API",
             "api_quota" => (int) self::MAX_API_HITS,
             "api_usage" => $this->accessLimiter(),
             "access_time_limit" => self::ACCESS_TIME_LIMIT,
+            "cached" => self::USE_CACHE,
             "cache_time_limit" => $cache_time_limit,
-            "cached" => false,
             "records_quota" => self::MAX_RECORDS,
             "private" => $priv,
             "allow_key" => $allow_key,
