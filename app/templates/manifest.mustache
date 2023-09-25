@@ -1,0 +1,65 @@
+{
+    "name": "{{ l.title }}",
+    "short_name": "{{ l.title_short }}",
+    "description": "{{ l.meta_description }}",
+    "icons": [{
+            "src": "{{cdn}}/img/favicon-64.webp",
+            "type": "image/webp",
+            "sizes": "64x64"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-120.webp",
+            "type": "image/webp",
+            "sizes": "120x120"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-144.webp",
+            "type": "image/webp",
+            "sizes": "144x144"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-152.webp",
+            "type": "image/webp",
+            "sizes": "152x152"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-192.webp",
+            "type": "image/webp",
+            "sizes": "192x192"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-384.webp",
+            "type": "image/webp",
+            "sizes": "384x384"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        },
+        {
+            "src": "{{cdn}}/img/favicon-512.webp",
+            "type": "image/webp",
+            "sizes": "512x512"
+        }
+    ],
+    "appleStatusBarStyle": "default",
+    "background_color": "{{#design.background_color}}{{ design.background_color }}{{/design.background_color}}{{^design.background_color}}#fff{{/design.background_color}}",
+    "display": "{{#design.display}}{{ design.display }}{{/design.display}}{{^design.display}}standalone{{/design.display}}",
+    "id": "/",
+    "lang": "{{ router.defaults.language }}",
+    "mobileAppIOS": "true",
+    "scope": "/",
+    "start_url": "/",
+    "theme_color": "{{#design.theme_color}}{{ design.theme_color }}{{/design.theme_color}}{{^design.theme_color}}#000{{/design.theme_color}}"
+}

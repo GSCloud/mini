@@ -7,19 +7,13 @@ var core = [
   {{#swpreload}}"{{ . }}", {{/swpreload}}
   {{#swpreload_cdn}}"{{ cdn }}{{ . }}", {{/swpreload_cdn}}
   "{{ cdn }}/img/favicon-16.webp",
-  "{{ cdn }}/img/favicon-32.webp",
   "{{ cdn }}/img/favicon-128.webp",
   "{{ cdn }}/img/favicon-180.webp",
   "{{ cdn }}/img/favicon-192.png",
   "{{ cdn }}/img/favicon-192.webp",
-  "{{ cdn }}/img/favicon-144.png",
   "{{ cdn }}/img/favicon-512.png",
   "{{ cdn }}/img/favicon-512.webp",
   "{{ cdn }}/img/logo.webp",
-  "/img/g.png",
-  "/img/google_signin.png",
-  "/js/jquery.min.js",
-  "/webfonts/materialicons-regular.woff2",
 ];
 
 self.addEventListener("install", function (event) {

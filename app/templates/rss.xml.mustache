@@ -4,12 +4,12 @@
   <title>{{ rss_channel_title }}</title>
   <link>{{ rss_channel_link }}</link>
   <description>{{ rss_channel_description }}</description>
-  {{#rss_items}}
+{{#rss_items}}
   <item>
     <title>{{ title }}</title>
     <link>{{ link }}</link>
     <description>{{ description }}</description>
   </item>
-  {{/rss_items}}
+{{/rss_items}}
 </channel>
 </rss>

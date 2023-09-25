@@ -117,7 +117,7 @@ du:
 	@bash ./bin/update_docker.sh
 
 # update and test local + sync to remote and test
-everything: doctor clear update test sync prod
+everything: clear update test sync prod
 
 # build docker image
-image: doctor clear update test build run
+image: clear update test build run

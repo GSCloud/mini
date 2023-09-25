@@ -1,16 +1,19 @@
 {{^LOCALHOST}}
-
 {{#google.map_query}}
 {{#google.mapsapi_key}}
 
-<iframe name="GoogleMap"
+<iframe
+  id="GoogleMap"
+  name="GoogleMap"
   {{#google.width}}width="{{ google.width }}"{{/google.width}}{{^google.width}}width="100%"{{/google.width}}
   {{#google.height}}height="{{ google.height }}"{{/google.height}}{{^google.height}}height="400"{{/google.height}}
-  frameborder="0" style="border:0" allowfullscreen
+  style="border:0"
+  loading="lazy"
+  allowfullscreen
+  referrerpolicy="no-referrer-when-downgrade"
   src="https://www.google.com/maps/embed/v1/place?key={{ google.mapsapi_key }}&q={{ google.map_query }}">
 </iframe>
 
 {{/google.mapsapi_key}}
 {{/google.map_query}}
-
 {{/LOCALHOST}}

@@ -79,16 +79,12 @@ class CiTester
         foreach ($presenter as $p) {
             if (strpos($p["path"], "[") !== false) {
                 $u = "<bold><blue>{$target}{$p['path']}</blue></bold>";
-                $climate->out(
-                    "{$u};skipped"
-                );
+                //$climate->out("{$u};skipped");
                 continue;
             }
             if (strpos($p["path"], "*") !== false) {
                 $u = "<bold><blue>{$target}{$p['path']}</blue></bold>";
-                $climate->out(
-                    "{$u};skipped"
-                );
+                //$climate->out("{$u};skipped");
                 continue;
             }
             if ($p["redirect"] ?? false) {

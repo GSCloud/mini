@@ -1,4 +1,4 @@
-<div class="webshare" aria-hidden="true" style="display:none;margin-top:20px;font-size:1.2em;width:100%">{{ l.webshare_button }}</div>
+<a class="webshare" aria-hidden="true" data-admin-tooltip="webshare_button" style="display:none;font-size:1.2em;width:100%">{{ l.webshare_button }}</a>
 
 <script>
   // touch devices only
@@ -25,10 +25,10 @@
         text = text.replace(new RegExp(/['\"\n\r]*/, "g"), "");
         url = url.replace(new RegExp(/['\"\n\r\s]*/, "g"), "");
         title = title.replace(new RegExp(/['\"\n\r]*/, "g"), "");
-        return '<div onclick="window.WebShare(\''
+        return '<a onclick="window.WebShare(\''
           + text + '\', \''
           + url + '\', \''
-          + title + '\')" class="webshareicon" aria-hidden="true" style="display:inline-block;margin:8px"></div>';
+          + title + '\')" href="/" class="webshareicon" aria-hidden="true" style="display:inline-block;margin:8px"></a>';
       }
 
       var el = document.getElementsByClassName("webshare");
