@@ -1,6 +1,5 @@
-#@author Fred Brooker <git@gscloud.cz>
-
-#CSP Headers
+# @author Fred Brooker <git@gscloud.cz>
+# CSP Security Headers
 
 csp: [
     "Content-Security-Policy: "
@@ -25,12 +24,15 @@ csp: [
     "'self'"
     "data:"
     "'unsafe-inline'"
+    "cdn.gscloud.cz"
     "*.gstatic.com;"
 
     "script-src"
     "*.googleapis.com"
+    "cdn.gscloud.cz"
     "cdnjs.cloudflare.com"
     "static.cloudflareinsights.com"
+    "umami.gscloud.cz"
     "'self'"
     "'unsafe-inline'"
     "'unsafe-eval';"

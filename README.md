@@ -2,6 +2,8 @@
 
 Demo: **[mini.gscloud.cz](https://mini.gscloud.cz)**  
 Repository:  **[github.com/GSCloud/mini](https://github.com/GSCloud/mini)**  
+local REST API: **[/api](/api)**  
+demo REST API: **[/api](https://mini.gscloud.cz/api)**  
 Distributed under **MIT** license.
 
 ## Building Microsites & Apps
@@ -21,5 +23,3 @@ Tesseract MINI has built-in generated **REST API** and **CI** testing.
 * **Model** is a multi-dimensional array,
 * **View** is a set of mustache templates,
 * **Presenter** is a set of classes extending basic abstract presenter.
-
-REST API: **[/api](/api)**

@@ -73,7 +73,7 @@ interface IPresenter
     public function renderHTML($template); // UT
     public function writeJsonData($data, $headers = [], $switches = null);
 
-    public function process($param); // abstract method
+    public function process($param = null); // abstract method
 
     public static function getInstance(); // UT
     public static function getTestInstance(); // for testing purposes only

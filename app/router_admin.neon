@@ -1,7 +1,10 @@
-#admin:
-#  method: GET|POST|DELETE
-#  path: '/admin/[a:p]'
-#  presenter: admin
+# @author Fred Brooker <git@gscloud.cz>
+# admin routes, mandatory for administration - see AdminPresenter.php
+
+admin:
+  method: GET|POST|DELETE
+  path: '/admin/[a:p]'
+  presenter: admin
 
 login:
   assert_httpcode: 303

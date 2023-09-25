@@ -1,11 +1,13 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -16,7 +18,11 @@ use League\CLImate\CLImate;
 /**
  * CLI Presenter class
  * 
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class CliPresenter extends APresenter
 {
@@ -24,7 +30,7 @@ class CliPresenter extends APresenter
      * Controller processor
      * 
      * @param mixed $param optional parameter
-     *
+     * 
      * @return self
      */
     public function process($param = null)
@@ -33,7 +39,7 @@ class CliPresenter extends APresenter
         $climate->out(
             "<bold><green>Tesseract CLI</green></bold>\tapp: "
             . $this->getData("VERSION_SHORT")
-            . " (" . str_replace(" ", "", $this->getData("VERSION_DATE")) . ")\n"
+            . " (" . $this->getData("VERSION_DATE") . ")\n"
         );
         return $this;
     }
@@ -41,7 +47,9 @@ class CliPresenter extends APresenter
     /**
      * Show presenter output
      * 
-     * @param string presenter name (optional)
+     * @param mixed $p presenter name
+     * 
+     * @return void
      */
     public function show($p = "home")
     {
@@ -59,15 +67,18 @@ class CliPresenter extends APresenter
         $data["controller"] = $c = ucfirst(strtolower($pres)) . "Presenter";
         $controller = "\\GSC\\{$c}";
 
-        echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
+        echo $controller::getInstance()
+            ->setData($data)->process()->getData()["output"] ?? "";
         exit(0);
     }
 
     /**
      * Show CORE presenter output
      * 
-     * @param string view name inside CORE presenter
-     * @param array arguments (optional)
+     * @param string $v   view name inside CORE presenter
+     * @param array  $arg arguments (optional)
+     * 
+     * @return void
      */
     public function showCore($v = "PingBack", $arg = null)
     {
@@ -86,7 +97,8 @@ class CliPresenter extends APresenter
         $data["base"] = $arg["base"] ?? "https://example.com/";
         $data["match"] = $arg["match"] ?? null;
 
-        echo $controller::getInstance()->setData($data)->process()->getData()["output"] ?? "";
+        echo $controller::getInstance()
+            ->setData($data)->process()->getData()["output"] ?? "";
         exit(0);
     }
 
@@ -95,11 +107,12 @@ class CliPresenter extends APresenter
      *
      * @return self
      */
-    private function showConst()
+    public function showConst()
     {
         $arr = array_filter(
             get_defined_constants(true)["user"], function ($key) {
-                return !(stripos($key, "sodium") === 0); // filter out Sodium constants
+                // filter out Sodium constants
+                return !(stripos($key, "sodium") === 0);
             }, ARRAY_FILTER_USE_KEY
         );
         dump($arr);
@@ -114,42 +127,45 @@ class CliPresenter extends APresenter
     public function help()
     {
         $climate = new CLImate;
-        $climate->out("Usage: \t <bold>php -f Bootstrap.php <command> [<parameter> ...]</bold>\n");
-        $climate->out("\t <bold>app</bold> '<code>'\t - run inline code");
-        $climate->out("\t <bold>clear</bold>\t\t - alias for <bold>clearall</bold>");
-        $climate->out("\t <bold>clearall</bold>\t - clear all temporary files");
-        $climate->out("\t <bold>clearcache</bold>\t - clear cache");
-        $climate->out("\t <bold>clearci</bold>\t - clear CI logs");
-        $climate->out("\t <bold>clearlogs</bold>\t - clear runtime logs");
-        $climate->out("\t <bold>cleartemp</bold>\t - clear temporary files");
-        $climate->out("\t <bold>doctor</bold>\t\t - check system requirements");
-        $climate->out("\t <bold>local</bold>\t\t - run local CI test");
-        $climate->out("\t <bold>prod</bold>\t\t - run production CI test");
-        $climate->out("\t <bold>unit</bold>\t\t - run Unit tests");
-        $climate->out("\t <bold>version</bold>\t - display version information in JSON format\n");
+        $climate->out(
+            "Usage: \t<bold>php -f Bootstrap.php"
+            . " <command> [<param> ...]</bold>\n"
+        );
+        $climate->out("\t<bold>app</bold> '<code>'\t- run inline code");
+        $climate->out("\t<bold>clear</bold>\t\t- alias for <bold>clearall</bold>");
+        $climate->out("\t<bold>clearall</bold>\t- clear all temporary files");
+        $climate->out("\t<bold>clearcache</bold>\t- clear cache");
+        $climate->out("\t<bold>clearci</bold>\t\t- clear CI logs");
+        $climate->out("\t<bold>clearlogs</bold>\t- clear runtime logs");
+        $climate->out("\t<bold>cleartemp</bold>\t- clear temporary files");
+        $climate->out("\t<bold>doctor</bold>\t\t- check system requirements");
+        $climate->out("\t<bold>local</bold>\t\t- run local CI test");
+        $climate->out("\t<bold>prod</bold>\t\t- run production CI test");
+        $climate->out("\t<bold>unit</bold>\t\t- run Unit tests");
+        $climate->out(
+            "\t<bold>version</bold>\t\t"
+            . "- display version information in JSON format\n"
+        );
         return $this;
     }
 
     /**
      * Evaluate input string
      *
-     * @param  object this object
-     * @param  int ARGC
-     * @param  array ARGV
+     * @param $app  object this object
+     * @param $argc int ARGC
+     * @param $argv array ARGV
+     * 
      * @return self
      */
-    private function evaler($app, $argc, $argv)
+    public function evaler($app, $argc, $argv)
     {
         $climate = new CLImate;
         if ($argc != 3) {
             // show examples
-            $climate->out("Examples:");
-            $climate->out("\t" . '<bold>app</bold> \'$app->showConst()\'');
-            $climate->out("\t" . '<bold>app</bold> \'dump($app->getCurrentUser())\'');
-            $climate->out("\t" . '<bold>app</bold> \'dump($app->getIdentity())\'');
-            $climate->out("\t" . '<bold>app</bold> \'$app->show()\'');
-            $climate->out("\t" . '<bold>app</bold> \'$app->showCore("GetTXTSitemap")\'');
-            $climate->out("\t" . '<bold>app</bold> \'$app->showCore("GetWebManifest")\'');
+            $climate->out("Tesseract app examples:\n");
+            $climate->out('<bold>app</bold> \'$app->showConst()\'');
+            $climate->out('<bold>app</bold> \'dump($app->getIdentity())\'');
         } else {
             $code = trim($argv[2]) . ';';
             try {
@@ -167,9 +183,10 @@ class CliPresenter extends APresenter
     /**
      * Select CLI module
      *
-     * @param  string CLI parameter
-     * @param  int ARGC
-     * @param  array ARGV
+     * @param $module string CLI parameter
+     * @param $argc   int ARGC number of arguments
+     * @param $argv   array ARGV array of arguments
+     * 
      * @return void
      */
     public function selectModule($module, $argc = null, $argv = null)
@@ -195,7 +212,8 @@ class CliPresenter extends APresenter
             break;
 
         case "clearcache":
-            foreach ($this->getData("cache_profiles") as $k => $v) { // clear all cache profiles
+            foreach ($this->getData("cache_profiles") as $k => $v) {
+                // clear all cache profiles
                 Cache::clear($k);
                 Cache::clear("{$k}_file");
             }

@@ -43,22 +43,30 @@ ob_start();
 error_reporting(E_ALL);
 
 defined('DS') || define('DS', DIRECTORY_SEPARATOR);
+
 defined('ROOT') || define('ROOT', __DIR__);
+
 defined('APP') || define('APP', ROOT . DS . 'app');
 defined('CACHE') || define('CACHE', ROOT . DS . 'temp');
 defined('DATA') || define('DATA', ROOT . DS . 'data');
 defined('WWW') || define('WWW', ROOT . DS . 'www');
+
 defined('CONFIG') || define('CONFIG', APP . DS . 'config.neon');
 defined('CONFIG_PRIVATE') || define(
     'CONFIG_PRIVATE', APP . DS . 'config_private.neon'
 );
+
 defined('CSP') || define('CSP', APP . DS . 'csp.neon');
-defined('TEMPLATES') || define('TEMPLATES', WWW . DS . 'templates');
-defined('PARTIALS') || define('PARTIALS', WWW . DS . 'partials');
+
+defined('TEMPLATES') || define('TEMPLATES', APP . DS . 'templates');
+defined('PARTIALS') || define('PARTIALS', APP . DS . 'partials');
+
 defined('DOWNLOAD') || define('DOWNLOAD', WWW . DS . 'download');
 defined('UPLOAD') || define('UPLOAD', WWW . DS . 'upload');
+
 defined('LOGS') || define('LOGS', ROOT . DS . 'logs');
 defined('TEMP') || define('TEMP', ROOT . DS . 'temp');
+
 defined('CLI') || define('CLI', (bool) (PHP_SAPI == 'cli'));
 defined('LOCALHOST') || define(
     'LOCALHOST', (bool) (($_SERVER['SERVER_NAME'] ?? '') == 'localhost') || CLI

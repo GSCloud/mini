@@ -1,3 +1,6 @@
+# @author Fred Brooker <git@gscloud.cz>
+# main page routes
+
 defaults:
   language: en
 

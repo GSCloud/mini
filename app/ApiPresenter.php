@@ -39,7 +39,7 @@ class ApiPresenter extends APresenter
      * 
      * @param mixed $param optional parameter
      * 
-     * @return object the controller
+     * @return object controller
      */
     public function process($param = null)
     {
@@ -54,17 +54,17 @@ class ApiPresenter extends APresenter
         // view properties
         $presenter = $this->getPresenter();
         $use_key = false;
-        if (is_array($presenter)) {
+        if (\is_array($presenter)) {
             $use_key = \array_key_exists('use_key', $presenter[$view])
                 ? $presenter[$view]['use_key'] : false;
         }
         $allow_key = false;
-        if (is_array($presenter)) {
+        if (\is_array($presenter)) {
             $allow_key = \array_key_exists('allow_key', $presenter[$view])
                 ? $presenter[$view]['allow_key'] : false;
         }
         $priv = false;
-        if (is_array($presenter)) {
+        if (\is_array($presenter)) {
             $priv = \array_key_exists('private', $presenter[$view])
                 ? $presenter[$view]['private'] : false;
         }
@@ -73,7 +73,7 @@ class ApiPresenter extends APresenter
         $api_key = $_GET['apikey'] ?? null;
         $user_id = null;
         $user_group = null;
-        if (is_array($d)) {
+        if (\is_array($d)) {
             $d['user'] = $this->getCurrentUser();
             $user_id = $d['user']['id'] ?? null;
             $d['admin'] = $user_group = $this->getUserGroup();
@@ -84,13 +84,16 @@ class ApiPresenter extends APresenter
 
         // general API properties
         $cache_profiles = (array) ($this->getData("cache_profiles") ?: []);
-        $cache_time_limit = array_key_exists(self::API_CACHE, $cache_profiles)
+        $cache_time_limit = \array_key_exists(self::API_CACHE, $cache_profiles)
             ? $cache_profiles[self::API_CACHE] : null;
+        
+        // general API properties
         $extras = [
-            "name" => "Tesseract REST API",
+            "name" => "MINI REST API",
             "fn" => $view,
-            "api_quota" => (int) self::MAX_API_HITS,
+            "endpoint" => \explode("?", $_SERVER['REQUEST_URI'])[0],
             "api_usage" => $this->accessLimiter(),
+            "api_quota" => (int) self::MAX_API_HITS,
             "access_time_limit" => self::ACCESS_TIME_LIMIT,
             "cached" => self::USE_CACHE,
             "cache_time_limit" => $cache_time_limit,
@@ -121,7 +124,7 @@ class ApiPresenter extends APresenter
             return $this->writeJsonData($data, $extras);
 
         default:
-            sleep(5);
+            \sleep(5);
             return ErrorPresenter::getInstance()->process(404);
         }
     }

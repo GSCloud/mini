@@ -1,11 +1,13 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -16,7 +18,11 @@ use Tester\Assert;
 /**
  * Unit Tester CLI class
  *
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class UnitTester
 {
@@ -27,11 +33,11 @@ class UnitTester
      */
     public function __construct()
     {
-        \Tracy\Debugger::timer("UNIT");
+        \Tracy\Debugger::timer('UNIT');
         \Tester\Environment::setup();
 
         $climate = new CLImate;
-        $climate->out("<green><bold>Tesseract Unit Tester");
+        $climate->out('<green><bold>Tesseract Unit Tester');
 
         // all testable controllers
         $controllers = [
@@ -48,26 +54,32 @@ class UnitTester
 
         // check controllers
         foreach ($controllers as $c) {
-            $controller = "\\GSC\\{$c}";
+            $controller = "\\GSC\\$c";
+
+            // get instances
             $app = $controller::getInstance();
             $app2 = $controller::getInstance();
 
-            // Singleton objects
+            // compare objects
             Assert::same($app, $app2);
 
-            // instance of APresenter
+            // check instance type
             Assert::type('\\GSC\\APresenter', $app);
 
             // getData(), setData(), getCfg()
             Assert::same(null, $app->getData('just.null.testing'));
-            Assert::type('array', $app->getData());
             Assert::truthy(count($app->getData()));
+            Assert::type('array', $app->getData());
             Assert::same($app->getData('cfg'), $app->getCfg());
-
-            $app->setData("animal.farm", ["dog", "cat", "bird"]);
-            Assert::same(["farm" => ["dog", "cat", "bird"]], $app->getData("animal"));
-
-            // getCfg()
+            Assert::same(null, $app->getData('foo'));
+            Assert::same(null, $app->getData('foo.bar'));
+            Assert::same(null, $app->getData('foo.bar.testing'));
+            $app->setData('foo.bar.testing', 'just_a_test');
+            Assert::same(['testing' => 'just_a_test'], $app->getData('foo.bar'));
+            $app->setData('animal.farm', ['dog', 'cat', 'bird']);
+            Assert::same(
+                ['farm' => ['dog', 'cat', 'bird']], $app->getData('animal')
+            );
 
             // magic __toString()
             Assert::type('string', $app->__toString());
@@ -96,7 +108,8 @@ class UnitTester
                 'id' => 1,
                 'name' => 'John Doe',
                 'ip' => '127.0.0.1',
-                'uid' => '5d93b9f0de6d0b30934db74b6d877154d704f562ad5bb88002409d51db5345c1',
+                'uid' => '5d93b9f0de6d0b30934db74b6d877'
+                    . '154d704f562ad5bb88002409d51db5345c1',
                 'uidstring' => 'CLI__127.0.0.1',
                 ], $app->getCurrentUser()
             );
@@ -143,30 +156,48 @@ class UnitTester
             Assert::same($app, $app->addAuditMessage([]));
             Assert::same($app, $app->addAuditMessage('test message'));
 
-            // null
-            Assert::same(null, $app->getRateLimit());
-            Assert::same(null, $app->getUserGroup());
-            Assert::same(null, $app->getView());
-
-            // getUID()
-            Assert::same('5d93b9f0de6d0b30934db74b6d877154d704f562ad5bb88002409d51db5345c1', $app->getUID());
-
-            // getUIDstring()
-            Assert::same('CLI__127.0.0.1', $app->getUIDstring());
-
             // fluent interface
             Assert::same($app, $app->checkLocales());
             Assert::same($app, $app->checkPermission());
             Assert::same($app, $app->checkRateLimit());
 
+            // these methods should return null when invoked from CLI
+            Assert::same(null, $app->getRateLimit());
+            Assert::same(null, $app->getUserGroup());
+            Assert::same(null, $app->getView());
+
+            // getUID()
+            Assert::same(
+                '5d93b9f0de6d0b30934db74b6d87715'
+                . '4d704f562ad5bb88002409d51db5345c1', $app->getUID()
+            );
+
+            // getUIDstring()
+            Assert::same('CLI__127.0.0.1', $app->getUIDstring());
+
             // renderHTML()
-            Assert::same("<title></title>", $app->renderHTML("<title>{{notitle}}</title>"));
-            Assert::same("<title>foo bar</title>", $app->setData("title", "foo bar")->renderHTML("<title>{{title}}</title>"));
-            Assert::same("<b>dog</b>", $app->renderHTML("<b>{{animal.farm.0}}</b>"));
-            Assert::same("<b>cat</b>", $app->renderHTML("<b>{{animal.farm.1}}</b>"));
-            Assert::same("dogcatbird", $app->renderHTML('{{#animal.farm}}{{.}}{{/animal.farm}}'));
+            Assert::same(
+                '<title></title>',
+                $app->renderHTML('<title>{{notitle}}</title>')
+            );
+            Assert::same(
+                '<title>foo bar</title>',
+                $app->setData(
+                    'title',
+                    'foo bar'
+                )->renderHTML('<title>{{title}}</title>')
+            );
+            Assert::same('<b>dog</b>', $app->renderHTML('<b>{{animal.farm.0}}</b>'));
+            Assert::same('<b>cat</b>', $app->renderHTML('<b>{{animal.farm.1}}</b>'));
+            Assert::same(
+                'dogcatbird',
+                $app->renderHTML('{{#animal.farm}}{{.}}{{/animal.farm}}')
+            );
         }
-        echo "Unit test finished in: " . round((float) \Tracy\Debugger::timer("UNIT") * 1000, 2) . " ms";
+
+        echo 'Unit test finished in '
+        . round((float) \Tracy\Debugger::timer('UNIT') * 1000, 2)
+        . ' ms';
         exit(0);
     }
 }

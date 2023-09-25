@@ -1,11 +1,13 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -15,7 +17,11 @@ use League\CLImate\CLImate;
 /**
  * Continuous Integration Tester class
  * 
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class CiTester
 {
@@ -62,7 +68,10 @@ class CiTester
             exit;
         }
 
-        $climate->out("CI testing: <bold><green>{$cfg['project']}: {$cfg['app']} {$case}\n");
+        $climate->out(
+            "CI testing: <bold><green>{$cfg['project']}: "
+            . "{$cfg['app']} {$case}\n"
+        );
 
         $i = 0;
         $pages = [];
@@ -174,7 +183,7 @@ class CiTester
             $json = true;
             $jsformat = "HTML";
             $jscode = "-";
-            if ($x["assert_json"]) {
+            if ($x["assert_json"] ?? null) {
                 $arr = @json_decode($content ?? '', true);
                 if (is_null($content) || is_null($arr)) {
                     $bad++;
@@ -203,20 +212,33 @@ class CiTester
             }
             if ($bad == 0) { // OK
                 $climate->out(
-                    "{$u1} length: <green>{$length}</green> code: <green>{$code}</green> time: <green>{$time} ms</green> format: <blue>$jsformat</blue> JS: <green>$jscode</green>"
+                    "{$u1} length: <green>{$length}</green>"
+                    . " code: <green>{$code}</green>"
+                    . " time: <green>{$time} ms</green>"
+                    . " format: <blue>$jsformat</blue>"
+                    . " JS: <green>$jscode</green>"
                 );
                 @file_put_contents(
                     ROOT . "/ci/tests_{$f1}.assert.txt",
-                    "{$u2};length:{$length};code:{$code};assert:{$x['assert_httpcode']};time:{$time};$jsformat;$jscode\n", FILE_APPEND | LOCK_EX
+                    "{$u2};length:{$length};code:{$code};"
+                    . "assert:{$x['assert_httpcode']};"
+                    . "time:{$time};$jsformat;$jscode\n",
+                    FILE_APPEND | LOCK_EX
                 );
             } else { // error
                 $errors++;
                 $climate->out(
-                    "<red>{$u1} length: <bold>{$length}</bold> code: <bold>{$code}</bold> assert: <bold>{$x['assert_httpcode']}</bold> time: {$time} ms format: $jsformat JScode: $jscode</red>\007"
+                    "<red>{$u1} length: <bold>{$length}</bold>"
+                    . " code: <bold>{$code}</bold>"
+                    . " assert: <bold>{$x['assert_httpcode']}</bold>"
+                    . " time: {$time} ms format: $jsformat JScode: $jscode</red>\007"
                 );
                 @file_put_contents(
                     ROOT . "/ci/errors_{$f1}.assert.txt",
-                    "{$u2};length:{$length};code:{$code};assert:{$x['assert_httpcode']};time:{$time};format:$jsformat;jscode:$jscode\n", FILE_APPEND | LOCK_EX
+                    "{$u2};length:{$length};"
+                    . "code:{$code};assert:{$x['assert_httpcode']};"
+                    . "time:{$time};format:$jsformat;jscode:$jscode\n",
+                    FILE_APPEND | LOCK_EX
                 );
             }
             $i++;

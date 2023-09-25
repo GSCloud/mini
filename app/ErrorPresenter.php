@@ -7,7 +7,7 @@
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 declare (strict_types = 1);
@@ -21,7 +21,7 @@ namespace GSC;
  * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 class ErrorPresenter extends APresenter
 {
@@ -46,18 +46,22 @@ class ErrorPresenter extends APresenter
      *
      * @param int $err error code (optional)
      * 
-     * @return self
+     * @return object controller
      */
     public function process($err = null)
     {
         $this->setHeaderHtml();
 
         // get the error code: either as a method parameter or URL parameter
-        if (is_int($err)) {
+        if (\is_int($err)) {
             $code = $err;
         } else {
             $match = $this->getMatch();
-            $params = (array) ($match["params"] ?? []);
+            if (\is_array($match)) {
+                $params = (array) ($match["params"] ?? []);
+            } else {
+                $params = [];
+            }
             if (array_key_exists("code", $params)) {
                 $code = (int) $params["code"];
             } else {
@@ -70,7 +74,7 @@ class ErrorPresenter extends APresenter
         $error = self::CODESET[$code];
 
         // set HTTP error code
-        header("HTTP/1.1 {$code} {$error}");
+        \header("HTTP/1.1 {$code} {$error}");
 
         // find error image
         $img = "error.png";

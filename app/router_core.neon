@@ -1,2 +1,37 @@
-defaults:
-  language: en
+# @author Fred Brooker <git@gscloud.cz>
+# CORE routes
+
+GetWebManifest:
+  path: /manifest.json
+  presenter: core
+  cached: true
+
+GetTXTSitemap:
+  path: /sitemap.txt
+  presenter: core
+  cached: true
+
+GetXMLSitemap:
+  path: /sitemap.xml
+  presenter: core
+  cached: true
+
+GetServiceWorker:
+  path: /sw.js
+  presenter: core
+  cached: true
+
+GetError:
+  path: '/err/[i:code]'
+  api: true
+  api_description: "Get error page"
+  api_info: "Parameters:\n<b><code></b> - numeric error code\n\nReturns: HTML page."
+  cached: true
+  method: GET|POST
+  presenter: error
+  finished: true
+  api_example: [
+    "err/404"
+    "err/420"
+    "err/500"
+  ]

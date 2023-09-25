@@ -45,22 +45,23 @@ class MiniPresenter extends APresenter
         // HTML content
         $file = null;
         defined('ROOT') && $file = ROOT . "/README.md";
+
         if ($file && \file_exists($file) && \is_readable($file)) {
             $data["l"]["readme"] = MarkdownExtra::defaultTransform(
-                file_get_contents($file) ?: ''
+                \file_get_contents($file) ?: ''
             );
         }
 
         // process template
         $template = 'app';
         if (\is_string($view) && \is_array($presenter)) {
-            $template = array_key_exists("template", $presenter[$view])
+            $template = \array_key_exists("template", $presenter[$view])
                 ? $presenter[$view]["template"] : 'app';
         }
         
         // process output
         $output = $this->setData($data)->renderHTML($template);
-        StringFilters::trim_html_comment($output); // fix content
+        StringFilters::trim_html_comment($output);
         return $this->setData("output", $output);
     }
 }

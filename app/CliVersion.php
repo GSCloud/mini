@@ -1,11 +1,13 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -13,7 +15,11 @@ namespace GSC;
 /**
  * CLI Version class
  *
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class CliVersion extends APresenter
 {
@@ -21,18 +27,22 @@ class CliVersion extends APresenter
      * Controller constructor
      */
     public function __construct()
-    {}
+    {
+    }
 
     /**
-     * Controller processor
+     * Controller processor - Show version information as a JSON formatted string.
      * 
-     * Show version information as a JSON formatted string.
+     * @param mixed $param optional parameter
      *
-     * @return void
+     * @return mixed nothing
      */
     public function process($param = null)
     {
         $data = $this->getData();
+        if (!\is_array($data)) {
+            return null;
+        }
         $out = [
             "TESSERACT" => "Tesseract 2.0 beta",
             "ARGUMENTS" => $data["ARGV"],
@@ -43,6 +53,6 @@ class CliVersion extends APresenter
             "VERSION_TIMESTAMP" => $data["VERSION_TIMESTAMP"],
         ];
         echo \json_encode($out, JSON_PRETTY_PRINT) . "\n";
-        exit(0);
+        exit;
     }
 }

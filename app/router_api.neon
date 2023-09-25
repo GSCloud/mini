@@ -1,3 +1,6 @@
+# @author Fred Brooker <git@gscloud.cz>
+# API routes
+
 call1:
   path: "/api/v1/call1/[a:string]"
   api_description: "API call example #1"

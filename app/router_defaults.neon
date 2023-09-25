@@ -1,79 +1,45 @@
+# @author Fred Brooker <git@gscloud.cz>
+# router defaults
+
 defaults:
+  # RESTful API
   api: false
   api_description: ""
   api_example: []
   api_info: ""
+  api_key: null
+
+  # testing
   assert_httpcode: 200
   assert_json: false
   assert_values: []
+
+  # switches
+  allow_key: false
   cached: false
   deprecated: false
   finished: false
-  language: cs
-  method: GET
-  presenter: home
+  norobots: false
   private: false
   sitemap: false
-  template: mini
   use_key: false
-  allow_key: false
+
+  # interface
+  access_key: null
+  encryption_key: null
+
+  # language
+  language: en
+
+  # HTTP methods - separated by |
+  method: GET
+
+  # MVP
+  presenter: home
+  template: mini
   view: home
 
-GetWebManifest:
-  path: /manifest.json
-  presenter: core
-  cached: true
-
-GetTXTSitemap:
-  path: /sitemap.txt
-  presenter: core
-  cached: true
-
-GetXMLSitemap:
-  path: /sitemap.xml
-  presenter: core
-  cached: true
-
-GetRSSXML:
-  path: /rss.xml
-  presenter: core
-  cached: true
-
-GetServiceWorker:
-  path: /sw.js
-  presenter: core
-  cached: true
-
-API:
-  api: true
-  api_description: "Show REST API dashboard"
-  api_info: "This page 🐱"
-  path: /api
-  presenter: core
-  template: mini
-  finished: true
-
-PingBack:
-  path: /pingback
-  api: true
-  api_description: "Ping back for remote monitoring service"
-  api_info: "Returns (JSON): ok."
-  assert_json: true
-  method: GET|POST
-  presenter: core
-  finished: true
-
-GetError:
-  path: '/err/[i:code]'
-  api: true
-  api_description: "Get error page"
-  api_info: "Parameters:\n<b><code></b> - numeric error code\n\nReturns: HTML page."
-  cached: true
-  method: GET|POST
-  presenter: error
-  finished: true
-  api_example: [
-    "err/404"
-    "err/420"
-    "err/500"
-  ]
+  # extras
+  alias: null
+  clone: null
+  redirect: null

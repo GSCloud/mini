@@ -1,11 +1,13 @@
 <?php
 /**
  * GSC Tesseract
+ * php version 8.2
  *
+ * @category CMS
+ * @package  Framework
  * @author   Fred Brooker <git@gscloud.cz>
- * @category Framework
  * @license  MIT https://gscloud.cz/LICENSE
- * @link     https://app.gscloud.cz
+ * @link     https://lasagna.gscloud.cz
  */
 
 namespace GSC;
@@ -13,16 +15,60 @@ namespace GSC;
 /**
  * String Filters interface
  * 
- * Modify a string content passed by a reference to fix common problems.
- * 
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 interface IStringFilters
 {
+    /**
+     * Convert EOLs to <br>
+     *
+     * @param string $content content by reference
+     * 
+     * @return void
+     */
     public static function convert_eol_to_br(&$content);
+
+    /**
+     * Convert EOL + hyphen/star to HTML
+     *
+     * @param string $content content by reference
+     * 
+     * @return void
+     */
     public static function convert_eolhyphen_to_brdot(&$content);
+
+    /**
+     * Correct text spacing
+     * 
+     * Correct the text spacing in passed content for various languages.
+     *
+     * @param string $content  content by reference
+     * @param string $language (optional: "cs", "sk", "en" - for now)
+     * 
+     * @return void
+     */
     public static function correct_text_spacing(&$content, $language);
+
+    /**
+     * Trim various EOL combinations
+     *
+     * @param string $content content by reference
+     * 
+     * @return void
+     */
     public static function trim_eol(&$content);
+
+    /**
+     * Trim THML comments
+     *
+     * @param string $content content by reference
+     * 
+     * @return void
+     */
     public static function trim_html_comment(&$content);
 }
 
@@ -31,7 +77,11 @@ interface IStringFilters
  * 
  * Modify a string content passed by a reference to fix common problems.
  * 
- * @package GSC
+ * @category CMS
+ * @package  Framework
+ * @author   Fred Brooker <git@gscloud.cz>
+ * @license  MIT https://gscloud.cz/LICENSE
+ * @link     https://lasagna.gscloud.cz
  */
 class StringFilters implements IStringFilters
 {
@@ -117,6 +167,7 @@ class StringFilters implements IStringFilters
         " ‰ " => "&nbsp;‰",
         "<<" => "«",
         ">>" => "»",
+        " / " => " /&nbsp;",
     ];
 
     public static $array_replace_czech = [
@@ -208,6 +259,7 @@ class StringFilters implements IStringFilters
         " ‰ " => "&nbsp;‰",
         "<<" => "«",
         ">>" => "»",
+        " / " => " /&nbsp;",
     ];
 
     public static $array_replace_english = [
@@ -269,12 +321,14 @@ class StringFilters implements IStringFilters
         " ‰ " => "&nbsp;‰",
         "<<" => "«",
         ">>" => "»",
+        " / " => " /&nbsp;",
     ];
 
     /**
      * Convert EOLs to <br>
      *
      * @param string $content content by reference
+     * 
      * @return void
      */
     public static function convert_eol_to_br(&$content)
@@ -283,16 +337,19 @@ class StringFilters implements IStringFilters
             return;
         }
 
-        $content = str_replace(array(
+        $content = str_replace(
+            array(
             "\n",
             "\r\n",
-        ), "<br>", (string) $content);
+            ), "<br>", (string) $content
+        );
     }
 
     /**
      * Convert EOL + hyphen/star to HTML
      *
      * @param string $content content by reference
+     * 
      * @return void
      */
     public static function convert_eolhyphen_to_brdot(&$content)
@@ -301,12 +358,14 @@ class StringFilters implements IStringFilters
             return;
         }
 
-        $content = str_replace(array(
+        $content = str_replace(
+            array(
             "\n* ",
             "\n- ",
             "\r\n* ",
             "\r\n- ",
-        ), "<br>•&nbsp;", (string) $content);
+            ), "<br>•&nbsp;", (string) $content
+        );
 
         // fix for the beginning of the string
         if ((substr($content, 0, 2) == "- ") || (substr($content, 0, 2) == "* ")) {
@@ -318,6 +377,7 @@ class StringFilters implements IStringFilters
      * Trim various EOL combinations
      *
      * @param string $content content by reference
+     * 
      * @return void
      */
     public static function trim_eol(&$content)
@@ -326,17 +386,20 @@ class StringFilters implements IStringFilters
             return;
         }
 
-        $content = str_replace(array(
+        $content = str_replace(
+            array(
             "\r\n",
             "\n",
             "\r",
-        ), "", (string) $content);
+            ), "", (string) $content
+        );
     }
 
     /**
      * Trim THML comments
      *
      * @param string $content content by reference
+     * 
      * @return void
      */
     public static function trim_html_comment(&$content)
@@ -366,8 +429,9 @@ class StringFilters implements IStringFilters
      * 
      * Correct the text spacing in passed content for various languages.
      *
-     * @param string $content content by reference
+     * @param string $content  content by reference
      * @param string $language (optional: "cs", "sk", "en" - for now)
+     * 
      * @return void
      */
     public static function correct_text_spacing(&$content, $language = "en")
@@ -378,14 +442,14 @@ class StringFilters implements IStringFilters
 
         $language = strtolower(trim((string) $language));
         switch ($language) {
-            case "sk":
-                $content = self::correct_text_spacing_sk($content);
-                break;
-            case "cs":
-                $content = self::correct_text_spacing_cs($content);
-                break;
-            default:
-                $content = self::correct_text_spacing_en($content);
+        case "sk":
+            $content = self::correct_text_spacing_sk($content);
+            break;
+        case "cs":
+            $content = self::correct_text_spacing_cs($content);
+            break;
+        default:
+            $content = self::correct_text_spacing_en($content);
         }
     }
 
@@ -393,44 +457,58 @@ class StringFilters implements IStringFilters
      * Correct text spacing for English language
      *
      * @param string $content textual data
+     * 
      * @return string
      */
-    private static function correct_text_spacing_en($content = null)
+    public static function correct_text_spacing_en($content = null)
     {
         if (!is_string($content)) {
             return $content;
         }
 
-        return str_replace(array_keys(self::$array_replace_english), self::$array_replace_english, $content);
+        return str_replace(
+            array_keys(self::$array_replace_english),
+            self::$array_replace_english, $content
+        );
     }
 
     /**
      * Correct text spacing for Czech language
      *
      * @param string $content textual data
+     * 
      * @return string
      */
-    private static function correct_text_spacing_cs($content = null)
+    public static function correct_text_spacing_cs($content = null)
     {
         if (!is_string($content)) {
             return $content;
         }
 
-        return str_replace(array_keys(self::$array_replace_czech), self::$array_replace_czech, $content);
+        return str_replace(
+            array_keys(self::$array_replace_czech),
+            self::$array_replace_czech,
+            $content
+        );
     }
 
     /**
      * Correct text spacing for Slovak language
      *
      * @param string $content textual data
+     * 
      * @return string
      */
-    private static function correct_text_spacing_sk($content = null)
+    public static function correct_text_spacing_sk($content = null)
     {
         if (!is_string($content)) {
             return $content;
         }
 
-        return str_replace(array_keys(self::$array_replace_slovak), self::$array_replace_slovak, $content);
+        return str_replace(
+            array_keys(self::$array_replace_slovak),
+            self::$array_replace_slovak,
+            $content
+        );
     }
 }
