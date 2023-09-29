@@ -1,6 +1,14 @@
 # @author Fred Brooker <git@gscloud.cz>
 # API routes
 
+API:
+  path: /api
+  api: true
+  api_description: "REST API dashboard"
+  api_info: "This page 🐱"
+  presenter: core
+  sitemap: false
+
 call1:
   path: "/api/v1/call1/[a:string]"
   api_description: "API call example #1"
